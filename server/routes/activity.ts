@@ -543,10 +543,18 @@ router.post("/:id/join", async (req, res) => {
             userFac = detail2;
           }
 
+          const standardFaculties = [
+            "สำนักวิชาวิทยาศาสตร์", "สำนักวิชาเทคโนโลยีสังคม", "สำนักวิชาเทคโนโลยีการเกษตร", 
+            "สำนักวิชาวิศวกรรมศาสตร์", "สำนักวิชาแพทยศาสตร์", "สำนักวิชาพยาบาลศาสตร์", 
+            "สำนักวิชาทันตแพทยศาสตร์", "สำนักวิชาสาธารณสุขศาสตร์", "สำนักวิชาศาสตร์และศิลป์ดิจิทัล"
+          ];
+          const isOtherFac = !standardFaculties.includes(userFac) && !standardFaculties.includes(detail2);
+
           const passFac =
             facultyVis.length === 0 ||
             facultyVis.includes(userFac) ||
-            facultyVis.includes(detail2);
+            facultyVis.includes(detail2) ||
+            (facultyVis.includes("อื่น ๆ") && isOtherFac);
           if (!passFac) {
             return {
               ok: false,
@@ -568,10 +576,18 @@ router.post("/:id/join", async (req, res) => {
           u.role_type === "บุคลากรโรงพยาบาล" ||
           u.role_type === "บุคลากรมหาวิทยาลัย"
         ) {
+          const standardFaculties = [
+            "สำนักวิชาวิทยาศาสตร์", "สำนักวิชาเทคโนโลยีสังคม", "สำนักวิชาเทคโนโลยีการเกษตร", 
+            "สำนักวิชาวิศวกรรมศาสตร์", "สำนักวิชาแพทยศาสตร์", "สำนักวิชาพยาบาลศาสตร์", 
+            "สำนักวิชาทันตแพทยศาสตร์", "สำนักวิชาสาธารณสุขศาสตร์", "สำนักวิชาศาสตร์และศิลป์ดิจิทัล"
+          ];
+          const isOtherDept = !standardFaculties.includes(u.role_detail_1) && !standardFaculties.includes(u.role_detail_2);
+
           if (
             facultyVis.length > 0 &&
             !facultyVis.includes(u.role_detail_1) &&
-            !facultyVis.includes(u.role_detail_2)
+            !facultyVis.includes(u.role_detail_2) &&
+            !(facultyVis.includes("อื่น ๆ") && isOtherDept)
           ) {
             return {
               ok: false,

@@ -1361,15 +1361,32 @@ async function handleEvent(event: any) {
 
       // ─── STEP 2: ดึงหน่วยและคุณสมบัติ OCR ของ task ─────────────────────────────────────────────
       let targetUnit = "km";
-      let useOcr = true;
+      let useOcr = true; // default: always try AI OCR
       if (lastBotTaskId) {
-        const [taskInfo]: any = await pool.query(
-          "SELECT metric_unit, use_ocr FROM tasks WHERE id = ?",
-          [lastBotTaskId],
-        );
-        if (taskInfo.length > 0) {
-          if (taskInfo[0].metric_unit) targetUnit = taskInfo[0].metric_unit.toLowerCase();
-          useOcr = taskInfo[0].use_ocr === 1 || taskInfo[0].use_ocr === true || taskInfo[0].use_ocr === null;
+        try {
+          const [taskInfo]: any = await pool.query(
+            "SELECT metric_unit, use_ocr FROM tasks WHERE id = ?",
+            [lastBotTaskId],
+          );
+          if (taskInfo.length > 0) {
+            if (taskInfo[0].metric_unit) targetUnit = taskInfo[0].metric_unit.toLowerCase();
+            // use_ocr: 1/true/null = enabled, 0/false = photo-proof only
+            const rawUseOcr = taskInfo[0].use_ocr;
+            useOcr = rawUseOcr === 1 || rawUseOcr === true || rawUseOcr === null || rawUseOcr === undefined;
+          }
+        } catch (dbErr: any) {
+          // Fallback: use_ocr column might not exist in schema yet — default to enabled
+          console.warn("[BOT] use_ocr column not found or DB error, defaulting useOcr=true:", dbErr.message);
+          try {
+            const [taskFallback]: any = await pool.query(
+              "SELECT metric_unit FROM tasks WHERE id = ?",
+              [lastBotTaskId],
+            );
+            if (taskFallback.length > 0 && taskFallback[0].metric_unit) {
+              targetUnit = taskFallback[0].metric_unit.toLowerCase();
+            }
+          } catch {}
+          useOcr = true;
         }
       }
 

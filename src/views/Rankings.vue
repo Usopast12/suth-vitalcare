@@ -240,6 +240,17 @@
                                                 :color="item.equipped_title_color"
                                                 size="sm"
                                             />
+                                            <!-- 🔥 Streak Badge (individual tab only) -->
+                                            <span
+                                                v-if="activeTab === 'individual' && item.streak >= 1"
+                                                class="streak-badge"
+                                                :class="{
+                                                    'streak-hot': item.streak >= 7,
+                                                    'streak-warm': item.streak >= 3 && item.streak < 7,
+                                                    'streak-cool': item.streak < 3
+                                                }"
+                                                :title="`${item.streak} วันติดต่อกัน`"
+                                            >🔥 {{ item.streak }}</span>
                                         </div>
                                     </div>
                                     <div class="col-score">
@@ -340,6 +351,41 @@ const handleSelectActivity = (id) => {
 <style scoped>
 /* นำเข้าฟอนต์ Sarabun จาก Google Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap");
+
+/* 🔥 Streak Badge */
+.streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+}
+.streak-badge:hover { transform: scale(1.08); }
+.streak-hot {
+    background: linear-gradient(135deg, #ff6a00, #ee0979);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(255,106,0,0.4);
+    animation: streak-pulse 1.8s infinite;
+}
+.streak-warm {
+    background: #fff0e6;
+    color: #ea580c;
+    border: 1px solid #fed7aa;
+}
+.streak-cool {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+@keyframes streak-pulse {
+    0%, 100% { box-shadow: 0 2px 8px rgba(255,106,0,0.4); }
+    50% { box-shadow: 0 4px 16px rgba(238,9,121,0.5); }
+}
 
 .rank-app {
     --primary: #ff6a00;

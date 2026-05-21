@@ -153,6 +153,9 @@ export function useMissions() {
     const expandedActivities = ref<Record<string, boolean>>({})
     const isEditingMode = ref(false)
     const showDetailModal = ref(false)
+    const showCelebration = ref(false)
+    const celebrationPoints = ref(0)
+    const celebrationTaskTitle = ref('')
     const textResponse = ref('')
     const oldSubmissionValue = ref<string>('')
     const hasAIResult = ref(false) // flag: AI เพิ่งกรอกค่าใหม่ → ห้าม sync ค่าเก่าจาก DB ทับ
@@ -975,6 +978,9 @@ export function useMissions() {
                 }
 
                 mutateActs(); mutateSubs(); mutateProfile()
+                celebrationPoints.value = activeTask.value?.points ?? 0
+                celebrationTaskTitle.value = activeTask.value?.note || 'ภารกิจ'
+                showCelebration.value = true
                 swal.fire({
                     icon: 'success',
                     title: 'บันทึกสำเร็จ!',
@@ -1218,6 +1224,9 @@ export function useMissions() {
         expandedActivities,
         isEditingMode,
         showDetailModal,
+        showCelebration,
+        celebrationPoints,
+        celebrationTaskTitle,
         textResponse,
         oldSubmissionValue,
         selectedTaskPerEvent,

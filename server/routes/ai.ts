@@ -21,15 +21,25 @@ dotenv.config();
 const router = express.Router();
 
 // AI API Rate Limiter: Prevent abuse and protect API budget
+// NOTE: Internal bot calls from localhost bypass this limiter automatically
 const aiLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
-  max: 20, // Increased to 20 requests per IP per day
+  max: 20, // 20 requests per IP per day for external users
   message: {
     error:
       "ใช้งานระบบ AI เกินขีดจำกัดประจำวัน (20 ครั้ง/วัน) กรุณาลองใหม่ในวันถัดไป หรือพิมพ์ข้อมูลด้วยตนเองหากมีความจำเป็นเร่งด่วน",
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Skip rate limit for internal server calls (bot uses localhost)
+  skip: (req) => {
+    const ip = req.ip || req.socket?.remoteAddress || "";
+    const isInternal = ip === "127.0.0.1" || ip === "::1" || ip === "::ffff:127.0.0.1";
+    if (isInternal) {
+      console.log("[AI] Internal bot request — skipping rate limit");
+    }
+    return isInternal;
+  },
 });
 
 const typhoonApiKey = process.env.TYPHOON_API_KEY;

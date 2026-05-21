@@ -89,6 +89,18 @@ export async function callTyphoonVisionAction(
   const base64Image = imageBuffer.toString("base64");
   const url = "https://api.opentyphoon.ai/v1/chat/completions";
 
+  // Detect actual MIME type from buffer magic bytes (not hardcoded!)
+  // PNG: 0x89 0x50 0x4E 0x47 | JPEG: 0xFF 0xD8 | WEBP: 52 49 46 46 ... 57 45 42 50
+  let mimeType = "image/jpeg"; // default fallback
+  if (imageBuffer[0] === 0x89 && imageBuffer[1] === 0x50 && imageBuffer[2] === 0x4E && imageBuffer[3] === 0x47) {
+    mimeType = "image/png";
+  } else if (imageBuffer[0] === 0xFF && imageBuffer[1] === 0xD8) {
+    mimeType = "image/jpeg";
+  } else if (imageBuffer.slice(8, 12).toString("ascii") === "WEBP") {
+    mimeType = "image/webp";
+  }
+  console.log(`[Typhoon Vision] Detected MIME type: ${mimeType} (buffer size: ${imageBuffer.length} bytes)`);
+
   const body = {
     model: modelName,
     messages: [
@@ -98,11 +110,12 @@ export async function callTyphoonVisionAction(
           { type: "text", text: prompt },
           {
             type: "image_url",
-            image_url: { url: `data:image/jpeg;base64,${base64Image}` }
+            image_url: { url: `data:${mimeType};base64,${base64Image}` }
           }
         ]
       }
     ],
+    max_tokens: 4096,
     temperature: 0.1
   };
 

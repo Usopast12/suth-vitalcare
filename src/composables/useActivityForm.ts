@@ -141,6 +141,7 @@ export function useActivityForm(fetchActivitiesCallback: () => Promise<void>) {
         "สำนักวิชาทันตแพทยศาสตร์",
         "สำนักวิชาสาธารณสุขศาสตร์",
         "สำนักวิชาศาสตร์และศิลป์ดิจิทัล",
+        "อื่น ๆ",
       ];
       const staticRoles = [
         { id: "general", name: "ทุกคนในโครงการ (Public)", category: "พื้นฐาน" },

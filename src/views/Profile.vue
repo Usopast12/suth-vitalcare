@@ -254,47 +254,46 @@
                       
                       <!-- Bento Grid for Core Fitness Targets -->
                       <div class="bento-fitness-targets">
-                        <!-- Calories Target Card -->
                         <div class="bento-card bento-calories" v-if="insightSweetSpot">
-                          <div class="bento-icon-bg">
-                            <Activity :size="18" class="text-orange-500" />
+                          <button class="tooltip-btn" @click.stop="showInfoPopup('คำแนะนำแคลอรี่', insightSweetSpot.action + '<br><br><a href=\'https://www.ptpioneer.com/personal-training/tools/total-daily-energy-expenditure-calculator-tdee-calculator/\' target=\'_blank\' class=\'text-orange-500 font-bold hover:underline\'>🔗 อ้างอิงสูตรคำนวณ TDEE & BMR</a>')">
+                            <Lightbulb :size="14" />
+                          </button>
+                          <div class="bento-icon-bg bg-orange-50">
+                            <Zap :size="18" class="text-orange-500" />
                           </div>
-                          <div class="bento-label">เป้าหมายแคลอรี่</div>
-                          <div class="bento-value text-orange-600">{{ insightSweetSpot.value }}</div>
-                          <div class="bento-sub">{{ insightSweetSpot.action }}</div>
+                          <div class="bento-label text-slate-500 pr-8">เป้าหมายแคลอรี่</div>
+                          <div class="bento-value text-slate-800">{{ insightSweetSpot.value }}</div>
                         </div>
 
-                        <!-- Water Target Card -->
                         <div class="bento-card bento-water">
-                          <div class="bento-icon-bg">
+                          <button class="tooltip-btn" @click.stop="showInfoPopup('เป้าหมายน้ำดื่ม', 'ดื่มน้ำช่วยกระตุ้นการเผาผลาญและการไหลเวียนของโลหิต โดยการคำนวณตาม น้ำหนักตัว (กก.) x 30 (มล.) = ปริมาณน้ำที่ควรดื่ม (มิลลิลิตร)')">
+                            <Lightbulb :size="14" />
+                          </button>
+                          <div class="bento-icon-bg bg-blue-50">
                             <Droplets :size="18" class="text-blue-500" />
                           </div>
-                          <div class="bento-label">เป้าหมายน้ำดื่ม</div>
-                          <div class="bento-value text-blue-600">{{ recommendedWater }}</div>
-                          <div class="bento-sub">ดื่มน้ำช่วยกระตุ้นการเผาผลาญและการไหลเวียนของโลหิต
-                            โดยการคำนวนตาม น้ำหนักตัว (กก.) x 30 (มล.) = ปริมาณน้ำที่ควรดื่ม (มิลลิลิตร)
-
-                          </div>
+                          <div class="bento-label text-slate-500 pr-8">เป้าหมายน้ำดื่ม</div>
+                          <div class="bento-value text-slate-800">{{ recommendedWater }}</div>
                         </div>
 
-                        <!-- Protein Target Card -->
                         <div class="bento-card bento-protein" v-if="insightProtein">
-                          <div class="bento-icon-bg">
-                            <HeartPulse :size="18" class="text-purple-500" />
+                          <button class="tooltip-btn" @click.stop="showInfoPopup('เป้าหมายโปรตีน', insightProtein.action + '<br><br><a href=\'https://www.ironman.com/news/protein-non-negotiable-macro\' target=\'_blank\' class=\'text-blue-500 font-bold hover:underline\'>🔗 อ้างอิงเป้าหมายโปรตีนรายวัน</a>')">
+                            <Lightbulb :size="14" />
+                          </button>
+                          <div class="bento-icon-bg bg-red-50">
+                            <Flame :size="18" class="text-red-500" />
                           </div>
-                          <div class="bento-label">เป้าหมายโปรตีน</div>
-                          <div class="bento-value text-purple-600">{{ insightProtein.value }}</div>
-                          <div class="bento-sub">{{ insightProtein.action }}</div>
+                          <div class="bento-label text-slate-500 pr-8">เป้าหมายโปรตีน</div>
+                          <div class="bento-value text-slate-800">{{ insightProtein.value }}</div>
                         </div>
                       </div>
 
                       <!-- Simulator Controls Card -->
                       <div class="simulator-card">
-                        <div class="sim-header">
+                        <div class="sim-header mb-3">
                           <Target :size="15" class="text-gray-500" />
                           <span>จำลองเป้าหมายและกิจกรรม</span>
                         </div>
-                        <p class="sim-desc text-[11px] text-gray-400 mb-3">คุณสามารถปรับเป้าหมายและระดับกิจกรรมจำลองเพื่อดูการเปลี่ยนแปลงของแคลอรี่และโปรตีนเป้าหมายด้านบนได้ทันที</p>
                         <div class="sim-controls-grid">
                           <CustomSelect 
                             v-model="dashboardGoal" 
@@ -311,30 +310,30 @@
                         </div>
                       </div>
 
-                      <!-- Scientific References Card to balance layout height -->
-                      <div class="references-card">
-                        <div class="ref-header flex items-center gap-2 mb-2">
-                          <BookOpen :size="15" class="text-orange-500" />
-                          <span class="ref-title text-[12px] font-bold text-slate-700 font-sans">สูตรคำนวณและแหล่งอ้างอิงทางวิทยาศาสตร์</span>
-                        </div>
-                        <div class="ref-grid grid grid-cols-1 md:grid-cols-2 gap-3">
-                          <div class="ref-item p-3 bg-slate-50 border border-slate-100 rounded-xl flex flex-col gap-1.5">
-                            <div class="flex items-center">
-                              <span class="ref-badge bg-orange-100 text-orange-700 font-bold text-[9px] px-2 py-0.5 rounded-full font-sans">สูตรคำนวณ TDEE & BMR</span>
-                            </div>
-                            <p class="ref-text text-[10px] text-slate-500 leading-relaxed font-medium font-sans">
-                              คำนวณตามสูตรสากล <strong>Mifflin-St Jeor</strong> ร่วมกับตัวคูณกิจกรรมประจำวัน เพื่อหาค่าความต้องการพลังงานจริงที่ยั่งยืน
-                            </p>
-                            <a href="https://www.ptpioneer.com/personal-training/tools/total-daily-energy-expenditure-calculator-tdee-calculator/#:~:text=as%20maintenance%20levels.-,How%20Is%20Total%20Daily%20Energy%20Expenditure%20Calculated?,%2D161%20(kcal%20/%20day)" target="_blank" class="ref-link text-[10px] text-orange-600 font-bold hover:underline mt-auto flex items-center gap-0.5 font-sans">🔗 อ้างอิงสูตรคำนวณ TDEE</a>
+                      <!-- BMI Visualizer (Moved to balance layout) -->
+                      <div class="bmi-compact-card relative">
+                        <button class="tooltip-btn" @click.stop="showInfoPopup('ดัชนีมวลกาย (BMI)', bmiImage.desc)">
+                          <Lightbulb :size="14" />
+                        </button>
+                        <div class="bmi-compact-header pr-8">
+                          <span class="bmi-compact-title">ดัชนีมวลกาย (BMI)</span>
+                          <div class="bmi-compact-value-row">
+                            <span class="bmi-compact-badge" :style="bmiImage.badgeStyle">{{ bmiImage.badge }}</span>
+                            <span class="bmi-compact-num">BMI {{ profileBMI }}</span>
                           </div>
-                          <div class="ref-item p-3 bg-slate-50 border border-slate-100 rounded-xl flex flex-col gap-1.5">
-                            <div class="flex items-center">
-                              <span class="ref-badge bg-blue-100 text-blue-700 font-bold text-[9px] px-2 py-0.5 rounded-full font-sans">เป้าหมายโปรตีนรายวัน</span>
-                            </div>
-                            <p class="ref-text text-[10px] text-slate-500 leading-relaxed font-medium font-sans">
-                              คำนวณสัดส่วนโปรตีนที่ <strong>1.2 - 2.0 กรัม/กก.</strong> อ้างอิงคำแนะนำทางวิทยาศาสตร์การกีฬาของสถาบัน <strong>ACSM</strong>
-                            </p>
-                            <a href="https://www.ironman.com/news/protein-non-negotiable-macro#:~:text=The%20American%20College%20of%20Sports%20Medicine%20(ACSM),kg%20(0.55%2D0.64%20grams%20per%20pound)%20of%20body" target="_blank" class="ref-link text-[10px] text-blue-600 font-bold hover:underline mt-auto flex items-center gap-0.5 font-sans">🔗 อ้างอิงเกณฑ์โปรตีน ACSM</a>
+                        </div>
+                        
+                        <div class="bmi-scale-container mt-3 mb-2">
+                          <div class="bmi-scale-line"></div>
+                          <div class="bmi-marker" :style="{ left: (bmiImage.dotIndex * 25) + '%' }"></div>
+                          
+                          <!-- Numbers and Ranges Labeling for the scale -->
+                          <div class="bmi-scale-labels mt-2.5 flex justify-between text-[9px] text-gray-400 font-semibold px-0.5 relative">
+                            <span>ผอม (&lt;18.5)</span>
+                            <span>ปกติ (18.5)</span>
+                            <span>ท้วม (23.0)</span>
+                            <span>อ้วน1 (25.0)</span>
+                            <span>อ้วน2 (30.0+)</span>
                           </div>
                         </div>
                       </div>
@@ -351,118 +350,106 @@
                       <div class="metrics-grid">
                         <!-- Weight -->
                         <div class="metric-coach-card">
-                          <div class="m-card-header flex items-center justify-between">
-                            <span class="m-title-mini">น้ำหนักตัว</span>
-                            <span class="m-status-badge" :style="bmiImage.badgeStyle" v-if="profileBMI !== '–'">{{ bmiImage.badge }}</span>
+                          <button class="tooltip-btn" @click.stop="showInfoPopup('น้ำหนักตัว', weightRecommendation)">
+                            <Lightbulb :size="14" />
+                          </button>
+                          <div class="m-card-header flex items-center mt-1 pr-10">
+                            <div class="flex items-center gap-1.5 text-blue-500">
+                              <Scale :size="14" class="shrink-0" />
+                              <span class="m-title-mini text-slate-500">น้ำหนักตัว</span>
+                            </div>
                           </div>
-                          <div class="m-val-mini mt-1">
-                            {{ latestWeight }} <span class="m-unit-mini">กก.</span>
+                          <div class="m-val-mini mt-1 text-slate-800">
+                            {{ latestWeight }} <span class="m-unit-mini text-slate-400">กก.</span>
                           </div>
-                          <div class="m-coach-rec mt-2 text-[11px] text-gray-500 font-medium">
-                            💡 {{ weightRecommendation }}
-                          </div>
+                          <span class="m-status-badge mt-1" :style="bmiImage.badgeStyle" v-if="profileBMI !== '–'">{{ bmiImage.badge }}</span>
                         </div>
 
                         <!-- Fat Percent -->
                         <div class="metric-coach-card">
-                          <div class="m-card-header flex items-center justify-between">
-                            <span class="m-title-mini font-semibold">เปอร์เซ็นต์ไขมัน</span>
-                            <span class="m-status-badge text-[10px]" :class="fatStatus" v-if="fatStatus">{{ fatStatus }}</span>
+                          <button class="tooltip-btn" @click.stop="showInfoPopup('เปอร์เซ็นต์ไขมัน', fatRecommendation)">
+                            <Lightbulb :size="14" />
+                          </button>
+                          <div class="m-card-header flex items-center mt-1 pr-10">
+                            <div class="flex items-center gap-1.5 text-orange-500">
+                              <Flame :size="14" class="shrink-0" />
+                              <span class="m-title-mini text-slate-500">เปอร์เซ็นต์ไขมัน</span>
+                            </div>
                           </div>
-                          <div class="m-val-mini mt-1">
-                            {{ tanita.fat_pc || '–' }} <span class="m-unit-mini">%</span>
+                          <div class="m-val-mini mt-1 text-slate-800">
+                            {{ tanita.fat_pc || '–' }} <span class="m-unit-mini text-slate-400">%</span>
                           </div>
-                          <div class="m-coach-rec mt-2 text-[11px] text-gray-500 font-medium">
-                            💡 {{ fatRecommendation }}
-                          </div>
+                          <span class="m-status-badge mt-1" :class="fatStatus" v-if="fatStatus">{{ fatStatus }}</span>
                         </div>
 
                         <!-- Visceral Fat -->
                         <div class="metric-coach-card">
-                          <div class="m-card-header flex items-center justify-between">
-                            <span class="m-title-mini">ไขมันช่องท้อง</span>
-                            <span class="m-status-badge text-[10px]" :class="tanita.visceral_fat >= 10 ? 'danger' : 'success'" v-if="tanita.visceral_fat">{{ tanita.visceral_fat >= 10 ? 'ควรลด' : 'ปกติ' }}</span>
+                          <button class="tooltip-btn" @click.stop="showInfoPopup('ไขมันช่องท้อง', visceralRecommendation)">
+                            <Lightbulb :size="14" />
+                          </button>
+                          <div class="m-card-header flex items-center mt-1 pr-10">
+                            <div class="flex items-center gap-1.5 text-orange-500">
+                              <Activity :size="14" class="shrink-0" />
+                              <span class="m-title-mini text-slate-500">ไขมันช่องท้อง</span>
+                            </div>
                           </div>
-                          <div class="m-val-mini mt-1">
+                          <div class="m-val-mini mt-1 text-slate-800">
                             ระดับ {{ tanita.visceral_fat || '–' }}
                           </div>
-                          <div class="m-coach-rec mt-2 text-[11px] text-gray-500 font-medium">
-                            💡 {{ visceralRecommendation }}
-                          </div>
+                          <span class="m-status-badge mt-1" :class="tanita.visceral_fat >= 10 ? 'danger' : 'success'" v-if="tanita.visceral_fat">{{ tanita.visceral_fat >= 10 ? 'ควรลด' : 'ปกติ' }}</span>
                         </div>
 
                         <!-- Total Body Water -->
                         <div class="metric-coach-card">
-                          <div class="m-card-header flex items-center justify-between">
-                            <span class="m-title-mini font-semibold">ระดับน้ำในร่างกาย</span>
-                            <span class="m-status-badge text-[10px]" :class="insightHydration?.value?.includes('ต่ำ') ? 'danger' : 'success'" v-if="insightHydration">{{ insightHydration.value.includes('ต่ำ') ? 'ควรดื่มเพิ่ม' : 'ปกติ' }}</span>
+                          <button class="tooltip-btn" @click.stop="showInfoPopup('ระดับน้ำในร่างกาย', waterRecommendation)">
+                            <Lightbulb :size="14" />
+                          </button>
+                          <div class="m-card-header flex items-center mt-1 pr-10">
+                            <div class="flex items-center gap-1.5 text-blue-500">
+                              <Droplets :size="14" class="shrink-0" />
+                              <span class="m-title-mini text-slate-500">ระดับน้ำในร่างกาย</span>
+                            </div>
                           </div>
-                          <div class="m-val-mini mt-1">
-                            {{ tanita.tbw_pc || '–' }} <span class="m-unit-mini">%</span>
+                          <div class="m-val-mini mt-1 text-slate-800">
+                            {{ tanita.tbw_pc || '–' }} <span class="m-unit-mini text-slate-400">%</span>
                           </div>
-                          <div class="m-coach-rec mt-2 text-[11px] text-gray-500 font-medium">
-                            💡 {{ waterRecommendation }}
-                          </div>
+                          <span class="m-status-badge mt-1" :class="insightHydration?.value?.includes('ต่ำ') ? 'danger' : 'success'" v-if="insightHydration">{{ insightHydration.value.includes('ต่ำ') ? 'ควรดื่มเพิ่ม' : 'ปกติ' }}</span>
                         </div>
 
                         <!-- Muscle Mass -->
                         <div class="metric-coach-card">
-                          <div class="m-card-header flex items-center justify-between">
-                            <span class="m-title-mini">มวลกล้ามเนื้อ</span>
-                            <span class="m-status-badge success text-[10px]">ปกติ</span>
+                          <button class="tooltip-btn" @click.stop="showInfoPopup('มวลกล้ามเนื้อ', 'ช่วยกระตุ้นระบบเผาผลาญ ควรออกกำลังกายแรงต้านเพื่อรักษามวลกล้ามเนื้อไว้')">
+                            <Lightbulb :size="14" />
+                          </button>
+                          <div class="m-card-header flex items-center mt-1 pr-10">
+                            <div class="flex items-center gap-1.5 text-red-500">
+                              <Dumbbell :size="14" class="shrink-0" />
+                              <span class="m-title-mini text-slate-500">มวลกล้ามเนื้อ</span>
+                            </div>
                           </div>
-                          <div class="m-val-mini mt-1">
-                            {{ tanita.muscle_mass || '–' }} <span class="m-unit-mini">กก.</span>
+                          <div class="m-val-mini mt-1 text-slate-800">
+                            {{ tanita.muscle_mass || '–' }} <span class="m-unit-mini text-slate-400">กก.</span>
                           </div>
-                          <div class="m-coach-rec mt-2 text-[11px] text-gray-500 font-medium">
-                            💡 ช่วยกระตุ้นระบบเผาผลาญ ควรออกกำลังกายแรงต้านเพื่อรักษามวลกล้ามเนื้อไว้
-                          </div>
+                          <span class="m-status-badge success mt-1">ปกติ</span>
                         </div>
 
-                        <!-- Metabolic Age & BMR -->
+                        <!-- Metabolic Age -->
                         <div class="metric-coach-card">
-                          <div class="m-card-header flex items-center justify-between">
-                            <span class="m-title-mini">พลังงาน & อายุเซลล์</span>
+                          <button class="tooltip-btn" @click.stop="showInfoPopup('อายุเซลล์', 'อายุเซลล์ควรเท่ากับหรือน้อยกว่าอายุจริง บ่งบอกสุขภาพการฟื้นฟูของเซลล์ที่ดี')">
+                            <Lightbulb :size="14" />
+                          </button>
+                          <div class="m-card-header flex items-center mt-1 pr-10">
+                            <div class="flex items-center gap-1.5 text-orange-500">
+                              <Zap :size="14" class="shrink-0" />
+                              <span class="m-title-mini text-slate-500">อายุเซลล์</span>
+                            </div>
                           </div>
-                          <div class="m-val-mini mt-1 text-[13px] flex items-center gap-2 flex-wrap">
-                            <span>BMR: <strong class="text-slate-800">{{ tanita.bmr_kcal || '–' }}</strong> <small class="text-gray-400">kcal</small></span>
-                            <span class="text-gray-300">|</span>
-                            <span>อายุเซลล์: <strong class="text-slate-800">{{ tanita.metabolic_age || '–' }}</strong> <small class="text-gray-400">ปี</small></span>
-                          </div>
-                          <div class="m-coach-rec mt-2 text-[11px] text-gray-500 font-medium">
-                            💡 อายุเซลล์ควรเท่ากับหรือน้อยกว่าอายุจริง บ่งบอกสุขภาพการฟื้นฟูของเซลล์ที่ดี
+                          <div class="m-val-mini mt-1 text-slate-800">
+                            {{ tanita.metabolic_age || '–' }} <span class="m-unit-mini text-slate-400">ปี</span>
                           </div>
                         </div>
                       </div>
 
-                      <!-- BMI Visualizer -->
-                      <div class="bmi-compact-card">
-                        <div class="bmi-compact-header">
-                          <span class="bmi-compact-title">ดัชนีมวลกาย (BMI)</span>
-                          <div class="bmi-compact-value-row">
-                            <span class="bmi-compact-badge" :style="bmiImage.badgeStyle">{{ bmiImage.badge }}</span>
-                            <span class="bmi-compact-num">BMI {{ profileBMI }}</span>
-                          </div>
-                        </div>
-                        
-                        <div class="bmi-scale-container mt-3">
-                          <div class="bmi-scale-line"></div>
-                          <div class="bmi-marker" :style="{ left: (bmiImage.dotIndex * 25) + '%' }"></div>
-                          
-                          <!-- Numbers and Ranges Labeling for the scale -->
-                          <div class="bmi-scale-labels mt-2.5 flex justify-between text-[9px] text-gray-400 font-semibold px-0.5 relative">
-                            <span>ผอม (&lt;18.5)</span>
-                            <span>ปกติ (18.5)</span>
-                            <span>ท้วม (23.0)</span>
-                            <span>อ้วน1 (25.0)</span>
-                            <span>อ้วน2 (30.0+)</span>
-                          </div>
-                        </div>
-
-                        <div class="bmi-compact-desc mt-3" :style="bmiImage.descStyle">
-                          {{ bmiImage.desc }}
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -923,7 +910,7 @@ import {
   LayoutDashboard, Loader2, User, Users, Calendar, Target, Mail, Phone, IdCard, 
   Scale, Ruler, Stethoscope, School, GraduationCap, Building2, Briefcase, VenetianMask,
   Heart, ImageIcon, Droplets, Lock, LayoutGrid, Medal, Check, PanelLeft, PanelLeftClose, ChevronLeft, X, Clock,
-  BookOpen
+  BookOpen, Info, Lightbulb, Zap, Flame, Dumbbell
 } from 'lucide-vue-next'
 import Swal from 'sweetalert2'
 import { authStore } from '../store/auth'
@@ -956,6 +943,21 @@ const filteredTitles = computed(() => {
 const unlockedCount = computed(() => titles.value.filter(t => t.is_unlocked).length)
 const totalCount = computed(() => titles.value.length)
 const unlockProgress = computed(() => totalCount.value ? (unlockedCount.value / totalCount.value * 100) : 0)
+
+const showInfoPopup = (title, text) => {
+  Swal.fire({
+    title: title,
+    html: text,
+    icon: 'info',
+    confirmButtonColor: '#F05A23',
+    confirmButtonText: 'เข้าใจแล้ว',
+    customClass: {
+      popup: 'premium-swal-popup',
+      confirmButton: 'premium-swal-confirm'
+    }
+  })
+}
+
 const handleClaim = async (title) => {
   if (title.unlock_type === 'code') {
     const { value: code } = await Swal.fire({
@@ -1597,6 +1599,35 @@ onUnmounted(() => {
   font-size: 16px;
 }
 
+.tooltip-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fef9c3;
+  border: 1px solid #fde047;
+  color: #eab308;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  min-height: 26px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 10;
+  flex-shrink: 0;
+}
+.tooltip-btn:hover {
+  background: #facc15; /* yellow-400 */
+  color: #fff;
+  border-color: #facc15;
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(250, 204, 21, 0.4);
+}
+
 .streak-cool-header {
   font-size: 9px;
 }
@@ -1971,8 +2002,29 @@ onUnmounted(() => {
     transition: background 0.2s;
   }
   .menu-item:hover { background: transparent; }
-  .menu-item.active .menu-label { font-weight: 700; color: #F05A23; }
-  .menu-item.active .menu-icon-wrap { border-color: #F05A23; transform: scale(1.05); }
+  .menu-item.active .menu-label { font-weight: 700; }
+  .menu-item.active .menu-icon-wrap { transform: scale(1.05); }
+  
+  .menu-item.mi-dashboard.active .menu-label { color: #a855f7; }
+  .menu-item.mi-dashboard.active .menu-icon-wrap { border-color: #a855f7; }
+  
+  .menu-item.mi-general.active .menu-label { color: #3b82f6; }
+  .menu-item.mi-general.active .menu-icon-wrap { border-color: #3b82f6; }
+  
+  .menu-item.mi-contact.active .menu-label { color: #f97316; }
+  .menu-item.mi-contact.active .menu-icon-wrap { border-color: #f97316; }
+  
+  .menu-item.mi-tanita.active .menu-label { color: #22c55e; }
+  .menu-item.mi-tanita.active .menu-icon-wrap { border-color: #22c55e; }
+  
+  .menu-item.mi-calendar.active .menu-label { color: #ec4899; }
+  .menu-item.mi-calendar.active .menu-icon-wrap { border-color: #ec4899; }
+  
+  .menu-item.mi-titles.active .menu-label { color: #eab308; }
+  .menu-item.mi-titles.active .menu-icon-wrap { border-color: #eab308; }
+  
+  .menu-item.mi-events.active .menu-label { color: #ef4444; }
+  .menu-item.mi-events.active .menu-icon-wrap { border-color: #ef4444; }
   .menu-icon-wrap { width: 34px; height: 34px; border-radius: 10px; border: 1.5px solid #eaeaea; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
   .menu-icon { width: 17px; height: 17px; }
   .menu-label { font-size: 1rem; text-align: left; color: #334155; font-weight: 500; transition: color 0.2s; }
@@ -2459,11 +2511,12 @@ onUnmounted(() => {
 .tanita-layout-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: 20px;
 }
 @media (min-width: 1024px) {
   .tanita-layout-grid {
     grid-template-columns: 1.15fr 0.85fr;
+    gap: 24px;
   }
 }
 .section-title-wrap {
@@ -2473,18 +2526,24 @@ onUnmounted(() => {
   margin-bottom: 2px;
 }
 .section-title {
-  font-size: 0.95rem;
+  font-size: 15px;
   font-weight: 700;
-  color: #0f172a;
+  color: #111 !important;
   margin: 0;
   font-family: 'Sarabun', sans-serif !important;
+}
+@media (min-width: 768px) {
+  .section-title { font-size: 18px; }
+}
+@media (min-width: 1024px) {
+  .section-title { font-size: 22px; }
 }
 
 /* Bento Targets Grid */
 .bento-fitness-targets {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 @media (min-width: 640px) {
   .bento-fitness-targets {
@@ -2492,15 +2551,17 @@ onUnmounted(() => {
   }
 }
 .bento-card {
+  position: relative;
   background: #fff;
   border: 1.5px solid #f1f5f9;
   border-radius: 16px;
-  padding: 16px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.015);
   transition: all 0.2s ease;
+  min-width: 0; /* prevent overflow */
 }
 .bento-card:hover {
   transform: translateY(-2px);
@@ -2508,36 +2569,53 @@ onUnmounted(() => {
   border-color: #e2e8f0;
 }
 .bento-icon-bg {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 .bento-calories .bento-icon-bg { background: #fff7ed; }
 .bento-water .bento-icon-bg { background: #eff6ff; }
 .bento-protein .bento-icon-bg { background: #faf5ff; }
 
 .bento-label {
-  font-size: 0.72rem;
+  font-size: 11px;
   font-weight: 700;
-  color: #94a3b8;
+  color: inherit;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   font-family: 'Sarabun', sans-serif !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 28px; /* space for tooltip btn */
 }
 .bento-value {
-  font-size: 1.35rem;
+  font-size: 18px;
   font-weight: 800;
+  color: inherit;
   letter-spacing: -0.02em;
   font-family: 'Sarabun', sans-serif !important;
+  word-break: break-word;
 }
 .bento-sub {
-  font-size: 0.72rem;
-  color: #64748b;
+  font-size: 12px;
+  color: #111 !important;
   line-height: 1.4;
   font-family: 'Sarabun', sans-serif !important;
+}
+@media (min-width: 768px) {
+  .bento-label { font-size: 13px; }
+  .bento-value { font-size: 22px; }
+  .bento-sub { font-size: 13px; }
+}
+@media (min-width: 1024px) {
+  .bento-label { font-size: 14px; }
+  .bento-value { font-size: 24px; }
+  .bento-sub { font-size: 14px; }
 }
 
 /* Simulator Card */
@@ -2551,14 +2629,20 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.88rem;
+  font-size: 16px;
   font-weight: 700;
-  color: #334155;
+  color: #111 !important;
   margin-bottom: 6px;
   font-family: 'Sarabun', sans-serif !important;
 }
 .sim-desc {
+  font-size: 13px;
+  color: #111 !important;
   font-family: 'Sarabun', sans-serif !important;
+}
+@media (min-width: 1024px) {
+  .sim-header { font-size: 18px; }
+  .sim-desc { font-size: 14px; }
 }
 .sim-controls-grid {
   display: grid;
@@ -2590,18 +2674,25 @@ onUnmounted(() => {
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 10px;
+}
+@media (max-width: 400px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
 }
 .metric-coach-card {
+  position: relative;
   background: #fff;
   border: 1.2px solid #e2e8f0;
   border-radius: 14px;
-  padding: 14px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   transition: all 0.2s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
+  min-width: 0;
 }
 .metric-coach-card:hover {
   transform: translateY(-1px);
@@ -2609,40 +2700,59 @@ onUnmounted(() => {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.03);
 }
 .m-title-mini {
-  font-size: 0.75rem;
+  font-size: 11px;
   font-weight: 600;
-  color: #64748b;
+  color: inherit;
   font-family: 'Sarabun', sans-serif !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .m-val-mini {
-  font-size: 1.08rem;
+  font-size: 18px;
   font-weight: 800;
-  color: #1e293b;
+  color: inherit;
   display: flex;
-  align-items: center;
-  gap: 4px;
+  align-items: baseline;
+  gap: 3px;
   flex-wrap: wrap;
   font-family: 'Sarabun', sans-serif !important;
+  word-break: break-word;
 }
 .m-unit-mini {
-  font-size: 0.78rem;
+  font-size: 12px;
   font-weight: 500;
-  color: #94a3b8;
+  color: inherit;
+  flex-shrink: 0;
 }
 .m-coach-rec {
-  font-size: 0.7rem;
+  font-size: 12px;
   line-height: 1.45;
-  color: #475569;
+  color: #111 !important;
   border-top: 1px dashed #f1f5f9;
   padding-top: 6px;
   font-family: 'Sarabun', sans-serif !important;
 }
+@media (min-width: 768px) {
+  .metric-coach-card { padding: 14px; }
+  .m-title-mini { font-size: 12px; }
+  .m-val-mini { font-size: 20px; }
+  .m-unit-mini { font-size: 13px; }
+}
+@media (min-width: 1024px) {
+  .m-title-mini { font-size: 14px; }
+  .m-val-mini { font-size: 24px; }
+  .m-unit-mini { font-size: 14px; }
+  .m-coach-rec { font-size: 14px; }
+}
 .m-status-badge {
-  font-size: 0.65rem;
-  padding: 2px 6px;
+  font-size: 11px;
+  padding: 3px 8px;
   border-radius: 6px;
   font-weight: 700;
   font-family: 'Sarabun', sans-serif !important;
+  white-space: nowrap;
+  align-self: flex-start;
 }
 .m-status-badge.ปกติ, .m-status-badge.success { background: #dcfce7; color: #15803d; }
 .m-status-badge.เฝ้าระวัง { background: #fef9c3; color: #a16207; }
@@ -2665,9 +2775,9 @@ onUnmounted(() => {
   gap: 8px;
 }
 .bmi-compact-title {
-  font-size: 0.82rem;
+  font-size: 13px;
   font-weight: 700;
-  color: #475569;
+  color: #111 !important;
   font-family: 'Sarabun', sans-serif !important;
 }
 .bmi-compact-value-row {
@@ -2678,22 +2788,29 @@ onUnmounted(() => {
 .bmi-compact-badge {
   padding: 3px 10px;
   border-radius: 12px;
-  font-size: 0.7rem;
+  font-size: 11px;
   font-weight: 700;
   font-family: 'Sarabun', sans-serif !important;
 }
 .bmi-compact-num {
-  font-size: 0.95rem;
+  font-size: 16px;
   font-weight: 800;
-  color: #1e293b;
+  color: #111 !important;
   font-family: 'Sarabun', sans-serif !important;
 }
 .bmi-compact-desc {
-  font-size: 0.75rem;
+  font-size: 13px;
+  color: #111 !important;
   padding: 10px;
   border-radius: 8px;
   line-height: 1.5;
   font-family: 'Sarabun', sans-serif !important;
+}
+@media (min-width: 1024px) {
+  .bmi-compact-title { font-size: 14px; }
+  .bmi-compact-badge { font-size: 12px; }
+  .bmi-compact-num { font-size: 18px; }
+  .bmi-compact-desc { font-size: 14px; }
 }
 
 /* Scoped BMI Scale Custom Overrides inside Tanita */
@@ -2727,17 +2844,60 @@ onUnmounted(() => {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.015);
 }
 .ref-title {
+  font-size: 13px;
+  color: #111 !important;
   font-family: 'Sarabun', sans-serif !important;
 }
 .ref-badge {
+  font-size: 11px;
   font-family: 'Sarabun', sans-serif !important;
 }
 .ref-text {
+  font-size: 13px;
+  color: #111 !important;
   font-family: 'Sarabun', sans-serif !important;
 }
 .ref-link {
+  font-size: 13px;
   transition: color 0.15s ease;
   font-family: 'Sarabun', sans-serif !important;
 }
-</style>
+@media (min-width: 1024px) {
+  .ref-title, .ref-text, .ref-link { font-size: 14px; }
+}
 
+/* ── Mobile-specific overrides ── */
+@media (max-width: 480px) {
+  /* Outer wrapper & date bar */
+  .tanita-date { font-size: 0.75rem; }
+
+  /* Simulator card: stack dropdowns */
+  .simulator-card { padding: 12px; }
+  .sim-header { font-size: 13px; }
+
+  /* BMI compact card */
+  .bmi-compact-card { padding: 12px; }
+  .bmi-compact-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .bmi-compact-value-row { flex-wrap: wrap; gap: 6px; }
+  .bmi-compact-num { font-size: 14px; }
+  .bmi-compact-badge { font-size: 10px; }
+
+  /* BMI scale labels — hide middle ones to avoid cramping */
+  .bmi-scale-labels span:nth-child(2),
+  .bmi-scale-labels span:nth-child(3),
+  .bmi-scale-labels span:nth-child(4) {
+    display: none;
+  }
+
+  /* Status badges */
+  .m-status-badge { font-size: 10px; padding: 2px 6px; }
+
+  /* Section gaps */
+  .tanita-dashboard-left,
+  .tanita-dashboard-right { gap: 12px !important; }
+}
+</style>
