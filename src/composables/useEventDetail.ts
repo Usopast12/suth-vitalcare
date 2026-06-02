@@ -735,10 +735,17 @@ export function useEventDetail() {
         } else {
           userFac = userDetail2 || "";
         }
+        const standardFaculties = [
+          "สำนักวิชาวิทยาศาสตร์", "สำนักวิชาเทคโนโลยีสังคม", "สำนักวิชาเทคโนโลยีการเกษตร", 
+          "สำนักวิชาวิศวกรรมศาสตร์", "สำนักวิชาแพทยศาสตร์", "สำนักวิชาพยาบาลศาสตร์", 
+          "สำนักวิชาทันตแพทยศาสตร์", "สำนักวิชาสาธารณสุขศาสตร์", "สำนักวิชาศาสตร์และศิลป์ดิจิทัล"
+        ];
+        const isOtherFac = !standardFaculties.includes(userFac) && !standardFaculties.includes(userDetail2);
         const passFac =
           facultyVis.length === 0 ||
           facultyVis.includes(userFac) ||
-          facultyVis.includes(userDetail2);
+          facultyVis.includes(userDetail2) ||
+          (facultyVis.includes("อื่น ๆ") && isOtherFac);
         if (!passFac) {
           hasPermissionToJoin.value = false;
           noPermissionReason.value = `จำกัดเฉพาะสำนักวิชา: ${facultyVis.join(", ")}`;
@@ -757,10 +764,17 @@ export function useEventDetail() {
         userRole === "บุคลากรมหาวิทยาลัย" ||
         userRole === "บุคลากรโรงพยาบาล"
       ) {
+        const standardFaculties = [
+          "สำนักวิชาวิทยาศาสตร์", "สำนักวิชาเทคโนโลยีสังคม", "สำนักวิชาเทคโนโลยีการเกษตร", 
+          "สำนักวิชาวิศวกรรมศาสตร์", "สำนักวิชาแพทยศาสตร์", "สำนักวิชาพยาบาลศาสตร์", 
+          "สำนักวิชาทันตแพทยศาสตร์", "สำนักวิชาสาธารณสุขศาสตร์", "สำนักวิชาศาสตร์และศิลป์ดิจิทัล"
+        ];
+        const isOtherDept = !standardFaculties.includes(userDetail1) && !standardFaculties.includes(userDetail2);
         if (
           facultyVis.length > 0 &&
           !facultyVis.includes(userDetail1) &&
-          !facultyVis.includes(userDetail2)
+          !facultyVis.includes(userDetail2) &&
+          !(facultyVis.includes("อื่น ๆ") && isOtherDept)
         ) {
           hasPermissionToJoin.value = false;
           noPermissionReason.value = `จำกัดเฉพาะหน่วยงาน/สำนักวิชา: ${facultyVis.join(", ")}`;

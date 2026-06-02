@@ -51,8 +51,85 @@ const {
   textResponse,
   oldSubmissionValue,
   cancelEditing,
-  isTaskAllowedOnDate
+  isTaskAllowedOnDate,
+  showCelebration,
+  celebrationPoints,
+  celebrationTaskTitle,
+  tableData
 } = useMissions()
+
+const getLocalYYYYMMDD = (d: Date) => {
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+// คำนวณ Streak ไฟสะสมติดต่อกัน
+const activeStreak = computed(() => {
+  const approvedDates = userSubmissions.value
+    .filter((s: any) => s.status === 'approved')
+    .map((s: any) => {
+      const d = new Date(s.created_at)
+      return getLocalYYYYMMDD(d)
+    })
+  
+  const uniqueDates = [...new Set(approvedDates)].sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
+  if (uniqueDates.length === 0) return 0
+  
+  const todayStr = getLocalYYYYMMDD(new Date())
+  const yesterdayStr = getLocalYYYYMMDD(new Date(Date.now() - 86400000))
+  
+  const latestDateStr = uniqueDates[0]
+  if (latestDateStr !== todayStr && latestDateStr !== yesterdayStr) {
+    return 0
+  }
+  
+  let streak = 1
+  let currentDate = new Date(latestDateStr)
+  for (let i = 1; i < uniqueDates.length; i++) {
+    const nextDate = new Date(uniqueDates[i])
+    const diffTime = currentDate.getTime() - nextDate.getTime()
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24))
+    if (diffDays === 1) {
+      streak++
+      currentDate = nextDate
+    } else if (diffDays > 1) {
+      break
+    }
+  }
+  return streak
+})
+
+// ฟังก์ชันคำนวณความคืบหน้ารายกิจกรรม
+const getActivityProgress = (title: string) => {
+  const actRows = tableData.value.filter((row: any) => row.evt === title)
+  const total = actRows.length
+  if (total === 0) return { done: 0, total: 0, percent: 0 }
+  const done = actRows.filter((row: any) => row.statusCode === 'done').length
+  const percent = Math.round((done / total) * 100)
+  return { done, total, percent }
+}
+
+// สไตล์เศษกระดาษเฉลิมฉลอง
+const getConfettiStyle = (i: number) => {
+  const colors = ['#FF6A00', '#FFB703', '#22C55E', '#3B82F6', '#EC4899', '#A855F7']
+  const color = colors[i % colors.length]
+  const left = Math.random() * 100
+  const delay = Math.random() * 1.5
+  const duration = 2 + Math.random() * 2
+  const size = 6 + Math.random() * 8
+  return {
+    backgroundColor: color,
+    left: `${left}%`,
+    animationDelay: `${delay}s`,
+    animationDuration: `${duration}s`,
+    width: `${size}px`,
+    height: `${size * 0.4}px`,
+    transform: `rotate(${Math.random() * 360}deg)`
+  }
+}
+
 // ฟังก์ชันคำนวณแต้มแยกตามกิจกรรม
 const getActivityPoints = (title: string) => {
   return userSubmissions.value
@@ -206,35 +283,64 @@ const getActivityStatus = (act: any) => {
 </script>
 <template>
   <div class="rank-app mission-adapted">
+    <!-- AI Loading Overlay as futuristic Download Bar -->
     <transition name="fade">
       <div v-if="isAnalyzing" class="ai-loading-overlay">
-        <div class="ai-loading-content">
-          <div class="ai-logo-wrap">
-            <div class="ai-pulse-glow"></div>
-            <div class="ai-logo-icon">AI</div>
-          </div>
-          <p class="ai-loading-desc">
-            <span>{{ currentLoadingMessage }}</span>
-            <span class="typing-loader">
-              <span class="typing-dot"></span>
-              <span class="typing-dot"></span>
-              <span class="typing-dot"></span>
-            </span>
-          </p>
-          <div class="ai-progress-container">
-            <div class="ai-progress-bar-wrap">
-              <div class="ai-progress-fill" :style="{ width: analyzingProgress + '%' }"></div>
+        <div class="ai-download-card">
+          <!-- Loading state representation -->
+          <div class="ai-loader-bar-container">
+            <div class="flex justify-between items-center text-sm font-semibold text-slate-700 mb-2">
+              <div class="flex items-center gap-2">
+                <span class="ai-loading-dot-pulse"></span>
+                <span>{{ currentLoadingMessage }}</span>
+              </div>
+              <span class="font-extrabold text-orange-600">{{ Math.round(analyzingProgress) }}%</span>
+            </div>
+            
+            <!-- The actual Download / Progress Bar -->
+            <div class="ai-download-bar-bg">
+              <div class="ai-download-bar-fill" :style="{ width: analyzingProgress + '%' }">
+                <!-- Glowing laser tip -->
+                <div class="laser-tip"></div>
+              </div>
+            </div>
+
+            <!-- Stats metadata below the bar -->
+            <div class="flex justify-between items-center text-xs text-slate-400 font-semibold mt-2">
+              <span>ความเร็ว: {{ (1.2 + (analyzingProgress / 40)).toFixed(1) }} MB/s</span>
+              <span>ประมวลผล: {{ Math.round(analyzingProgress * 12.5) }} / 1,250 KB</span>
             </div>
           </div>
         </div>
       </div>
     </transition>
+
     <div v-if="currentStep === 1" class="modern-list-view">
-      <div class="top-actions-wrapper justify-end">
-        <div class="text-slate-500 font-bold">
-          <span class="text-orange-600">{{ totalPoints.toLocaleString() }}</span> แต้มรวม
+      <!-- Dashboard header section containing Flame Streak and Points -->
+      <div class="mission-dashboard">
+        <div class="dash-card points-card animate-pulse-subtle">
+          <div class="dash-icon-wrap bg-orange-100">
+            <Star :size="24" class="text-orange-500 fill-current" />
+          </div>
+          <div class="dash-info">
+            <span class="dash-label text-slate-500 font-bold text-xs uppercase tracking-wider">แต้มสะสมทั้งหมด</span>
+            <span class="dash-value text-orange-600 font-black text-2xl">{{ totalPoints.toLocaleString() }} <span class="text-sm font-bold text-slate-400">แต้ม</span></span>
+          </div>
+        </div>
+
+        <div class="dash-card streak-card" :class="{ 'has-streak': activeStreak > 0 }">
+          <div class="dash-icon-wrap" :class="activeStreak > 0 ? 'bg-red-100 animate-bounce-slow' : 'bg-slate-100'">
+            <span class="streak-emoji">{{ activeStreak > 0 ? '🔥' : '❄️' }}</span>
+          </div>
+          <div class="dash-info">
+            <span class="dash-label text-slate-500 font-bold text-xs uppercase tracking-wider">ความต่อเนื่อง</span>
+            <span class="dash-value font-black text-2xl" :class="activeStreak > 0 ? 'text-red-500' : 'text-slate-400'">
+              {{ activeStreak }} <span class="text-sm font-bold text-slate-400">วันติดต่อกัน</span>
+            </span>
+          </div>
         </div>
       </div>
+
       <div class="search-header">
         <div class="modern-search-box">
           <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -272,6 +378,18 @@ const getActivityStatus = (act: any) => {
               </div>
             <div class="info-box">
               <h4 class="card-title">{{ act.title }}</h4>
+
+              <!-- แถบแสดงความคืบหน้ารายกิจกรรม -->
+              <div class="activity-progress-wrap mt-1 mb-3">
+                <div class="flex justify-between items-center text-xs font-bold text-slate-500 mb-1">
+                  <span>ความคืบหน้า</span>
+                  <span>{{ getActivityProgress(act.title).done }}/{{ getActivityProgress(act.title).total }} ภารกิจ ({{ getActivityProgress(act.title).percent }}%)</span>
+                </div>
+                <div class="activity-progress-bg">
+                  <div class="activity-progress-fill" :style="{ width: getActivityProgress(act.title).percent + '%' }"></div>
+                </div>
+              </div>
+
               <div class="meta-row text-orange-600">
                 <Target :size="14" class="meta-icon" />
                 <span>มีทั้งหมด: {{ getTaskCount(act.title) }} ภารกิจ</span>
@@ -491,6 +609,37 @@ const getActivityStatus = (act: any) => {
         </main>
       </div>
     </div>
+
+    <!-- Celebration Modal for Successful Submissions & Goals achieved! -->
+    <transition name="scale-fade">
+      <div v-if="showCelebration" class="celebration-overlay" @click="showCelebration = false">
+        <div class="celebration-card" @click.stop>
+          
+          <!-- Confetti Particles Falling down -->
+          <div class="confetti-container">
+            <div 
+              v-for="i in 60" 
+              :key="i" 
+              class="confetti-piece" 
+              :style="getConfettiStyle(i)"
+            ></div>
+          </div>
+
+          <h2 class="celebration-title">ยินดีด้วย! ส่งภารกิจสำเร็จ 🎉</h2>
+          <p class="celebration-desc">คุณได้ทำภารกิจ <strong>"{{ celebrationTaskTitle }}"</strong> เสร็จสมบูรณ์แล้ว</p>
+          
+          <div class="points-gain-badge">
+            <Star class="fill-current" :size="16" />
+            <span>ได้รับ +{{ celebrationPoints }} แต้ม!</span>
+          </div>
+
+
+          <button class="celebration-btn" @click="showCelebration = false">
+            รับทราบและลุยต่อ! 💪
+          </button>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 <style scoped>
@@ -867,15 +1016,354 @@ const getActivityStatus = (act: any) => {
 .shadow-sm { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
 .loader { width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.3); border-bottom-color: #fff; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
 @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-/* AI Overlay */
-.ai-loading-overlay { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--text-main); }
-.ai-loading-content { width: 100%; max-width: 400px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-.ai-logo-wrap { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; }
-.ai-pulse-glow { position: absolute; inset: 0; background: radial-gradient(circle, var(--primary) 0%, transparent 70%); border-radius: 50%; animation: ai-pulse 2s infinite; }
-.ai-logo-icon { position: relative; z-index: 10; font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--orange-600)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-@keyframes ai-pulse { 0% { transform: scale(0.8); opacity: 0.3; } 50% { transform: scale(1.2); opacity: 0.6; } 100% { transform: scale(0.8); opacity: 0.3; } }
-.ai-progress-bar-wrap { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-bottom: 0.75rem; }
-.ai-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--orange-600)); transition: width 0.4s ease-out; }
+/* AI Download Bar Style */
+.ai-loading-overlay { 
+  position: fixed; 
+  inset: 0; 
+  background: rgba(15, 23, 42, 0.6); 
+  backdrop-filter: blur(16px); 
+  z-index: 9999; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 24px;
+}
+.ai-download-card {
+  width: 100%;
+  max-width: 440px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  overflow: hidden;
+}
+.ai-download-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: #F8FAFC;
+  border-bottom: 1px solid #F1F5F9;
+}
+.ai-download-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 900;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, var(--primary), var(--orange-600));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.sparkle-ai {
+  font-size: 1.2rem;
+  animation: rotation 3s linear infinite;
+}
+.ai-version-pill {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 106, 0, 0.2);
+}
+.ai-loader-bar-container {
+  padding: 24px;
+}
+.ai-loading-dot-pulse {
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: inline-block;
+  animation: ai-pulse-dot 1.2s ease-in-out infinite;
+}
+@keyframes ai-pulse-dot {
+  0%, 100% { transform: scale(0.6); opacity: 0.4; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+.ai-download-bar-bg {
+  width: 100%;
+  height: 14px;
+  background: #E2E8F0;
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.ai-download-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FF9A44 0%, #FF6A00 100%);
+  border-radius: 99px;
+  position: relative;
+  transition: width 0.3s ease-out;
+}
+.laser-tip {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 8px;
+  background: #FFF;
+  box-shadow: 0 0 10px #FFF, 0 0 20px var(--primary);
+  animation: laser-pulse 1s infinite alternate;
+}
+@keyframes laser-pulse {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+/* ================= MISSION DASHBOARD (Streak & Points) ================= */
+.mission-dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 576px) {
+  .mission-dashboard {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+.dash-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  padding: 16px 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s ease;
+}
+.dash-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  border-color: rgba(255, 106, 0, 0.2);
+}
+.dash-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.dash-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.dash-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.dash-value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.streak-card.has-streak {
+  border-color: rgba(239, 68, 68, 0.2);
+  background: linear-gradient(135deg, #FFFFFF 0%, #FEF2F2 100%);
+}
+.streak-emoji {
+  font-size: 1.6rem;
+}
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite;
+}
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-pulse-subtle {
+  animation: pulse-subtle 4s infinite;
+}
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+}
+
+/* ================= ACTIVITY PROGRESS BAR ================= */
+.activity-progress-wrap {
+  width: 100%;
+}
+.activity-progress-bg {
+  width: 100%;
+  height: 8px;
+  background: #F1F5F9;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.activity-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FF9A44 0%, #FF6A00 100%);
+  border-radius: 99px;
+  transition: width 0.5s ease-out;
+}
+
+/* ================= CELEBRATION OVERLAY ================= */
+.celebration-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.celebration-card {
+  width: 100%;
+  max-width: 420px;
+  background: #FFFFFF;
+  border-radius: 32px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.confetti-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  border-radius: 2px;
+  opacity: 0.8;
+  animation: confetti-fall 3s linear infinite;
+}
+@keyframes confetti-fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(500px) rotate(720deg); opacity: 0; }
+}
+.trophy-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  z-index: 2;
+}
+.trophy-pulse-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255, 106, 0, 0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: ai-pulse 2s infinite;
+}
+.trophy-circle {
+  width: 90px;
+  height: 90px;
+  background: var(--primary-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #FFE3D1;
+  box-shadow: 0 10px 20px rgba(255, 106, 0, 0.15);
+  z-index: 2;
+  animation: trophy-spin-bounce 4s ease-in-out infinite;
+}
+@keyframes trophy-spin-bounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(15deg); }
+}
+.celebration-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #0F172A;
+  margin: 0 0 12px 0;
+  z-index: 2;
+}
+.celebration-desc {
+  font-size: 0.95rem;
+  color: #64748B;
+  margin: 0 0 20px 0;
+  line-height: 1.5;
+  z-index: 2;
+}
+.points-gain-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ECFDF5;
+  color: #059669;
+  border: 1.5px solid #A7F3D0;
+  font-size: 1.2rem;
+  font-weight: 900;
+  padding: 8px 20px;
+  border-radius: 99px;
+  margin-bottom: 20px;
+  z-index: 2;
+  box-shadow: 0 4px 10px rgba(5, 150, 105, 0.1);
+}
+.celebration-streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFF5F5;
+  color: #E53E3E;
+  border: 1.5px solid #FEE2E2;
+  font-size: 0.95rem;
+  padding: 6px 16px;
+  border-radius: 99px;
+  margin-bottom: 24px;
+  z-index: 2;
+}
+.streak-fire-icon {
+  font-size: 1.2rem;
+}
+.celebration-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #FF9A44 0%, #FF6A00 100%);
+  color: #FFFFFF;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 800;
+  padding: 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(255, 106, 0, 0.25);
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+.celebration-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(255, 106, 0, 0.35);
+}
+
+/* Animations & Transitions */
+.scale-fade-enter-active,
+.scale-fade-leave-active {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.scale-fade-enter-from,
+.scale-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
 /* AI Input Integration */
 .field-ai-wrapper {
   display: flex;
