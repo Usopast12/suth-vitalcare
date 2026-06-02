@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import { authStore } from "../store/auth";
+import { langStore } from "../store/lang";
 import Swal from "sweetalert2";
 import { swal } from "../lib/swal";
 import CustomSelect from "../components/CustomSelect.vue";
@@ -54,21 +55,31 @@ const hasDisease = ref("no"); // Default to 'no'
 const isAnalyzing = ref(false);
 const isSubmitting = ref(false);
 const errorMsg = ref("");
-const loadingMessages = [
-    "กำลังอัปโหลดรูปภาพใบเสร็จ...",
-    "AI กำลังสแกนตัวเลขบนหน้าจอ...",
-    "กำลังวิเคราะห์ข้อมูลสุขภาพ...",
-    "เกือบเสร็จแล้ว รออีกนิดนะ...",
-    "กำลังจัดเรียงข้อมูลลงแบบฟอร์ม...",
-];
-const currentLoadingMessage = ref(loadingMessages[0]);
+const loadingMessages = computed(() =>
+  langStore.locale === 'th'
+    ? [
+        "กำลังอัปโหลดรูปภาพใบเสร็จ...",
+        "AI กำลังสแกนตัวเลขบนหน้าจอ...",
+        "กำลังวิเคราะห์ข้อมูลสุขภาพ...",
+        "เกือบเสร็จแล้ว รออีกนิดนะ...",
+        "กำลังจัดเรียงข้อมูลลงแบบฟอร์ม...",
+      ]
+    : [
+        "Uploading receipt image...",
+        "AI is scanning the numbers on the screen...",
+        "Analyzing health data...",
+        "Almost done, please wait...",
+        "Organizing data into the form...",
+      ]
+);
+const currentLoadingMessage = ref(loadingMessages.value[0]);
 let messageInterval: any = null;
 const startLoadingMessages = () => {
     let index = 0;
-    currentLoadingMessage.value = loadingMessages[0];
+    currentLoadingMessage.value = loadingMessages.value[0];
     messageInterval = setInterval(() => {
-        index = (index + 1) % loadingMessages.length;
-        currentLoadingMessage.value = loadingMessages[index];
+        index = (index + 1) % loadingMessages.value.length;
+        currentLoadingMessage.value = loadingMessages.value[index];
     }, 3500);
 };
 const stopLoadingMessages = () => {
@@ -131,6 +142,22 @@ const faculties = [
     "สำนักวิชาศาสตร์และศิลป์ดิจิทัล",
     "อื่น ๆ",
 ];
+const facultiesOptions = computed(() =>
+    langStore.locale === 'th'
+        ? faculties
+        : [
+            "Institute of Science",
+            "Institute of Social Technology",
+            "Institute of Agricultural Technology",
+            "Institute of Engineering",
+            "Institute of Medicine",
+            "Institute of Nursing",
+            "Institute of Dentistry",
+            "Institute of Public Health",
+            "Institute of Digital Arts and Science",
+            "Other",
+        ].map((label, i) => ({ value: faculties[i], label }))
+);
 onMounted(() => {
     const isAllowed = sessionStorage.getItem("allow_signup") === "true";
     const hasAuth = authStore.user || localStorage.getItem("vitalcare_user");
@@ -226,34 +253,34 @@ onMounted(() => {
     }
     if (socialData.value?.provider) {
         toast.success(
-            `ดึงข้อมูลตั้งต้นจาก ${socialData.value.provider} สำเร็จ! กรุณากรอกข้อมูลส่วนที่เหลือ`,
+            langStore.locale === 'th' ? `ดึงข้อมูลตั้งต้นจาก ${socialData.value.provider} สำเร็จ! กรุณากรอกข้อมูลส่วนที่เหลือ` : `Successfully pulled initial data from ${socialData.value.provider}! Please fill out the rest.`,
         );
     }
 });
 const storedSocial = localStorage.getItem("social_login_data");
-const genderOptions = [
-    { value: "male", label: "ชาย" },
-    { value: "female", label: "หญิง" },
-    { value: "other", label: "อื่นๆ" },
-];
-const userTypeOptions = [
-    { value: "นักเรียน", label: "นักเรียน (School Student)" },
-    { value: "นักศึกษา", label: "นักศึกษา (University Student)" },
-    { value: "บุคลากรโรงพยาบาล", label: "บุคลากรโรงพยาบาล (Hospital Staff)" },
+const genderOptions = computed(() => [
+    { value: "male", label: langStore.locale === 'th' ? "ชาย" : "Male" },
+    { value: "female", label: langStore.locale === 'th' ? "หญิง" : "Female" },
+    { value: "other", label: langStore.locale === 'th' ? "อื่นๆ" : "Other" },
+]);
+const userTypeOptions = computed(() => [
+    { value: "นักเรียน", label: langStore.locale === 'th' ? "นักเรียน (School Student)" : "School Student" },
+    { value: "นักศึกษา", label: langStore.locale === 'th' ? "นักศึกษา (University Student)" : "University Student" },
+    { value: "บุคลากรโรงพยาบาล", label: langStore.locale === 'th' ? "บุคลากรโรงพยาบาล (Hospital Staff)" : "Hospital Staff" },
     {
         value: "บุคลากรมหาวิทยาลัย",
-        label: "บุคลากรมหาวิทยาลัย (University Staff)",
+        label: langStore.locale === 'th' ? "บุคลากรมหาวิทยาลัย (University Staff)" : "University Staff",
     },
-    { value: "บุคคลทั่วไป", label: "บุคคลทั่วไป (General Public)" },
-];
-const gradeOptions = [
-    { value: "ป.1 - ป.6", label: "ประถมศึกษา (ป.1 - ป.6)" },
-    { value: "ม.1 - ม.6", label: "มัธยมศึกษา (ม.1 - ม.6)" },
-];
-const yearOptions = [1, 2, 3, 4, 5, 6].map((y) => ({
+    { value: "บุคคลทั่วไป", label: langStore.locale === 'th' ? "บุคคลทั่วไป (General Public)" : "General Public" },
+]);
+const gradeOptions = computed(() => [
+    { value: "ป.1 - ป.6", label: langStore.locale === 'th' ? "ประถมศึกษา (ป.1 - ป.6)" : "Primary School (G1 - G6)" },
+    { value: "ม.1 - ม.6", label: langStore.locale === 'th' ? "มัธยมศึกษา (ม.1 - ม.6)" : "High School (G7 - G12)" },
+]);
+const yearOptions = computed(() => [1, 2, 3, 4, 5, 6].map((y) => ({
     value: "ปี " + y,
-    label: "ปี " + y,
-}));
+    label: langStore.locale === 'th' ? "ปี " + y : "Year " + y,
+})));
 const goalsList = [
     "ลดน้ำหนัก",
     "เพิ่มกล้ามเนื้อ",
@@ -261,6 +288,18 @@ const goalsList = [
     "นอนหลับให้ดีขึ้น",
     "รักษาสุขภาพทั่วไป",
 ];
+const goalsOptions = computed(() => 
+    goalsList.map((val, i) => ({
+        value: val,
+        label: langStore.locale === 'th' ? val : [
+            "Lose Weight",
+            "Gain Muscle",
+            "Walk More",
+            "Sleep Better",
+            "General Health Maintenance",
+        ][i]
+    }))
+);
 const nextStep = () => {
     if (step.value === 1) {
         // Basic fields to check
@@ -878,18 +917,18 @@ const handleFileSelect = async (file: File) => {
             }
         });
         toast.success(
-            "AI วิเคราะห์และกรอกข้อมูลให้คุณแล้ว! กรุณาตรวจสอบความถูกต้อง",
+            langStore.locale === 'th' ? "AI วิเคราะห์และกรอกข้อมูลให้คุณแล้ว! กรุณาตรวจสอบความถูกต้อง" : "AI has analyzed and filled out the data for you! Please verify.",
         );
     } catch (err: any) {
         const isInvalidImage =
-            err.message && err.message.includes("ไม่ใช่ใบตรวจสุขภาพ");
+            err.message && (err.message.includes("ไม่ใช่ใบตรวจสุขภาพ") || err.message.includes("not a health check receipt"));
         swal.fire({
             icon: isInvalidImage ? "error" : "warning",
             title: isInvalidImage
-                ? "รูปภาพไม่ถูกต้อง"
-                : "AI ไม่สามารถระบุข้อมูลจากรูปภาพ",
-            text: err.message || "กรุณากรอกข้อมูลด้วยตนเอง",
-            confirmButtonText: "ตกลง",
+                ? (langStore.locale === 'th' ? "รูปภาพไม่ถูกต้อง" : "Invalid Image")
+                : (langStore.locale === 'th' ? "AI ไม่สามารถระบุข้อมูลจากรูปภาพ" : "AI cannot extract data from the image"),
+            text: err.message || (langStore.locale === 'th' ? "กรุณากรอกข้อมูลด้วยตนเอง" : "Please enter data manually"),
+            confirmButtonText: langStore.locale === 'th' ? "ตกลง" : "OK",
             confirmButtonColor: "#356768",
         });
     } finally {
@@ -942,7 +981,7 @@ const handlePaste = (e: ClipboardEvent) => {
                 </button>
             </div>
             <div class="header">
-                <h1>สร้างบัญชีใหม่</h1>
+                <h1>{{ langStore.locale === 'th' ? 'สร้างบัญชีใหม่' : 'Create New Account' }}</h1>
                 <div class="stepper">
                     <div
                         class="step-indicator"
@@ -956,10 +995,10 @@ const handlePaste = (e: ClipboardEvent) => {
                     </div>
                 </div>
                 <p class="step-title" v-if="step === 1">
-                    ขั้นตอน 1: ข้อมูลส่วนตัวพื้นฐาน
+                    {{ langStore.locale === 'th' ? 'ขั้นตอน 1: ข้อมูลส่วนตัวพื้นฐาน' : 'Step 1: Basic Personal Info' }}
                 </p>
                 <p class="step-title" v-if="step === 2">
-                    ขั้นตอน 2: ข้อมูลสุขภาพ
+                    {{ langStore.locale === 'th' ? 'ขั้นตอน 2: ข้อมูลสุขภาพ' : 'Step 2: Health Info' }}
                 </p>
             </div>
             <form
@@ -968,9 +1007,9 @@ const handlePaste = (e: ClipboardEvent) => {
                 class="form-content fade-in"
             >
                 <div v-if="socialData?.provider" class="provider-info-box">
-                    กำลังสมัครสมาชิกบัญชีผู้ใช้ผ่าน {{ socialData.provider }}
+                    {{ langStore.locale === 'th' ? 'กำลังสมัครสมาชิกบัญชีผู้ใช้ผ่าน' : 'Signing up via' }} {{ socialData.provider }}
                 </div>
-                <h3 class="section-title mt-4">ข้อมูลส่วนตัว</h3>
+                <h3 class="section-title mt-4">{{ langStore.locale === 'th' ? 'ข้อมูลส่วนตัว' : 'Personal Information' }}</h3>
                 <div class="grid-2">
                     <div class="premium-input-group">
                         <input
@@ -980,7 +1019,7 @@ const handlePaste = (e: ClipboardEvent) => {
                             placeholder=" "
                             required
                         />
-                        <label>ชื่อจริง</label>
+                        <label>{{ langStore.locale === 'th' ? 'ชื่อจริง' : 'First Name' }}</label>
                     </div>
                     <div class="premium-input-group">
                         <input
@@ -990,7 +1029,7 @@ const handlePaste = (e: ClipboardEvent) => {
                             placeholder=" "
                             required
                         />
-                        <label>นามสกุล</label>
+                        <label>{{ langStore.locale === 'th' ? 'นามสกุล' : 'Last Name' }}</label>
                     </div>
                 </div>
                 <div class="grid-2">
@@ -1000,13 +1039,13 @@ const handlePaste = (e: ClipboardEvent) => {
                             v-model="formData.nickname"
                             placeholder=" "
                         />
-                        <label>ชื่อเล่น</label>
+                        <label>{{ langStore.locale === 'th' ? 'ชื่อเล่น' : 'Nickname' }}</label>
                     </div>
                     <CustomSelect
                         id="gender_select"
                         v-model="formData.gender"
                         :options="genderOptions"
-                        label="เพศ"
+                        :label="langStore.locale === 'th' ? 'เพศ' : 'Gender'"
                         :required="true"
                     />
                 </div>
@@ -1020,7 +1059,7 @@ const handlePaste = (e: ClipboardEvent) => {
                             class="date-input"
                             placeholder=" "
                         />
-                        <label>วันเดือนปีเกิด พ.ศ.</label>
+                        <label>{{ langStore.locale === 'th' ? 'วันเดือนปีเกิด พ.ศ.' : 'Date of Birth' }}</label>
                     </div>
                     <div class="premium-input-group">
                         <input
@@ -1031,7 +1070,7 @@ const handlePaste = (e: ClipboardEvent) => {
                             required
                             maxlength="12"
                         />
-                        <label>เบอร์โทรศัพท์</label>
+                        <label>{{ langStore.locale === 'th' ? 'เบอร์โทรศัพท์' : 'Phone Number' }}</label>
                         <svg
                             class="trailing-icon"
                             width="20"
@@ -1050,10 +1089,10 @@ const handlePaste = (e: ClipboardEvent) => {
                     </div>
                 </div>
                 <!-- เพิ่มส่วนโรคประจำตัว -->
-                <h3 class="section-title mt-4">ข้อมูลสุขภาพเพิ่มเติม</h3>
+                <h3 class="section-title mt-4">{{ langStore.locale === 'th' ? 'ข้อมูลสุขภาพเพิ่มเติม' : 'Additional Health Info' }}</h3>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2"
-                        >คุณมีโรคประจำตัวหรือไม่?</label
+                        >{{ langStore.locale === 'th' ? 'คุณมีโรคประจำตัวหรือไม่?' : 'Do you have any underlying diseases?' }}</label
                     >
                     <div class="flex gap-4 mb-3">
                         <button
@@ -1070,7 +1109,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                     'ไม่มีโรคประจำตัว';
                             "
                         >
-                            ไม่มี
+                            {{ langStore.locale === 'th' ? 'ไม่มี' : 'No' }}
                         </button>
                         <button
                             type="button"
@@ -1089,7 +1128,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                     formData.underlying_disease = '';
                             "
                         >
-                            มี
+                            {{ langStore.locale === 'th' ? 'มี' : 'Yes' }}
                         </button>
                     </div>
                     <transition name="slide-fade">
@@ -1104,16 +1143,16 @@ const handlePaste = (e: ClipboardEvent) => {
                                 placeholder=" "
                                 required
                             />
-                            <label>ระบุโรคประจำตัว</label>
+                            <label>{{ langStore.locale === 'th' ? 'ระบุโรคประจำตัว' : 'Specify underlying disease' }}</label>
                         </div>
                     </transition>
                 </div>
-                <h3 class="section-title mt-4">สังกัดระดับผู้ใช้</h3>
+                <h3 class="section-title mt-4">{{ langStore.locale === 'th' ? 'สังกัดระดับผู้ใช้' : 'User Affiliation' }}</h3>
                 <CustomSelect
                     id="usertype_select"
                     v-model="formData.userType"
                     :options="userTypeOptions"
-                    label="ประเภทผู้ใช้"
+                    :label="langStore.locale === 'th' ? 'ประเภทผู้ใช้' : 'User Type'"
                     :required="true"
                 />
                 <transition name="slide-fade">
@@ -1129,13 +1168,13 @@ const handlePaste = (e: ClipboardEvent) => {
                                 placeholder=" "
                                 required
                             />
-                            <label>ชื่อมหาวิทยาลัย</label>
+                            <label>{{ langStore.locale === 'th' ? 'ชื่อมหาวิทยาลัย' : 'University Name' }}</label>
                         </div>
                         <CustomSelect
                             id="faculty_select"
                             v-model="formData.faculty"
-                            :options="faculties"
-                            label="คณะ / สำนักวิชา"
+                            :options="facultiesOptions"
+                            :label="langStore.locale === 'th' ? 'คณะ / สำนักวิชา' : 'Faculty / Institute'"
                             :required="true"
                         />
                         <div
@@ -1149,14 +1188,14 @@ const handlePaste = (e: ClipboardEvent) => {
                                 placeholder=" "
                                 required
                             />
-                            <label>โปรดระบุคณะ / สำนักวิชา</label>
+                            <label>{{ langStore.locale === 'th' ? 'โปรดระบุคณะ / สำนักวิชา' : 'Please specify Faculty / Institute' }}</label>
                         </div>
                         <div class="grid-2">
                             <CustomSelect
                                 id="year_select"
                                 v-model="formData.year"
                                 :options="yearOptions"
-                                label="ปีการศึกษา"
+                                :label="langStore.locale === 'th' ? 'ปีการศึกษา' : 'Year of Study'"
                                 :required="true"
                             />
                             <div class="premium-input-group">
@@ -1165,7 +1204,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                     v-model="formData.studentId"
                                     placeholder=" "
                                 />
-                                <label>รหัสนักศึกษา</label>
+                                <label>{{ langStore.locale === 'th' ? 'รหัสนักศึกษา' : 'Student ID' }}</label>
                             </div>
                         </div>
                     </div>
@@ -1183,13 +1222,13 @@ const handlePaste = (e: ClipboardEvent) => {
                                 placeholder=" "
                                 required
                             />
-                            <label>ชื่อโรงเรียน</label>
+                            <label>{{ langStore.locale === 'th' ? 'ชื่อโรงเรียน' : 'School Name' }}</label>
                         </div>
                         <CustomSelect
                             id="grade_select"
                             v-model="formData.grade"
                             :options="gradeOptions"
-                            label="ระดับชั้น"
+                            :label="langStore.locale === 'th' ? 'ระดับชั้น' : 'Grade Level'"
                             :required="true"
                         />
                     </div>
@@ -1205,7 +1244,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 v-model="formData.empId"
                                 placeholder=" "
                             />
-                            <label>รหัสพนักงาน</label>
+                            <label>{{ langStore.locale === 'th' ? 'รหัสพนักงาน' : 'Employee ID' }}</label>
                         </div>
                         <div class="premium-input-group">
                             <input
@@ -1215,7 +1254,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 placeholder=" "
                                 required
                             />
-                            <label>แผนก / สังกัด</label>
+                            <label>{{ langStore.locale === 'th' ? 'แผนก / สังกัด' : 'Department' }}</label>
                         </div>
                         <div class="premium-input-group">
                             <input
@@ -1225,7 +1264,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 placeholder=" "
                                 required
                             />
-                            <label>วิชาชีพ/ตำเเหน่ง</label>
+                            <label>{{ langStore.locale === 'th' ? 'วิชาชีพ/ตำเเหน่ง' : 'Profession/Position' }}</label>
                         </div>
                     </div>
                 </transition>
@@ -1240,13 +1279,13 @@ const handlePaste = (e: ClipboardEvent) => {
                                 v-model="formData.empId"
                                 placeholder=" "
                             />
-                            <label>รหัสพนักงาน</label>
+                            <label>{{ langStore.locale === 'th' ? 'รหัสพนักงาน' : 'Employee ID' }}</label>
                         </div>
                         <CustomSelect
                             id="dept_select"
                             v-model="formData.department"
-                            :options="faculties"
-                            label="สังกัดหน่วยงาน / สำนักวิชา"
+                            :options="facultiesOptions"
+                            :label="langStore.locale === 'th' ? 'สังกัดหน่วยงาน / สำนักวิชา' : 'Department / Institute'"
                             :required="true"
                         />
                         <div
@@ -1258,9 +1297,8 @@ const handlePaste = (e: ClipboardEvent) => {
                                 type="text"
                                 v-model="formData.departmentOther"
                                 placeholder=" "
-                                required
                             />
-                            <label>โปรดระบุสังกัดหน่วยงาน</label>
+                            <label>{{ langStore.locale === 'th' ? 'โปรดระบุสังกัดหน่วยงาน' : 'Please specify Department' }}</label>
                         </div>
                     </div>
                 </transition>
@@ -1272,10 +1310,10 @@ const handlePaste = (e: ClipboardEvent) => {
                     >
                         <template v-if="isSubmitting">
                             <span class="loader small mr-2"></span>
-                            กำลังประมวลผล...
+                            {{ langStore.locale === 'th' ? 'กำลังประมวลผล...' : 'Processing...' }}
                         </template>
                         <template v-else>
-                            ขั้นตอนต่อไป
+                            {{ langStore.locale === 'th' ? 'ขั้นตอนต่อไป' : 'Next Step' }}
                             <svg
                                 width="20"
                                 height="20"
@@ -1311,7 +1349,7 @@ const handlePaste = (e: ClipboardEvent) => {
                             v-if="isSubmitting"
                             class="loader small mr-2"
                         ></span>
-                        ข้ามขั้นตอนนี้เพื่อเปิดใช้งานทันที
+                        {{ langStore.locale === 'th' ? 'ข้ามขั้นตอนนี้เพื่อเปิดใช้งานทันที' : 'Skip this step and activate now' }}
                     </button>
                 </div>
                 <div class="mode-selector">
@@ -1340,7 +1378,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                     d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
                                 />
                             </svg>
-                            <span>กรอกข้อมูลเอง</span>
+                            <span>{{ langStore.locale === 'th' ? 'กรอกข้อมูลเอง' : 'Manual Entry' }}</span>
                         </div>
                     </label>
                     <label
@@ -1376,7 +1414,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                     d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"
                                 />
                             </svg>
-                            <span>AI ช่วยอ่านจากรูป</span>
+                            <span>{{ langStore.locale === 'th' ? 'AI ช่วยอ่านจากรูป' : 'AI Extraction' }}</span>
                         </div>
                     </label>
                 </div>
@@ -1424,19 +1462,18 @@ const handlePaste = (e: ClipboardEvent) => {
                                 </svg>
                                 <span class="upload-main-text">{{
                                     isDragging
-                                        ? "วางรูปภาพที่นี่"
-                                        : "ถ่ายภาพ, อัปโหลด หรือวางรูป (Paste)"
+                                        ? (langStore.locale === 'th' ? "วางรูปภาพที่นี่" : "Drop image here")
+                                        : (langStore.locale === 'th' ? "ถ่ายภาพ, อัปโหลด หรือวางรูป (Paste)" : "Capture, Upload, or Paste Image")
                                 }}</span>
                                 <span class="upload-sub-text"
-                                    >รองรับการลากวาง (Drag & Drop)
-                                    และการคัดลอกวาง</span
+                                    >{{ langStore.locale === 'th' ? 'รองรับการลากวาง (Drag & Drop) และการคัดลอกวาง' : 'Supports Drag & Drop and Copy & Paste' }}</span
                                 >
                             </label>
                         </div>
                     </div>
                 </transition>
                 <div class="form-scrollable-area">
-                    <h3 class="section-title mt-4">ข้อมูลภาพรวม</h3>
+                    <h3 class="section-title mt-4">{{ langStore.locale === 'th' ? 'ข้อมูลภาพรวม' : 'Overview Data' }}</h3>
                     <div class="grid-3">
                         <div class="premium-input-group">
                             <input
@@ -1446,7 +1483,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 placeholder=" "
                                 required
                             />
-                            <label>ส่วนสูง (cm)</label>
+                            <label>{{ langStore.locale === 'th' ? 'ส่วนสูง (cm)' : 'Height (cm)' }}</label>
                         </div>
                         <div class="premium-input-group">
                             <input
@@ -1457,7 +1494,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 placeholder=" "
                                 required
                             />
-                            <label>น้ำหนัก (kg)</label>
+                            <label>{{ langStore.locale === 'th' ? 'น้ำหนัก (kg)' : 'Weight (kg)' }}</label>
                         </div>
                         <div class="premium-input-group">
                             <input
@@ -1467,7 +1504,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 v-model="formData.waist"
                                 placeholder=" "
                             />
-                            <label>รอบเอว (cm)</label>
+                            <label>{{ langStore.locale === 'th' ? 'รอบเอว (cm)' : 'Waist (cm)' }}</label>
                         </div>
                         <div class="premium-input-group">
                             <input
@@ -1477,11 +1514,11 @@ const handlePaste = (e: ClipboardEvent) => {
                                 class="readonly"
                                 placeholder=" "
                             />
-                            <label>รูปร่างมาตรฐาน</label>
+                            <label>{{ langStore.locale === 'th' ? 'รูปร่างมาตรฐาน' : 'Standard Body Type' }}</label>
                         </div>
                     </div>
                     <h3 class="section-title mt-4">
-                        องค์ประกอบร่างกาย (Body Composition)
+                        {{ langStore.locale === 'th' ? 'องค์ประกอบร่างกาย (Body Composition)' : 'Body Composition' }}
                     </h3>
                     <div class="grid-2">
                         <div class="premium-input-group small">
@@ -1490,7 +1527,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 step="0.1"
                                 v-model="formData.fatPercent"
                                 placeholder=" "
-                            /><label>ไขมัน (%)</label>
+                            /><label>{{ langStore.locale === 'th' ? 'ไขมัน (%)' : 'Fat (%)' }}</label>
                         </div>
                         <div class="premium-input-group small">
                             <input
@@ -1498,7 +1535,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 step="0.1"
                                 v-model="formData.fatMass"
                                 placeholder=" "
-                            /><label>มวลไขมัน (kg)</label>
+                            /><label>{{ langStore.locale === 'th' ? 'มวลไขมัน (kg)' : 'Fat Mass (kg)' }}</label>
                         </div>
                         <div class="premium-input-group small">
                             <input
@@ -1506,7 +1543,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 step="0.1"
                                 v-model="formData.ffm"
                                 placeholder=" "
-                            /><label>มวลไร้ไขมัน FFM (kg)</label>
+                            /><label>{{ langStore.locale === 'th' ? 'มวลไร้ไขมัน FFM (kg)' : 'Fat-Free Mass (kg)' }}</label>
                         </div>
                         <div class="premium-input-group small">
                             <input
@@ -1514,7 +1551,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 step="0.1"
                                 v-model="formData.muscleMass"
                                 placeholder=" "
-                            /><label>มวลกล้ามเนื้อ (kg)</label>
+                            /><label>{{ langStore.locale === 'th' ? 'มวลกล้ามเนื้อ (kg)' : 'Muscle Mass (kg)' }}</label>
                         </div>
                         <div class="premium-input-group small">
                             <input
@@ -1522,7 +1559,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 step="0.1"
                                 v-model="formData.bodyWaterMass"
                                 placeholder=" "
-                            /><label>มวลน้ำ (kg)</label>
+                            /><label>{{ langStore.locale === 'th' ? 'มวลน้ำ (kg)' : 'Total Body Water (kg)' }}</label>
                         </div>
                         <div class="premium-input-group small">
                             <input
@@ -1530,7 +1567,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 step="0.1"
                                 v-model="formData.bodyWaterPercent"
                                 placeholder=" "
-                            /><label>น้ำในร่างกาย (%)</label>
+                            /><label>{{ langStore.locale === 'th' ? 'น้ำในร่างกาย (%)' : 'Total Body Water (%)' }}</label>
                         </div>
                         <div class="premium-input-group small">
                             <input
@@ -1538,7 +1575,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 step="0.1"
                                 v-model="formData.boneMass"
                                 placeholder=" "
-                            /><label>มวลกระดูก (kg)</label>
+                            /><label>{{ langStore.locale === 'th' ? 'มวลกระดูก (kg)' : 'Bone Mass (kg)' }}</label>
                         </div>
                         <div class="premium-input-group small">
                             <input
@@ -1546,11 +1583,11 @@ const handlePaste = (e: ClipboardEvent) => {
                                 step="0.1"
                                 v-model="formData.clothesWeight"
                                 placeholder=" "
-                            /><label>น้ำหนักเสื้อผ้า (kg)</label>
+                            /><label>{{ langStore.locale === 'th' ? 'น้ำหนักเสื้อผ้า (kg)' : 'Clothes Weight (kg)' }}</label>
                         </div>
                     </div>
                     <h3 class="section-title mt-4">
-                        ระบบเผาผลาญ & ดัชนีสุขภาพ
+                        {{ langStore.locale === 'th' ? 'ระบบเผาผลาญ & ดัชนีสุขภาพ' : 'Metabolism & Health Index' }}
                     </h3>
                     <div class="grid-2">
                         <div class="premium-input-group small">
@@ -1572,7 +1609,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 type="number"
                                 v-model="formData.metabolicAge"
                                 placeholder=" "
-                            /><label>อายุเมตาบอลิก (ปี)</label>
+                            /><label>{{ langStore.locale === 'th' ? 'อายุเมตาบอลิก (ปี)' : 'Metabolic Age (years)' }}</label>
                         </div>
                         <div class="premium-input-group small">
                             <input
@@ -1580,7 +1617,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 step="0.1"
                                 v-model="formData.visceralFat"
                                 placeholder=" "
-                            /><label>ไขมันช่องท้อง</label>
+                            /><label>{{ langStore.locale === 'th' ? 'ไขมันช่องท้อง' : 'Visceral Fat' }}</label>
                         </div>
                         <div class="premium-input-group small">
                             <input
@@ -1588,7 +1625,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 step="0.1"
                                 v-model="formData.bmi"
                                 placeholder=" "
-                            /><label>ค่าดัชนีมวลกาย (BMI)</label>
+                            /><label>{{ langStore.locale === 'th' ? 'ค่าดัชนีมวลกาย (BMI)' : 'Body Mass Index (BMI)' }}</label>
                         </div>
                         <div class="premium-input-group small">
                             <input
@@ -1596,7 +1633,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 step="0.1"
                                 v-model="formData.idealWeight"
                                 placeholder=" "
-                            /><label>น้ำหนักเหมาะสม (kg)</label>
+                            /><label>{{ langStore.locale === 'th' ? 'น้ำหนักเหมาะสม (kg)' : 'Ideal Weight (kg)' }}</label>
                         </div>
                         <div class="premium-input-group small">
                             <input
@@ -1604,7 +1641,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                 step="0.1"
                                 v-model="formData.obesityDegree"
                                 placeholder=" "
-                            /><label>ระดับความอ้วน (%)</label>
+                            /><label>{{ langStore.locale === 'th' ? 'ระดับความอ้วน (%)' : 'Obesity Degree (%)' }}</label>
                         </div>
                         <div class="premium-input-group small">
                             <input
@@ -1615,17 +1652,17 @@ const handlePaste = (e: ClipboardEvent) => {
                         </div>
                     </div>
                     <h3 class="section-title mt-4">
-                        เป้าหมายที่ต้องการรับการดูแล
+                        {{ langStore.locale === 'th' ? 'เป้าหมายที่ต้องการรับการดูแล' : 'Care Goals' }}
                     </h3>
                     <div id="goal_select" class="goals-grid">
                         <label
-                            v-for="goal in goalsList"
-                            :key="goal"
+                            v-for="goal in goalsOptions"
+                            :key="goal.value"
                             class="luxury-checkbox-card"
                         >
                             <input
                                 type="checkbox"
-                                :value="goal"
+                                :value="goal.value"
                                 v-model="formData.goals"
                             />
                             <div class="luxury-content">
@@ -1643,7 +1680,7 @@ const handlePaste = (e: ClipboardEvent) => {
                                         <path d="M20 6 9 17l-5-5" />
                                     </svg>
                                 </div>
-                                <span>{{ goal }}</span>
+                                <span>{{ goal.label }}</span>
                             </div>
                         </label>
                     </div>
@@ -1656,10 +1693,10 @@ const handlePaste = (e: ClipboardEvent) => {
                     >
                         <template v-if="isSubmitting">
                             <span class="loader small mr-2"></span>
-                            กำลังบันทึกข้อมูล...
+                            {{ langStore.locale === 'th' ? 'กำลังบันทึกข้อมูล...' : 'Saving...' }}
                         </template>
                         <template v-else>
-                            ยืนยันข้อมูลทั้งหมด และเข้าสู่หน้าหลัก
+                            {{ langStore.locale === 'th' ? 'ยืนยันข้อมูลทั้งหมด และเข้าสู่หน้าหลัก' : 'Confirm and Enter Home Page' }}
                         </template>
                     </button>
                 </div>

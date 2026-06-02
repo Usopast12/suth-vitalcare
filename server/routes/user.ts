@@ -11,22 +11,8 @@ import { requireAdmin, requireAdminOrHost } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// Auto-migration for profile updates (delayed to avoid startup race condition)
-setTimeout(() => {
-  pool.query("SHOW COLUMNS FROM users LIKE 'activity_level'").then(([rows]: any) => {
-    if (rows.length === 0) {
-      pool.query("ALTER TABLE users ADD COLUMN activity_level VARCHAR(50) DEFAULT 'sedentary'")
-        .catch((e: any) => console.error("[user migration] activity_level:", e.message));
-    }
-  }).catch((e: any) => console.error("[user migration] check activity_level failed:", e.message));
 
-  pool.query("SHOW COLUMNS FROM users LIKE 'reset_token'").then(([rows]: any) => {
-    if (rows.length === 0) {
-      pool.query("ALTER TABLE users ADD COLUMN reset_token VARCHAR(255) DEFAULT NULL, ADD COLUMN reset_token_expiry DATETIME DEFAULT NULL")
-        .catch((e: any) => console.error("[user migration] reset_token:", e.message));
-    }
-  }).catch((e: any) => console.error("[user migration] check reset_token failed:", e.message));
-}, 5000);
+
 
 // ── LOGIN / REGISTER via LINE ──
 router.post("/login", async (req, res) => {

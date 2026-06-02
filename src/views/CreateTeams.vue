@@ -11,6 +11,7 @@ import {
 import { swal, showSuccess, showError } from "../lib/swal";
 import { useRealtime } from "../composables/useRealtime";
 import { uiStore } from "../store/ui";
+import { langStore } from "../store/lang";
 const router = useRouter();
 type User = { id: string; name: string; avatar?: string; fname_th?: string; nickname?: string };
 type Room = {
@@ -78,7 +79,7 @@ const handleFocus = (e: FocusEvent) => {
 };
 const submitJoinByCode = async () => {
   const code = joinCodeStr.value;
-  if (code.length < 6) return showToast('error', 'กรอกรหัส 6 หลักให้ครบ');
+  if (code.length < 6) return showToast('error', langStore.locale === 'th' ? 'กรอกรหัส 6 หลักให้ครบ' : 'Please enter all 6 digits');
   if (joinCodeLoading.value) return;
   joinCodeLoading.value = true;
   try {
@@ -109,9 +110,9 @@ const openJoinModal = (initialRoom = null) => {
    }
 };
 const verifyJoinName = () => {
-   if (!joinTargetName.value.trim()) return showToast('error', 'กรุณาใส่ชื่อทีม');
+   if (!joinTargetName.value.trim()) return showToast('error', langStore.locale === 'th' ? 'กรุณาใส่ชื่อทีม' : 'Please enter team name');
    const match = rooms.value.find(r => r.name.toLowerCase() === joinTargetName.value.trim().toLowerCase());
-   if (!match) return showToast('error', 'ไม่พบทีมนี้ในระบบ');
+   if (!match) return showToast('error', langStore.locale === 'th' ? 'ไม่พบทีมนี้ในระบบ' : 'Team not found');
    if (!match.isPrivate) {
       showCodeModal.value = false;
       confirmJoin(match.id);
@@ -134,15 +135,15 @@ const fetchRooms = async () => {
       headers: { "x-user-id": String(currentUser.value.id) }
     });
     if (res.ok) { const all = await res.json(); rooms.value = all; }
-  } catch { showToast("error", "โหลดรายการห้องไม่สำเร็จ"); }
+  } catch { showToast("error", langStore.locale === 'th' ? "โหลดรายการห้องไม่สำเร็จ" : "Failed to load rooms"); }
   finally { skeletonVisible.value = false; }
 };
 const handleCreateRoom = async () => {
   if (loading.value) return;
-  if (authStore.user?.team_id) return showToast("info", "คุณมีทีมอยู่แล้ว ไม่สามารถสร้างทีมใหม่ได้");
-  if (!newRoomForm.value.name.trim()) return showToast("error", "กรุณาใส่ชื่อทีม");
+  if (authStore.user?.team_id) return showToast("info", langStore.locale === 'th' ? "คุณมีทีมอยู่แล้ว ไม่สามารถสร้างทีมใหม่ได้" : "You are already in a team. You cannot create a new one.");
+  if (!newRoomForm.value.name.trim()) return showToast("error", langStore.locale === 'th' ? "กรุณาใส่ชื่อทีม" : "Please enter team name");
   if (newRoomForm.value.isPrivate && (!newRoomForm.value.code || newRoomForm.value.code.length !== 6)) {
-    return showToast("error", "กรุณาระบุ PIN ควบคุมห้องให้ครบ 6 หลัก");
+    return showToast("error", langStore.locale === 'th' ? "กรุณาระบุ PIN ควบคุมห้องให้ครบ 6 หลัก" : "Please enter a 6-digit PIN");
   }
   if (!currentUser.value.id) return router.push("/login");
   loading.value = true;
@@ -154,12 +155,12 @@ const handleCreateRoom = async () => {
       if (authStore.user && tid) {
         const updatedUser = { ...authStore.user, team_id: tid };
         authStore.setUser(updatedUser);
-        showToast("success", "สร้างทีมสำเร็จ!");
+        showToast("success", langStore.locale === 'th' ? "สร้างทีมสำเร็จ!" : "Team created successfully!");
       } else {
-        showToast("error", "สร้างทีมสำเร็จแต่ไม่สามารถระบุ ID ทีมได้");
+        showToast("error", langStore.locale === 'th' ? "สร้างทีมสำเร็จแต่ไม่สามารถระบุ ID ทีมได้" : "Team created but ID is missing.");
       }
-    } else { const err = await res.json(); showToast("error", err.error ?? "สร้างทีมไม่สำเร็จ"); }
-  } catch { showToast("error", "เกิดข้อผิดพลาดในการสร้างทีม"); }
+    } else { const err = await res.json(); showToast("error", err.error ?? (langStore.locale === 'th' ? "สร้างทีมไม่สำเร็จ" : "Failed to create team")); }
+  } catch { showToast("error", langStore.locale === 'th' ? "เกิดข้อผิดพลาดในการสร้างทีม" : "Error creating team"); }
   finally { loading.value = false; }
 };
 const confirmJoin = async (teamId: string) => {
@@ -173,9 +174,9 @@ const confirmJoin = async (teamId: string) => {
         const updatedUser = { ...authStore.user, team_id: teamId };
         authStore.setUser(updatedUser);
       }
-      showToast("success", "เข้าร่วมทีมสำเร็จ!");
-    } else { const err = await res.json(); showToast("error", err.error ?? "เข้าร่วมทีมไม่สำเร็จ"); }
-  } catch { showToast("error", "เข้าร่วมทีมล้มเหลว"); }
+      showToast("success", langStore.locale === 'th' ? "เข้าร่วมทีมสำเร็จ!" : "Joined team successfully!");
+    } else { const err = await res.json(); showToast("error", err.error ?? (langStore.locale === 'th' ? "เข้าร่วมทีมไม่สำเร็จ" : "Failed to join team")); }
+  } catch { showToast("error", langStore.locale === 'th' ? "เข้าร่วมทีมล้มเหลว" : "Failed to join team"); }
   finally { loading.value = false; }
 };
 const joinByCode = async (code: string) => {
@@ -190,14 +191,14 @@ const joinByCode = async (code: string) => {
         const updatedUser = { ...authStore.user, team_id: data.teamId };
         authStore.setUser(updatedUser);
       }
-      showToast("success", "เข้าร่วมทีมสำเร็จ!");
-    } else showToast("error", data.error ?? "ค้นหาห้องไม่สำเร็จ");
-  } catch { showToast("error", "ค้นหาห้องล้มเหลว"); }
+      showToast("success", langStore.locale === 'th' ? "เข้าร่วมทีมสำเร็จ!" : "Joined team successfully!");
+    } else showToast("error", data.error ?? (langStore.locale === 'th' ? "ค้นหาห้องไม่สำเร็จ" : "Room not found"));
+  } catch { showToast("error", langStore.locale === 'th' ? "ค้นหาห้องล้มเหลว" : "Failed to find room"); }
   finally { loading.value = false; }
 };
 const joinRoom = (room: Room) => {
-  if (authStore.user?.team_id) return showToast("info", "คุณมีทีมอยู่แล้ว ไม่สามารถเข้าร่วมทีมอื่นได้");
-  if ((room.members?.length || 0) >= room.maxMembers) return showToast("info", "ห้องเต็มแล้ว");
+  if (authStore.user?.team_id) return showToast("info", langStore.locale === 'th' ? "คุณมีทีมอยู่แล้ว ไม่สามารถเข้าร่วมทีมอื่นได้" : "You are already in a team. You cannot join another one.");
+  if ((room.members?.length || 0) >= room.maxMembers) return showToast("info", langStore.locale === 'th' ? "ห้องเต็มแล้ว" : "Room is full");
   if (room.isPrivate) {
     openJoinModal(room);
     return;
@@ -243,7 +244,7 @@ watch(searchQuery, (newVal) => {
 });
 const navigateHub = (view: "search" | "create" | "join") => {
   if (authStore.user?.team_id) {
-    return showToast("info", "คุณมีทีมอยู่แล้ว ไม่สามารถดำเนินการนี้ได้");
+    return showToast("info", langStore.locale === 'th' ? "คุณมีทีมอยู่แล้ว ไม่สามารถดำเนินการนี้ได้" : "You are already in a team. You cannot perform this action.");
   }
   if (view === "join") openJoinModal();
   else if (view === "create") showCreateModal.value = true;
@@ -272,11 +273,11 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
           <div class="top-actions-wrapper" :class="authStore.user?.team_id ? 'justify-between' : 'justify-end'">
             <button v-if="authStore.user?.team_id" class="my-team-btn" @click="router.push('/teams')">
                <ShieldCheck :size="18" class="text-orange-600" />
-               <span>ดูทีมของฉัน</span>
+               <span>{{ langStore.locale === 'th' ? 'ดูทีมของฉัน' : 'My Team' }}</span>
             </button>
             <button v-if="!authStore.user?.team_id" class="create-btn-top" @click="navigateHub('create')">
               <Plus :size="18" />
-              <span>สร้างทีม</span>
+              <span>{{ langStore.locale === 'th' ? 'สร้างทีม' : 'Create Team' }}</span>
             </button>
           </div>
           <div class="search-header">
@@ -284,12 +285,12 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
               <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
-              <input class="modern-search-input" v-model="searchQuery" placeholder="ค้นหาชื่อทีม หรือ รหัสทีม 6 หลัก..." />
+              <input class="modern-search-input" v-model="searchQuery" :placeholder="langStore.locale === 'th' ? 'ค้นหาชื่อทีม หรือ รหัสทีม 6 หลัก...' : 'Search team name or 6-digit code...'" />
             </div>
           </div>
           <div class="activity-list-container">
             <div class="list-header-bar">
-              <div class="list-title">ทีมทั้งหมด ({{ filteredRooms.length }})</div>
+              <div class="list-title">{{ langStore.locale === 'th' ? 'ทีมทั้งหมด' : 'All Teams' }} ({{ filteredRooms.length }})</div>
             </div>
             <div class="activity-list-body">
               <div v-if="skeletonVisible" class="skeleton-list">
@@ -297,10 +298,10 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
               </div>
               <div v-else-if="filteredRooms.length === 0" class="empty-search">
                 <Users :size="48" class="empty-icon-wrap" />
-                <h3 class="empty-title">ไม่พบข้อมูลทีม</h3>
-                <p class="empty-desc">ลองค้นหาด้วยชื่ออื่น หรือสร้างทีมของคุณเอง</p>
+                <h3 class="empty-title">{{ langStore.locale === 'th' ? 'ไม่พบข้อมูลทีม' : 'No teams found' }}</h3>
+                <p class="empty-desc">{{ langStore.locale === 'th' ? 'ลองค้นหาด้วยชื่ออื่น หรือสร้างทีมของคุณเอง' : 'Try searching with another name or create your own team' }}</p>
                 <button class="btn-primary mt-4" @click="navigateHub('create')">
-                  <Plus :size="18" /> สร้างทีมใหม่
+                  <Plus :size="18" /> {{ langStore.locale === 'th' ? 'สร้างทีมใหม่' : 'Create New Team' }}
                 </button>
               </div>
               <div v-else class="ev-list">
@@ -318,7 +319,7 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
                         <Lock :size="12" />
                       </div>
                     </div>
-                    <div class="ar-system-name">หัวหน้าทีม: {{ getHost(room)?.fname_th || getHost(room)?.nickname || 'หัวหน้า' }}</div>
+                    <div class="ar-system-name">{{ langStore.locale === 'th' ? 'หัวหน้าทีม:' : 'Leader:' }} {{ getHost(room)?.fname_th || getHost(room)?.nickname || (langStore.locale === 'th' ? 'หัวหน้า' : 'Leader') }}</div>
                   </div>
                   <div class="ar-right">
                     <span class="ev-score">
@@ -329,9 +330,9 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
                 </div>
               </div>
               <div class="pagination" v-if="totalPages > 1">
-                <button :disabled="currentPage === 1" @click="currentPage--">« ก่อนหน้า</button>
-                <span class="page-info">หน้า {{ currentPage }} / {{ totalPages }}</span>
-                <button :disabled="currentPage === totalPages" @click="currentPage++">ถัดไป »</button>
+                <button :disabled="currentPage === 1" @click="currentPage--">&laquo; {{ langStore.locale === 'th' ? 'ก่อนหน้า' : 'Prev' }}</button>
+                <span class="page-info">{{ langStore.locale === 'th' ? 'หน้า' : 'Page' }} {{ currentPage }} / {{ totalPages }}</span>
+                <button :disabled="currentPage === totalPages" @click="currentPage++">{{ langStore.locale === 'th' ? 'ถัดไป' : 'Next' }} &raquo;</button>
               </div>
             </div>
           </div>
@@ -343,31 +344,31 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
         <div v-if="showCreateModal" class="tn-overlay" @click.self="showCreateModal = false">
           <div class="tn-sheet">
             <div class="tn-header">
-              <div class="tn-title">สร้างทีมใหม่</div>
+              <div class="tn-title">{{ langStore.locale === 'th' ? 'สร้างทีมใหม่' : 'Create New Team' }}</div>
               <button class="tn-close-btn" @click="showCreateModal = false">
                 <X :size="20" />
               </button>
             </div>
             <div class="tn-body">
                <div class="input-group mb-5">
-                  <label class="input-label">ชื่อทีมของคุณ</label>
-                  <input class="modern-input" v-model="newRoomForm.name" placeholder="ตั้งชื่อทีมสุดเจ๋ง..." maxlength="40" />
+                  <label class="input-label">{{ langStore.locale === 'th' ? 'ชื่อทีมของคุณ' : 'Your Team Name' }}</label>
+                  <input class="modern-input" v-model="newRoomForm.name" :placeholder="langStore.locale === 'th' ? 'ตั้งชื่อทีมสุดเจ๋ง...' : 'Enter an awesome team name...'" maxlength="40" />
                </div>
                <div class="setting-row mb-5" @click="newRoomForm.isPrivate = !newRoomForm.isPrivate">
                   <div class="setting-info">
-                    <span class="setting-title">ตั้งรหัสผ่านเข้าทีม (Private)</span>
-                    <span class="setting-desc">เฉพาะคนที่มีรหัสผ่านเท่านั้นถึงจะเข้าได้</span>
+                    <span class="setting-title">{{ langStore.locale === 'th' ? 'ตั้งรหัสผ่านเข้าทีม (Private)' : 'Set Team Password (Private)' }}</span>
+                    <span class="setting-desc">{{ langStore.locale === 'th' ? 'เฉพาะคนที่มีรหัสผ่านเท่านั้นถึงจะเข้าได้' : 'Only people with the password can join' }}</span>
                   </div>
                   <div class="fancy-toggle" :class="{ 'on': newRoomForm.isPrivate }"><div class="fancy-knob"></div></div>
                </div>
                <Transition name="fade">
                  <div v-if="newRoomForm.isPrivate" class="input-group mb-5">
-                    <label class="input-label text-orange-600">สร้าง PIN 6 หลัก</label>
-                    <input class="modern-input" v-model="newRoomForm.code" placeholder="เช่น ABC123" maxlength="6" style="text-transform: uppercase; font-weight: bold; letter-spacing: 2px;" />
+                    <label class="input-label text-orange-600">{{ langStore.locale === 'th' ? 'สร้าง PIN 6 หลัก' : 'Create 6-digit PIN' }}</label>
+                    <input class="modern-input" v-model="newRoomForm.code" :placeholder="langStore.locale === 'th' ? 'เช่น ABC123' : 'e.g. ABC123'" maxlength="6" style="text-transform: uppercase; font-weight: bold; letter-spacing: 2px;" />
                  </div>
                </Transition>
                <div class="input-group mb-4">
-                  <label class="input-label">จำนวนสมาชิกสูงสุด (คน)</label>
+                  <label class="input-label">{{ langStore.locale === 'th' ? 'จำนวนสมาชิกสูงสุด (คน)' : 'Max Members' }}</label>
                   <div class="num-grid">
                     <button v-for="n in [2,3,4,5,6]" :key="n" @click="newRoomForm.maxMembers = n" :class="{ active: newRoomForm.maxMembers === n }" class="num-btn">
                       {{ n }}
@@ -378,7 +379,7 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
             <div class="tn-footer">
               <button class="tn-btn-save" @click="handleCreateRoom" :disabled="loading">
                 <Loader2 v-if="loading" class="spin mr-2" :size="18" />
-                <span v-else>ยืนยันสร้างทีม</span>
+                <span v-else>{{ langStore.locale === 'th' ? 'ยืนยันสร้างทีม' : 'Confirm Create Team' }}</span>
               </button>
             </div>
           </div>
@@ -390,18 +391,18 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
         <div v-if="showCodeModal" class="tn-overlay" @click.self="showCodeModal = false">
           <div class="tn-sheet">
             <div class="tn-header">
-              <div class="tn-title">เข้าร่วมทีม</div>
+              <div class="tn-title">{{ langStore.locale === 'th' ? 'เข้าร่วมทีม' : 'Join Team' }}</div>
               <button class="tn-close-btn" @click="showCodeModal = false">
                 <X :size="20" />
               </button>
             </div>
             <div class="tn-body text-center flex-col-center">
               <p class="text-gray-500 text-sm mb-6 px-4">
-                {{ joinStep === 1 ? 'ระบุชื่อทีมที่คุณต้องการค้นหา ระบบจะตรวจสอบโดยอัตโนมัติ' : `กรอก PIN 6 หลักเพื่อเข้าทีม: ${selectedRoomToJoin?.name}` }}
+                {{ joinStep === 1 ? (langStore.locale === 'th' ? 'ระบุชื่อทีมที่คุณต้องการค้นหา ระบบจะตรวจสอบโดยอัตโนมัติ' : 'Enter the team name to search') : (langStore.locale === 'th' ? `กรอก PIN 6 หลักเพื่อเข้าทีม: ${selectedRoomToJoin?.name}` : `Enter 6-digit PIN to join: ${selectedRoomToJoin?.name}`) }}
               </p>
               <div v-if="joinStep === 1" class="input-group text-left mb-4 px-2 w-full">
-                 <label class="input-label">ชื่อทีมเป้าหมาย</label>
-                 <input id="joinNameInput" class="modern-input text-center font-bold text-lg" v-model="joinTargetName" placeholder="พิมพ์ชื่อทีม..." @keyup.enter="verifyJoinName" />
+                 <label class="input-label">{{ langStore.locale === 'th' ? 'ชื่อทีมเป้าหมาย' : 'Target Team Name' }}</label>
+                 <input id="joinNameInput" class="modern-input text-center font-bold text-lg" v-model="joinTargetName" :placeholder="langStore.locale === 'th' ? 'พิมพ์ชื่อทีม...' : 'Type team name...'" @keyup.enter="verifyJoinName" />
               </div>
               <div v-if="joinStep === 2" class="otp-line mb-6 w-full">
                 <input v-for="(_, i) in codeDigits" :key="i" :id="`otp-${i}`" :value="codeDigits[i]" type="text" maxlength="1" class="otp-input-field" @input="handleDigitInput($event, i)" @keydown="handleDigitKeydown($event, i)" @paste="handleDigitPaste" @focus="handleFocus" />
@@ -410,11 +411,11 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
             <div class="tn-footer">
               <button v-if="joinStep === 1" class="tn-btn-save" @click="verifyJoinName" :disabled="loading">
                 <Loader2 v-if="loading" class="spin mr-2" :size="18" />
-                ตรวจสอบ
+                {{ langStore.locale === 'th' ? 'ตรวจสอบ' : 'Verify' }}
               </button>
               <button v-else class="tn-btn-save" @click="submitJoinByCode" :disabled="joinCodeStr.length < 6 || joinCodeLoading || loading">
                 <Loader2 v-if="joinCodeLoading" class="spin mr-2" :size="18" />
-                <span v-else>ยืนยันเข้าร่วม</span>
+                <span v-else>{{ langStore.locale === 'th' ? 'ยืนยันเข้าร่วม' : 'Confirm Join' }}</span>
               </button>
             </div>
           </div>

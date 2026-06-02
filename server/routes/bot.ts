@@ -2381,7 +2381,7 @@ Answer in a friendly Thai language (ใช้ภาษาที่เป็น�
             {
               type: "text",
               text: `ขออภัยครับ เกิดข้อผิดพลาดบางอย่าง: ${err.message || "Unknown Error"}\nกรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ดูแลระบบ`,
-              quickReply: await getMainQuickReply(userId || null, isGroupChat),
+              quickReply: await getMainQuickReply(null, false),
             },
           ],
         });

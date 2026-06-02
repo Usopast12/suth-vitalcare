@@ -9,6 +9,7 @@ import {
 import { useActivities } from '../composables/useActivities';
 import AppPagination from '../components/common/AppPagination.vue';
 import MultiSelectFilter from '../components/common/MultiSelectFilter.vue';
+import { langStore } from '../store/lang';
 const {
   searchQuery, debouncedQuery, activeBanners, currentBannerIndex, loadingBanners,
   sortBy, filterContinuousReg, filterHasGoals, filterFavorites,
@@ -20,27 +21,6 @@ const {
   goToDetail, onBannerClick, toggleFavorite, getActivityStatus, setSection,
   fetchActivities, prefetchDetailPages, hasMore, currentPage, totalPages, changePage
 } = useActivities();
-const filterOptions = [
-  { id: 'registered', label: 'กิจกรรมของฉัน' },
-  { id: 'favorites', label: 'รายการโปรด' },
-  { id: 'cert', label: 'มีเกียรติบัตร' },
-  { id: 'open', label: 'เปิดรับสมัคร' },
-  { id: 'role_student', label: 'เฉพาะนักเรียน' },
-  { id: 'role_uni', label: 'เฉพาะนักศึกษา' },
-  { id: 'role_staff', label: 'เฉพาะบุคลากร' },
-  { id: 'role_public', label: 'บุคคลทั่วไป' },
-  { id: 'continuous', label: 'รับสมัครตลอด' },
-  { id: 'goals', label: 'มีเป้าหมาย' },
-];
-const sortOptions = [
-  { value: 'newest', label: 'มาใหม่ล่าสุด' },
-  { value: 'popular', label: 'คนร่วมเยอะที่สุด' },
-  { value: 'least_popular', label: 'คนร่วมน้อยที่สุด' },
-  { value: 'start_soonest', label: 'เริ่มเร็วที่สุด' },
-  { value: 'date', label: 'วันที่จัดกิจกรรม' },
-  { value: 'az', label: 'ชื่อ (ก-ฮ)' },
-  { value: 'za', label: 'ชื่อ (ฮ-ก)' }
-];
 const selectedFilterIds = computed({
   get: () => {
     const active = [];
@@ -69,6 +49,26 @@ const selectedFilterIds = computed({
     filterHasGoals.value = newVal.includes('goals');
   }
 });
+
+const filterOptions = computed(() => [
+  { id: 'registered', label: langStore.locale === 'th' ? 'สมัครแล้ว' : 'Registered' },
+  { id: 'favorites', label: langStore.locale === 'th' ? 'รายการโปรด' : 'Favorites' },
+  { id: 'open', label: langStore.locale === 'th' ? 'กำลังเปิดรับสมัคร' : 'Open' },
+  { id: 'continuous', label: langStore.locale === 'th' ? 'รับสมัครต่อเนื่อง' : 'Continuous' },
+  { id: 'goals', label: langStore.locale === 'th' ? 'มีเป้าหมาย/ภารกิจ' : 'With Goals' },
+  { id: 'cert', label: langStore.locale === 'th' ? 'มีใบประกาศ' : 'Certificate' },
+  { id: 'role_student', label: langStore.locale === 'th' ? 'นักศึกษา' : 'Student' },
+  { id: 'role_uni', label: langStore.locale === 'th' ? 'บุคลากร มทส.' : 'University Staff' },
+  { id: 'role_staff', label: langStore.locale === 'th' ? 'บุคลากร รพ.' : 'Hospital Staff' },
+  { id: 'role_public', label: langStore.locale === 'th' ? 'บุคคลทั่วไป' : 'Public' }
+]);
+
+const sortOptions = computed(() => [
+  { value: 'newest', label: langStore.locale === 'th' ? 'มาใหม่' : 'Newest' },
+  { value: 'popular', label: langStore.locale === 'th' ? 'ยอดนิยม' : 'Popular' },
+  { value: 'closest', label: langStore.locale === 'th' ? 'ใกล้ถึงวันจัด' : 'Closest' }
+]);
+
 // ==========================================
 // 🌟 ระบบ Carousel ลื่นๆ + เมาส์ลาก (Grab) 🌟
 // ==========================================
@@ -176,7 +176,7 @@ onMounted(() => {
   <div class="shop-layout">
     <header class="shop-header">
       <div class="brand-title">
-        <h1>ค้นหากิจกรรม</h1>
+        <h1>{{ langStore.t('search_activities').replace('...', '') || langStore.t('activities') }}</h1>
       </div>
     </header>
     <div class="shop-search-section">
@@ -186,7 +186,7 @@ onMounted(() => {
           <input 
             v-model="searchQuery" 
             type="text" 
-            placeholder="ค้นหากิจกรรมที่คุณชอบ..." 
+            :placeholder="langStore.t('search_activities')" 
           />
           <button v-if="searchQuery" @click="clearSearch" class="btn-clear-search">
             <X :size="18" />
@@ -249,11 +249,13 @@ onMounted(() => {
                 <img :src="banner.image_url" :alt="banner.title" draggable="false" />
               </div>
               <div class="hero-content-side">
-                <h2 class="hero-title">{{ banner.title || 'ไม่พบหัวข้อแบนเนอร์' }}</h2>
-                <p class="hero-subtitle" v-if="banner.subtitle">{{ banner.subtitle }}</p>
+                <h2 class="hero-title">{{ (langStore.locale === 'en' && banner.title_en) ? banner.title_en : (banner.title || langStore.t('no_banner_title')) }}</h2>
+                <p class="hero-subtitle" v-if="banner.subtitle_en || banner.subtitle">
+                  {{ (langStore.locale === 'en' && banner.subtitle_en) ? banner.subtitle_en : banner.subtitle }}
+                </p>
                 <div class="hero-actions" v-if="banner.link_type !== 'none'">
                   <button class="btn-hero-solid" @click="onBannerClick(banner)">
-                    ดูรายละเอียด <ArrowRight :size="16" class="ml-1"/>
+                    {{ langStore.t('view_detail') }} <ArrowRight :size="16" class="ml-1"/>
                   </button>
                 </div>
               </div>
@@ -266,9 +268,9 @@ onMounted(() => {
       </section>
       <section class="shop-categories" v-if="hasActiveFilters">
         <div class="section-title-row">
-          <h3>ตัวกรองที่เลือกไว้</h3>
+          <h3>{{ langStore.t('active_filters') }}</h3>
           <button class="text-btn" @click="clearFilters">
-            ล้างทั้งหมด <X :size="16"/>
+            {{ langStore.t('clear_all') }} <X :size="16"/>
           </button>
         </div>
         <div class="chips-scroll">
@@ -277,7 +279,7 @@ onMounted(() => {
             <X :size="14" class="ml-1 cursor-pointer" @click="selectedFilterIds = selectedFilterIds.filter(f => f !== id)" />
           </div>
           <div v-if="sortBy !== 'newest'" class="flat-chip active">
-            เรียงตาม: {{ sortOptions.find(o => o.value === sortBy)?.label }}
+            {{ langStore.t('sort_label') }} {{ sortOptions.find(o => o.value === sortBy)?.label }}
             <X :size="14" class="ml-1 cursor-pointer" @click="sortBy = 'newest'" />
           </div>
         </div>
@@ -291,8 +293,8 @@ onMounted(() => {
       </div>
       <div v-else-if="totalFiltered === 0" class="shop-empty">
         <div class="empty-icon"><Search :size="48" /></div>
-        <h3>ไม่พบกิจกรรมที่ค้นหา</h3>
-        <p>ลองเปลี่ยนคำค้นหา หรือลดตัวกรองลงนะ</p>
+        <h3>{{ langStore.t('no_search_results') }}</h3>
+        <p>{{ langStore.t('try_change_search') }}</p>
       </div>
       <div v-else class="shop-feed">
         <section v-for="sec in viewSections" :key="sec.id" class="feed-section">
@@ -300,20 +302,20 @@ onMounted(() => {
             <h3 v-if="!sec.isFlash">
               {{ sec.title }}
               <span v-if="hasActiveFilters || searchQuery" class="text-gray-400 font-normal ml-1" style="font-size: 0.8em;">
-                ({{ totalFiltered }} รายการ)
+                ({{ totalFiltered }} {{ langStore.t('items_unit') }})
               </span>
             </h3>
             <h3 v-else class="text-primary flex items-center gap-2">
               <Sparkles :size="18"/> {{ sec.title }}
               <span v-if="hasActiveFilters || searchQuery" class="text-gray-400 font-normal ml-1" style="font-size: 0.8em;">
-                ({{ totalFiltered }} รายการ)
+                ({{ totalFiltered }} {{ langStore.t('items_unit') }})
               </span>
             </h3>
             <button class="text-btn" v-if="sec.isFiltered" @click="setSection('all')">
-              กลับ <X :size="16"/>
+              {{ langStore.t('back') }} <X :size="16"/>
             </button>
             <button class="text-btn" v-if="!sec.isFiltered && !['all', 'all-home'].includes(sec.id)" @click="setSection(sec.id)">
-              ดูทั้งหมด <ArrowRight :size="16"/>
+              {{ langStore.t('view_all') }} <ArrowRight :size="16"/>
             </button>
           </div>
           <div class="flat-grid" :class="{'is-horizontal': !sec.isFiltered && sec.id !== 'all-home' && isMobileScreen}">
@@ -332,11 +334,11 @@ onMounted(() => {
                   <ImageIcon :size="32" class="fallback-icon" />
                 </div>
                 <div class="dark-badge" :class="getActivityStatus(act)">
-                  <template v-if="getActivityStatus(act) === 'ended'">สิ้นสุดกิจกรรม</template>
-                  <template v-else-if="getActivityStatus(act) === 'ongoing'">กำลังดำเนินการ</template>
-                  <template v-else-if="getActivityStatus(act) === 'registered'">ลงทะเบียนแล้ว</template>
-                  <template v-else-if="getActivityStatus(act) === 'full'">กิจกรรมเต็มแล้ว</template>
-                  <template v-else>เปิดรับสมัคร</template>
+                  <template v-if="getActivityStatus(act) === 'ended'">{{ langStore.t('status_ended') }}</template>
+                  <template v-else-if="getActivityStatus(act) === 'ongoing'">{{ langStore.t('status_ongoing') }}</template>
+                  <template v-else-if="getActivityStatus(act) === 'registered'">{{ langStore.t('status_registered') }}</template>
+                  <template v-else-if="getActivityStatus(act) === 'full'">{{ langStore.t('status_full') }}</template>
+                  <template v-else>{{ langStore.t('registration_open') }}</template>
                 </div>
                 <button class="heart-btn" :class="{'active': favoriteIds.has(act.id)}" @click.stop="toggleFavorite($event, act.id)">
                   <Heart :size="18" :fill="favoriteIds.has(act.id) ? '#FF6A00' : 'none'" />
@@ -346,16 +348,16 @@ onMounted(() => {
                 <h4 class="title" :title="act.title">{{ act.title }}</h4>
                 <div class="meta-row text-primary">
                   <CalendarDays :size="14" />
-                  <span>รับสมัคร: {{ act.is_continuous_registration ? 'เปิดรับตลอด' : (act.registration_end_date ? formatDateThai(act.registration_end_date) : 'ไม่ระบุ') }}</span>
+                  <span>{{ langStore.t('register_label') }} {{ act.is_continuous_registration ? langStore.t('always_open') : (act.registration_end_date ? formatDateThai(act.registration_end_date) : langStore.t('not_specified')) }}</span>
                 </div>
                 <div class="meta-row text-gray">
                   <CalendarDays :size="14" />
-                  <span>จัดกิจกรรม: {{ act.is_continuous_event ? 'ต่อเนื่องตลอด' : (act.start_date ? formatDateThai(act.start_date) : 'ไม่ระบุ') }}</span>
+                  <span>{{ langStore.t('activity_date_label') }} {{ act.is_continuous_event ? langStore.t('reg_open_forever') : (act.start_date ? formatDateThai(act.start_date) : langStore.t('not_specified')) }}</span>
                 </div>
                 <div class="meta-row text-gray mt-1">
                   <Users :size="14" />
-                  <span v-if="act.is_unlimited_max_slots">รับจำนวนไม่จำกัด</span>
-                  <span v-else>เข้าร่วมแล้ว {{ act.registration_count || 0 }} / {{ act.max_slots || 'ไม่จำกัด' }} คน</span>
+                  <span v-if="act.is_unlimited_max_slots">{{ langStore.t('unlimited_slots') }}</span>
+                  <span v-else>{{ langStore.t('joined_label') }} {{ act.registration_count || 0 }} / {{ act.max_slots || langStore.t('unlimited') }} {{ langStore.t('participants_unit') }}</span>
                 </div>
               </div>
             </div>
@@ -366,7 +368,7 @@ onMounted(() => {
       <div v-if="(filterSection !== 'all' || searchQuery || hasActiveFilters) && hasMore" ref="sentinelEl" class="infinite-scroll-trigger">
         <div v-if="loadingMore" class="loading-more">
           <Loader2 class="spin" :size="24" />
-          <span>กำลังโหลดกิจกรรมเพิ่ม...</span>
+          <span>{{ langStore.t('loading_activities') }}</span>
         </div>
       </div>
       <!-- Pagination (Only on Home Discovery Feed) -->

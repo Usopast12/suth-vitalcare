@@ -10,6 +10,7 @@ export interface Section {
   title: string;
   content: string;
   image?: string;
+  type?: string;
 }
 export interface Task {
   id?: number | null;
@@ -249,8 +250,8 @@ export function useActivityForm(fetchActivitiesCallback: () => Promise<void>) {
     }
     
     // Also clean up any intermediate section images
-    if (form.value.detail && Array.isArray(form.value.detail)) {
-        for (const section of form.value.detail) {
+    if (form.value.sections && Array.isArray(form.value.sections)) {
+        for (const section of form.value.sections) {
             if (section.type === 'image' && section.image) {
                 const isOriginal = originalSections.value.some((s: any) => s.type === 'image' && s.image === section.image);
                 if (!isOriginal && section.image.startsWith('/uploads/')) {
@@ -418,7 +419,7 @@ export function useActivityForm(fetchActivitiesCallback: () => Promise<void>) {
         localStorage.removeItem(ACTIVITY_DRAFT_KEY);
         // ✅ Prevent resetForm from deleting the newly uploaded files we just saved
         originalPoster.value = form.value.poster;
-        originalSections.value = form.value.detail ? form.value.detail.map(s => s.image).filter(Boolean) : [];
+        originalSections.value = form.value.sections ? form.value.sections.map(s => s.image).filter(Boolean) : [];
         resetForm();
         router.replace({
           query: { ...route.query, sub: undefined, id: undefined },

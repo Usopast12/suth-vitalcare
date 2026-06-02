@@ -2,6 +2,7 @@ import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { authStore } from '../store/auth';
 import { uiStore } from '../store/ui';
+import { langStore } from '../store/lang';
 import { useSWR } from '../composables/useSWR';
 import { useFavorites } from '../composables/useFavorites';
 export function useActivities() {
@@ -254,16 +255,17 @@ export function useActivities() {
         return 'open';
     };
     function getCountdown(act: any): string | null {
-        if (!!act.is_continuous_registration) return 'เปิดรับตลอด';
+        if (!!act.is_continuous_registration) return langStore.t('always_open');
         if (!act.registration_deadline) return null;
         const diff = act._regDeadlineMs - now.value;
-        if (diff <= 0) return 'หมดเวลา';
+        const isEn = langStore.locale === 'en';
+        if (diff <= 0) return isEn ? 'Expired' : 'หมดเวลา';
         const d = Math.floor(diff / 86400000);
         const h = Math.floor((diff % 86400000) / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
-        if (d > 0) return `${d}วัน ${h}ชม.`;
-        if (h > 0) return `${h}ชม. ${m}น.`;
-        return `${m}นาที`;
+        if (d > 0) return isEn ? `${d}d ${h}h` : `${d}วัน ${h}ชม.`;
+        if (h > 0) return isEn ? `${h}h ${m}m` : `${h}ชม. ${m}น.`;
+        return isEn ? `${m}min` : `${m}นาที`;
     }
     function isCountdownUrgent(act: any): boolean {
         if (!act.registration_deadline) return false;
@@ -446,11 +448,12 @@ export function useActivities() {
     );
     const viewSections = computed(() => {
         const allItems = paginatedActivities.value;
+        const t = (k: any) => langStore.t(k);
         const allSection = {
             id: 'all',
             title: (activeTab.value === 'all' && !debouncedQuery.value && !hasActiveFilters.value)
-                ? (viewMode.value === 'grid' ? 'กิจกรรมแนะนำสำหรับคุณ' : 'กิจกรรมทั้งหมด')
-                : (allItems.length ? 'ผลการค้นหา' : 'ไม่พบกิจกรรมที่ระบุ'),
+                ? (viewMode.value === 'grid' ? t('activities_for_you') : t('activities'))
+                : (allItems.length ? t('search_results') : t('no_results_found')),
             items: allItems,
             isFlash: false,
             isFiltered: false
@@ -458,13 +461,16 @@ export function useActivities() {
         if (viewMode.value === 'grid' && activeTab.value === 'all' && !debouncedQuery.value && !hasActiveFilters.value) {
             if (filterSection.value !== 'all') {
                 const titles: any = {
-                    'mine': 'กิจกรรมของฉัน', 'ending-soon': 'ใกล้ปิดรับสมัคร',
-                    'popular': 'กิจกรรมยอดนิยม', 'newest': 'มาใหม่ล่าสุด',
-                    'solo': 'กิจกรรมแบบคนเดียว', 'team': 'กิจกรรมแบบทีม',
-                    'ongoing': 'กิจกรรมที่กำลังดำเนินการอยู่',
-                    'favorites': 'รายการโปรด'
+                    'mine':       t('my_activities'),
+                    'ending-soon': t('ending_soon'),
+                    'popular':    t('popular_activities'),
+                    'newest':     t('newest_activities'),
+                    'solo':       t('solo_activities'),
+                    'team':       t('team_activities'),
+                    'ongoing':    t('ongoing_activities'),
+                    'favorites':  langStore.locale === 'en' ? 'Favorites' : 'รายการโปรด'
                 };
-                return [{ id: 'filtered-' + filterSection.value, title: titles[filterSection.value] || 'ผลการค้นหา', items: allItems, isFlash: filterSection.value === 'ending-soon', isFiltered: true }];
+                return [{ id: 'filtered-' + filterSection.value, title: titles[filterSection.value] || t('search_results'), items: allItems, isFlash: filterSection.value === 'ending-soon', isFiltered: true }];
             }
             const nowMs = now.value;
             const registered: any[] = [];
@@ -501,9 +507,9 @@ export function useActivities() {
             newest.sort((a, b) => b._createdMs - a._createdMs);
             favorites.sort((a, b) => b._createdMs - a._createdMs);
             const sections: any[] = [];
-            if (registered.length > 0) sections.push({ id: 'mine', title: 'กิจกรรมของฉัน', items: registered, isFlash: false, isFiltered: false });
-            if (favorites.length > 0) sections.push({ id: 'favorites', title: 'รายการโปรด', items: favorites, isFlash: false, isFiltered: false });
-            sections.push({ ...allSection, items: allItems, id: 'all-home', title: 'กิจกรรมทั้งหมด', isHorizontal: false });
+            if (registered.length > 0) sections.push({ id: 'mine', title: t('my_activities'), items: registered, isFlash: false, isFiltered: false });
+            if (favorites.length > 0) sections.push({ id: 'favorites', title: langStore.locale === 'en' ? 'Favorites' : 'รายการโปรด', items: favorites, isFlash: false, isFiltered: false });
+            sections.push({ ...allSection, items: allItems, id: 'all-home', title: t('activities'), isHorizontal: false });
             return sections;
         }
         return [allSection];
@@ -555,6 +561,9 @@ export function useActivities() {
     const formatDateThai = (dateStr: string) => {
         if (!dateStr) return '';
         const date = new Date(dateStr);
+        if (langStore.locale === 'en') {
+            return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
         const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
         return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear() + 543}`;
     };

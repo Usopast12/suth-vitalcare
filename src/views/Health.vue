@@ -11,6 +11,7 @@ import {
 import { authStore } from '../store/auth';
 import { useSWR } from '../composables/useSWR';
 import { uiStore } from '../store/ui';
+import { langStore } from '../store/lang';
 import Swal from 'sweetalert2';
 const route = useRoute();
 const router = useRouter();
@@ -583,30 +584,31 @@ const goBackToActivity = () => {
         <div class="intro-top-bar">
           <button v-if="activityEventId" class="rect-btn-history" @click="goBackToActivity">
             <ArrowLeft :size="18" stroke-width="2.5" />
-            <span>กลับไปที่กิจกรรม</span>
+            <span>{{ langStore.locale === 'th' ? 'กลับไปที่กิจกรรม' : 'Back to Event' }}</span>
           </button>
           <button v-if="!activityEventId" class="rect-btn-history" @click="showHistoryModal = true">
             <History :size="18" stroke-width="2.5" />
-            <span>ประวัติสุขภาพ</span>
+            <span>{{ langStore.locale === 'th' ? 'ประวัติสุขภาพ' : 'Health History' }}</span>
           </button>
         </div>
         <div class="intro-centered">
           <div class="icon-block mx-auto mb-6">
             <ClipboardCheck :size="48" stroke-width="1.5" />
           </div>
-          <h1 class="intro-heading">แบบประเมิน<br><em>พฤติกรรมสุขภาพ</em></h1>
+          <h1 class="intro-heading" v-if="langStore.locale === 'th'">แบบประเมิน<br><em>พฤติกรรมสุขภาพ</em></h1>
+          <h1 class="intro-heading" v-else>Health<br><em>Behavior Assessment</em></h1>
           <div class="intro-divider"></div>
-          <p class="intro-body">เช็กความพร้อมของร่างกายผ่านหลัก 3อ. 2ส. และรับคำแนะนำที่ตรงจุดเพื่อนำไปปรับใช้ได้จริงในชีวิตประจำวัน</p>
-          <button class="btn-rect-primary btn-large shadow-sharp" @click="start">เริ่มทำแบบประเมิน</button>
+          <p class="intro-body">{{ langStore.locale === 'th' ? 'เช็กความพร้อมของร่างกายผ่านหลัก 3อ. 2ส. และรับคำแนะนำที่ตรงจุดเพื่อนำไปปรับใช้ได้จริงในชีวิตประจำวัน' : 'Check your body readiness through the 3O 2S principles and receive personalized advice for your daily life.' }}</p>
+          <button class="btn-rect-primary btn-large shadow-sharp" @click="start">{{ langStore.locale === 'th' ? 'เริ่มทำแบบประเมิน' : 'Start Assessment' }}</button>
         </div>
       </div>
       <div v-else-if="view === 'explanation'" class="intro-page">
         <div class="explanation-container">
           <div class="explanation-card">
             <div class="explanation-header">
-              <h2 class="explanation-title">ก่อนเริ่มการประเมิน</h2>
-              <p class="explanation-subtitle">ใช้เวลาประมาณ 3-5 นาที เพื่อเข้าใจสุขภาพของคุณ</p>
-              <p>ประเมิน 5 ด้าน: อาหาร, ออกกำลังกาย, อารมณ์, บุหรี่ และสุรา</p>
+              <h2 class="explanation-title">{{ langStore.locale === 'th' ? 'ก่อนเริ่มการประเมิน' : 'Before Starting' }}</h2>
+              <p class="explanation-subtitle">{{ langStore.locale === 'th' ? 'ใช้เวลาประมาณ 3-5 นาที เพื่อเข้าใจสุขภาพของคุณ' : 'Takes about 3-5 minutes to understand your health.' }}</p>
+              <p>{{ langStore.locale === 'th' ? 'ประเมิน 5 ด้าน: อาหาร, ออกกำลังกาย, อารมณ์, บุหรี่ และสุรา' : 'Assess 5 areas: Food, Exercise, Emotion, Smoking, and Alcohol.' }}</p>
             </div>
             <div class="explanation-body">
               <!-- PDPA Consent Checkboxes -->
@@ -618,7 +620,7 @@ const goBackToActivity = () => {
                       <svg v-if="acceptAll" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                     </span>
                   </span>
-                  <span class="pdpa-label-text pdpa-label-bold">ยอมรับข้อตกลงทั้งหมด</span>
+                  <span class="pdpa-label-text pdpa-label-bold">{{ langStore.locale === 'th' ? 'ยอมรับข้อตกลงทั้งหมด' : 'Accept all terms' }}</span>
                 </label>
                 <div class="pdpa-divider"></div>
                 <label class="pdpa-row" @click.stop>
@@ -628,7 +630,7 @@ const goBackToActivity = () => {
                       <svg v-if="acceptTerms" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                     </span>
                   </span>
-                  <span class="pdpa-label-text">ยอมรับ <button type="button" class="pdpa-link" @click.stop="showTerms()">เงื่อนไขการให้บริการ</button></span>
+                  <span class="pdpa-label-text">{{ langStore.locale === 'th' ? 'ยอมรับ ' : 'Accept ' }}<button type="button" class="pdpa-link" @click.stop="showTerms()">{{ langStore.locale === 'th' ? 'เงื่อนไขการให้บริการ' : 'Terms of Service' }}</button></span>
                 </label>
                 <label class="pdpa-row" @click.stop>
                   <span class="pdpa-checkbox-wrap">
@@ -637,28 +639,28 @@ const goBackToActivity = () => {
                       <svg v-if="acceptPrivacy" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                     </span>
                   </span>
-                  <span class="pdpa-label-text">ยอมรับ <button type="button" class="pdpa-link" @click.stop="showPrivacyPolicy()">นโยบายความเป็นส่วนตัว (PDPA)</button></span>
+                  <span class="pdpa-label-text">{{ langStore.locale === 'th' ? 'ยอมรับ ' : 'Accept ' }}<button type="button" class="pdpa-link" @click.stop="showPrivacyPolicy()">{{ langStore.locale === 'th' ? 'นโยบายความเป็นส่วนตัว (PDPA)' : 'Privacy Policy (PDPA)' }}</button></span>
                 </label>
               </div>
               <button class="btn-premium-primary mt-4" :class="{ 'btn-disabled': !pdpaAccepted }" :disabled="!pdpaAccepted" @click="view = 'form'">
-                เริ่มทำแบบประเมิน <ArrowRight :size="18" />
+                {{ langStore.locale === 'th' ? 'เริ่มทำแบบประเมิน' : 'Start Assessment' }} <ArrowRight :size="18" />
               </button>
               <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
                 <div style="display: flex; gap: 12px; align-items: flex-start; text-align: left;">
                   <ShieldCheck :size="16" style="color: #16a34a; margin-top: 2px; flex-shrink: 0;" />
                   <p style="font-size: 0.8rem; color: #64748b; line-height: 1.4;">
-                    <strong>การรักษาความลับ:</strong> ข้อมูลของท่านจะถูกเก็บเป็นความลับและใช้เพื่อประมวลผลคำแนะนำเบื้องต้นเท่านั้น (ไม่ใช่การวินิจฉัยทางการแพทย์)
+                    <strong>{{ langStore.locale === 'th' ? 'การรักษาความลับ:' : 'Confidentiality:' }}</strong> {{ langStore.locale === 'th' ? 'ข้อมูลของท่านจะถูกเก็บเป็นความลับและใช้เพื่อประมวลผลคำแนะนำเบื้องต้นเท่านั้น (ไม่ใช่การวินิจฉัยทางการแพทย์)' : 'Your data will be kept strictly confidential and used for preliminary guidance only (not medical diagnosis).' }}
                   </p>
                 </div>
               </div>
               <div style="margin-top: 16px; display: flex; justify-content: center;">
                 <a href="/docs/manual_3O2S.pdf" target="_blank" style="font-size: 0.8rem; color: #f97316; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;">
-                  <FileText :size="14" /> เอกสารอ้างอิงการประเมิน 3อ. 2ส.
+                  <FileText :size="14" /> {{ langStore.locale === 'th' ? 'เอกสารอ้างอิงการประเมิน 3อ. 2ส.' : 'Reference Manual 3O 2S' }}
                 </a>
               </div>
             </div>
           </div>
-          <button class="btn-text-muted" @click="view = 'intro'"><ChevronLeft :size="16" /> ย้อนกลับ</button>
+          <button class="btn-text-muted" @click="view = 'intro'"><ChevronLeft :size="16" /> {{ langStore.locale === 'th' ? 'ย้อนกลับ' : 'Back' }}</button>
         </div>
       </div>
       <div v-else-if="view === 'form'" class="form-page">
@@ -687,14 +689,14 @@ const goBackToActivity = () => {
               </div>
             </div>
             <div class="form-cta">
-              <div v-if="!sectionComplete" class="cta-hint-rect">กรุณาตอบให้ครบทุกข้อ</div>
+              <div v-if="!sectionComplete" class="cta-hint-rect">{{ langStore.locale === 'th' ? 'กรุณาตอบให้ครบทุกข้อ' : 'Please answer all questions' }}</div>
               <div class="cta-buttons">
-                <button class="btn-rect-outline" @click="prevSection" v-if="currentSectionIdx > 0">ย้อนกลับ</button>
+                <button class="btn-rect-outline" @click="prevSection" v-if="currentSectionIdx > 0">{{ langStore.locale === 'th' ? 'ย้อนกลับ' : 'Back' }}</button>
                 <button class="btn-rect-primary" @click="handleNextClick" :disabled="isSubmitting">
                   <span v-if="isSubmitting" class="flex items-center gap-2">
-                    <Loader2 class="w-4 h-4 spin" /> บันทึกข้อมูล...
+                    <Loader2 class="w-4 h-4 spin" /> {{ langStore.locale === 'th' ? 'บันทึกข้อมูล...' : 'Saving...' }}
                   </span>
-                  <span v-else>{{ isLastSection ? 'ดูผลลัพธ์' : 'ถัดไป' }}</span>
+                  <span v-else>{{ isLastSection ? (langStore.locale === 'th' ? 'ดูผลลัพธ์' : 'View Results') : (langStore.locale === 'th' ? 'ถัดไป' : 'Next') }}</span>
                 </button>
               </div>
             </div>
@@ -703,10 +705,10 @@ const goBackToActivity = () => {
       </div>
       <div v-else-if="view === 'result'" class="res-page">
         <div class="res-hero">
-          <div class="res-hero-sub-rect">สรุปผลพฤติกรรมสุขภาพของคุณ</div>
-          <h2 class="res-hero-title">ผลประเมินรวม: <span :style="{ color: levelMeta(overallLevel).color }">{{ overallLevel }}</span></h2>
+          <div class="res-hero-sub-rect">{{ langStore.locale === 'th' ? 'สรุปผลพฤติกรรมสุขภาพของคุณ' : 'Your Health Behavior Summary' }}</div>
+          <h2 class="res-hero-title">{{ langStore.locale === 'th' ? 'ผลประเมินรวม:' : 'Overall Result:' }} <span :style="{ color: levelMeta(overallLevel).color }">{{ overallLevel }}</span></h2>
           <div class="res-overall-rect" :style="{ borderColor: levelMeta(overallLevel).color, background: levelMeta(overallLevel).bg }">
-            <div class="res-overall-label">คะแนนรวม</div>
+            <div class="res-overall-label">{{ langStore.locale === 'th' ? 'คะแนนรวม' : 'Total Score' }}</div>
             <div class="res-overall-value" :style="{ color: levelMeta(overallLevel).color }">
               {{ sectionScores.reduce((t, s) => t + s.score, 0) }} / {{ sections.reduce((t, s) => t + s.maxScore, 0) }}
             </div>
@@ -717,7 +719,7 @@ const goBackToActivity = () => {
           <div class="res-cards-rect">
             <div class="res-card-rect">
               <div class="res-card-head">
-                <div class="res-card-name">ระดับ: {{ res.level }} ({{ res.score }} คะแนน)</div>
+                <div class="res-card-name">{{ langStore.locale === 'th' ? 'ระดับ:' : 'Level:' }} {{ res.level }} ({{ res.score }} {{ langStore.locale === 'th' ? 'คะแนน' : 'pts' }})</div>
                 <div class="res-card-badge-rect" :style="{ background: levelMeta(res.level).bg, color: levelMeta(res.level).color }">
                   {{ res.level }}
                 </div>
@@ -737,14 +739,14 @@ const goBackToActivity = () => {
         <div class="res-section" v-if="Object.keys(answers).length > 0 || (selectedRecord && (selectedRecord.granular_answers || selectedRecord.granularAnswers))">
           <div class="res-section-title-rect">
             <ClipboardCheck :size="24" class="text-primary" />
-            สรุปคำตอบของคุณ
+            {{ langStore.locale === 'th' ? 'สรุปคำตอบของคุณ' : 'Your Answers Summary' }}
           </div>
           <div class="res-ans-list-rect">
             <div v-for="s in sections" :key="s.id" class="res-section-group" style="margin-bottom: 32px;">
               <h4 style="font-size: 1rem; font-weight: 700; color: #64748b; margin-bottom: 12px; padding-left: 8px; border-left: 3px solid #cbd5e1;">{{ s.label }}</h4>
               <template v-for="q in s.questions" :key="q.id">
                 <div class="res-ans-row-rect" v-if="getAnswerForQuestion(q.id)">
-                  <div class="res-ans-num">{{ s.shortLabel }} - ข้อ {{ q.text.split(')')[0] }}</div>
+                  <div class="res-ans-num">{{ s.shortLabel }} - {{ langStore.locale === 'th' ? 'ข้อ' : 'Q' }} {{ q.text.split(')')[0] }}</div>
                   <p class="res-ans-q">{{ q.text.split(')')[1] }}</p>
                   <div class="res-ans-bottom">
                     <div class="res-ans-a-rect">
@@ -752,7 +754,7 @@ const goBackToActivity = () => {
                       <span>{{ getAnswerForQuestion(q.id) }}</span>
                     </div>
                     <div class="res-ans-score-rect">
-                      {{ q.options.find(o => o.text === getAnswerForQuestion(q.id))?.score || 0 }} คะแนน
+                      {{ q.options.find(o => o.text === getAnswerForQuestion(q.id))?.score || 0 }} {{ langStore.locale === 'th' ? 'คะแนน' : 'pts' }}
                     </div>
                   </div>
                 </div>
@@ -761,15 +763,15 @@ const goBackToActivity = () => {
           </div>
         </div>
         <div class="res-actions">
-          <button class="btn-rect-primary" @click="restart">ประเมินใหม่อีกครั้ง</button>
-          <button class="btn-rect-outline" @click="goBackToActivity">กลับไปยังกิจกรรม</button>
+          <button class="btn-rect-primary" @click="restart">{{ langStore.locale === 'th' ? 'ประเมินใหม่อีกครั้ง' : 'Retake Assessment' }}</button>
+          <button class="btn-rect-outline" @click="goBackToActivity">{{ langStore.locale === 'th' ? 'กลับไปยังกิจกรรม' : 'Back to Event' }}</button>
         </div>
       </div>
     </transition>
     <div v-if="showHistoryModal" class="history-modal-overlay" @click.self="showHistoryModal = false">
       <div class="history-modal-rect">
         <div class="hm-header">
-          <div style="font-weight:700;">ประวัติย้อนหลัง</div>
+          <div style="font-weight:700;">{{ langStore.locale === 'th' ? 'ประวัติย้อนหลัง' : 'History' }}</div>
           <div class="hm-close" @click="showHistoryModal = false"><X :size="18" /></div>
         </div>
         <div class="hm-body">
@@ -778,14 +780,14 @@ const goBackToActivity = () => {
             <div class="jc-main">
               <div>
                 <div class="jc-level">{{ h.overall_level || h.overallLevel }}</div>
-                <div class="jc-sub">คะแนนรวม: {{ h.total_score || h.totalScore }}</div>
+                <div class="jc-sub">{{ langStore.locale === 'th' ? 'คะแนนรวม:' : 'Total Score:' }} {{ h.total_score || h.totalScore }}</div>
               </div>
               <div class="jc-icon" :style="{ background: levelMeta(h.overall_level || h.overallLevel).bg, color: levelMeta(h.overall_level || h.overallLevel).color }">
                 <CheckCircle2 :size="20" />
               </div>
             </div>
           </div>
-          <div v-if="displayHistory.length === 0" style="text-align:center; padding: 40px; color: #9ca3af;">ยังไม่มีประวัติการทำแบบประเมิน</div>
+          <div v-if="displayHistory.length === 0" style="text-align:center; padding: 40px; color: #9ca3af;">{{ langStore.locale === 'th' ? 'ยังไม่มีประวัติการทำแบบประเมิน' : 'No assessment history' }}</div>
         </div>
       </div>
     </div>
