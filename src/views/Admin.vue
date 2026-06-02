@@ -21,6 +21,7 @@ import {
 import { useRoute, useRouter } from "vue-router";
 import { authStore } from "../store/auth";
 import { uiStore } from "../store/ui";
+import { langStore } from "../store/lang";
 import AdminOverview from "../components/admin/AdminOverview.vue";
 import AdminUsers from "../components/admin/AdminUsers.vue";
 import AdminActivities from "../components/admin/AdminActivities.vue";
@@ -40,48 +41,48 @@ const checkMobile = () => {
     if (!isMobile.value) isMobileMenuOpen.value = false;
 };
 // ─── Organized Grouped Tabs ───────────────────────────────────────────────
-const ADMIN_GROUPS = [
+const ADMIN_GROUPS = computed(() => [
     {
         title: "Dashboard",
         items: [
-            { id: "overview", label: "แดชบอร์ดภาพรวม", icon: LayoutDashboard },
+            { id: "overview", label: langStore.locale === 'th' ? "แดชบอร์ดภาพรวม" : "Overview", icon: LayoutDashboard },
         ],
     },
     {
-        title: "การจัดการ",
+        title: langStore.locale === 'th' ? "การจัดการ" : "Management",
         items: [
-            { id: "users", label: "จัดการสมาชิก", icon: Users },
-            { id: "activities", label: "จัดการกิจกรรม", icon: PlusCircle },
-            { id: "teams", label: "จัดการทีม", icon: Users2 },
-            { id: "banners", label: "จัดการแบนเนอร์", icon: Image },
-            { id: "titles", label: "จัดการฉายา", icon: Medal },
+            { id: "users", label: langStore.locale === 'th' ? "จัดการสมาชิก" : "Manage Users", icon: Users },
+            { id: "activities", label: langStore.locale === 'th' ? "จัดการกิจกรรม" : "Manage Activities", icon: PlusCircle },
+            { id: "teams", label: langStore.locale === 'th' ? "จัดการทีม" : "Manage Teams", icon: Users2 },
+            { id: "banners", label: langStore.locale === 'th' ? "จัดการแบนเนอร์" : "Manage Banners", icon: Image },
+            { id: "titles", label: langStore.locale === 'th' ? "จัดการฉายา" : "Manage Titles", icon: Medal },
         ],
     },
     {
-        title: "การตั้งค่าระบบ",
+        title: langStore.locale === 'th' ? "การตั้งค่าระบบ" : "System Settings",
         items: [
-            { id: "logs", label: "Logs ระบบ", icon: ShieldCheck },
-            { id: "docs", label: "คู่มือผู้ดูแลระบบ", icon: BookOpen },
+            { id: "logs", label: langStore.locale === 'th' ? "Logs ระบบ" : "System Logs", icon: ShieldCheck },
+            { id: "docs", label: langStore.locale === 'th' ? "คู่มือผู้ดูแลระบบ" : "Admin Manual", icon: BookOpen },
         ],
     },
-];
-const HOST_GROUPS = [
+]);
+const HOST_GROUPS = computed(() => [
     {
-        title: "การจัดการ",
-        items: [{ id: "activities", label: "กิจกรรมของฉัน", icon: Users2 }],
+        title: langStore.locale === 'th' ? "การจัดการ" : "Management",
+        items: [{ id: "activities", label: langStore.locale === 'th' ? "กิจกรรมของฉัน" : "My Activities", icon: Users2 }],
     },
-];
+]);
 const currentGroups = computed(() => {
     const role = authStore.user?.role?.toLowerCase();
-    return role === "admin" ? ADMIN_GROUPS : HOST_GROUPS;
+    return role === "admin" ? ADMIN_GROUPS.value : HOST_GROUPS.value;
 });
 
-const ADMIN_DOCS = [
-    { label: "คู่มือผู้ดูแลระบบ (ไทย)", path: "/docs/คู่มือผู้ดูแลระบบ.pdf" },
+const ADMIN_DOCS = computed(() => [
+    { label: langStore.locale === 'th' ? "คู่มือผู้ดูแลระบบ (ไทย)" : "Admin Manual (TH)", path: "/docs/คู่มือผู้ดูแลระบบ.pdf" },
     { label: "Admin Manual", path: "/docs/manual_3O2S.pdf" },
-];
+]);
 
-const selectedDocPath = ref(ADMIN_DOCS[0].path);
+const selectedDocPath = ref(ADMIN_DOCS.value[0].path);
 const selectedDocUrl = computed(() => encodeURI(selectedDocPath.value));
 const openDocInNewTab = () => window.open(selectedDocUrl.value, "_blank");
 // ─── Lifecycle ────────────────────────────────────────────────────────────
@@ -119,7 +120,7 @@ watch(
 
 watch(activeTab, (tab) => {
     if (tab === "docs" && !selectedDocPath.value) {
-        selectedDocPath.value = ADMIN_DOCS[0].path;
+        selectedDocPath.value = ADMIN_DOCS.value[0].path;
     }
 });
 // ─── Actions ─────────────────────────────────────────────────────────────
@@ -212,7 +213,7 @@ const exitAdmin = () => {
                 <div class="sidebar-footer">
                     <button class="nav-item exit-btn" @click="exitAdmin">
                         <LogOut :size="20" />
-                        <span v-if="isSidebarOpen">ออกจากโหมดจัดการ</span>
+                        <span v-if="isSidebarOpen">{{ langStore.locale === 'th' ? 'ออกจากโหมดจัดการ' : 'Exit Admin Mode' }}</span>
                     </button>
                 </div>
             </nav>
@@ -284,7 +285,7 @@ const exitAdmin = () => {
                                     @click="exitAdmin"
                                 >
                                     <LogOut :size="20" />
-                                    <span>ออกจากโหมดจัดการ</span>
+                                    <span>{{ langStore.locale === 'th' ? 'ออกจากโหมดจัดการ' : 'Exit Admin Mode' }}</span>
                                 </button>
                             </div>
                         </div>
@@ -321,11 +322,10 @@ const exitAdmin = () => {
                                         <h2
                                             class="text-lg sm:text-xl font-bold text-slate-800"
                                         >
-                                            คู่มือผู้ดูแลระบบ
+                                            {{ langStore.locale === 'th' ? 'คู่มือผู้ดูแลระบบ' : 'Admin Manual' }}
                                         </h2>
                                         <p class="text-sm text-slate-500 mt-1">
-                                            เลือกไฟล์คู่มือและอ่าน PDF
-                                            ได้จากหน้านี้
+                                            {{ langStore.locale === 'th' ? 'เลือกไฟล์คู่มือและอ่าน PDF ได้จากหน้านี้' : 'Select a manual and read PDF from this page' }}
                                         </p>
                                     </div>
                                     <button
@@ -333,7 +333,7 @@ const exitAdmin = () => {
                                         class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 text-white text-sm font-semibold hover:bg-slate-900 transition-colors"
                                     >
                                         <ExternalLink :size="16" />
-                                        เปิดในแท็บใหม่
+                                        {{ langStore.locale === 'th' ? 'เปิดในแท็บใหม่' : 'Open in new tab' }}
                                     </button>
                                 </div>
                             </div>
@@ -343,7 +343,7 @@ const exitAdmin = () => {
                             >
                                 <label
                                     class="text-sm font-semibold text-slate-700"
-                                    >เลือกเอกสาร</label
+                                    >{{ langStore.locale === 'th' ? 'เลือกเอกสาร' : 'Select Document' }}</label
                                 >
                                 <select
                                     v-model="selectedDocPath"

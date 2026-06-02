@@ -1,16 +1,6 @@
 import { pool } from "../mysql.js";
 import { Request } from "express";
 
-// Auto-migration for user_agent column (delay to let DB warm up, silent fail)
-setTimeout(() => {
-  pool.query("SHOW COLUMNS FROM audit_logs LIKE 'user_agent'").then(([rows]: any) => {
-    if (rows.length === 0) {
-      pool.query("ALTER TABLE audit_logs ADD COLUMN user_agent TEXT DEFAULT NULL")
-        .then(() => console.log("Auto-migrated: Added user_agent column to audit_logs"))
-        .catch((e: any) => console.error("[audit migration]", e.message));
-    }
-  }).catch((e: any) => console.error("[audit migration] check failed:", e.message));
-}, 5000);
 
 export interface AuditLogOptions {
   userId: number | string | null;
@@ -194,14 +184,6 @@ export async function logAudit(options: any, actionArg?: string, descriptionArg?
         return result;
     }
     
-    // If user_id is null and table is NOT NULL, it will hit here
-    if (error.message.includes("Column 'user_id' cannot be null")) {
-        // Attempt to fix table on the fly
-        pool.query("ALTER TABLE audit_logs MODIFY COLUMN user_id VARCHAR(255) NULL")
-          .then(() => console.log("Auto-migrated: audit_logs.user_id is now NULLABLE"))
-          .catch(console.error);
-    }
-
     console.error(`[AUDIT ERROR] Failed to log action ${action}:`, error.message);
     return null;
   }

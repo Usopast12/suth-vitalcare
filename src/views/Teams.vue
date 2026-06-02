@@ -9,6 +9,7 @@ import {
 import { uiStore } from "../store/ui";
 import { swal, showSuccess, showError, showConfirm } from "../lib/swal";
 import { useRealtime } from "../composables/useRealtime";
+import { langStore } from "../store/lang";
 const router = useRouter();
 type User = { id: string; name: string; avatar?: string; canCreateActivity: boolean; fname_th?: string; nickname?: string };
 type Room = {
@@ -37,7 +38,7 @@ const isHost = computed(() => {
 });
 const assertIsHost = (action = 'ดำเนินการนี้'): boolean => {
   if (!isHost.value) {
-    showToast('error', `คุณไม่มีสิทธิ์${action} (เฉพาะหัวหน้าทีมนี้เท่านั้น)`);
+    showToast('error', langStore.locale === 'th' ? `คุณไม่มีสิทธิ์${action} (เฉพาะหัวหน้าทีมนี้เท่านั้น)` : `You don't have permission to perform this action (Host only)`);
     return false;
   }
   return true;
@@ -66,7 +67,7 @@ const fetchCurrentRoom = async (teamId: any) => {
           authStore.saveUser();
         }
         router.push("/create-teams");
-        showToast("info", "คุณไม่ได้อยู่ในทีมนี้แล้ว");
+        showToast("info", langStore.locale === 'th' ? "คุณไม่ได้อยู่ในทีมนี้แล้ว" : "You are no longer in this team");
       }
     } else {
       if (authStore.user) {
@@ -75,7 +76,7 @@ const fetchCurrentRoom = async (teamId: any) => {
       }
       router.push("/create-teams");
     }
-  } catch { showToast("error", "โหลดข้อมูลห้องไม่สำเร็จ"); }
+  } catch { showToast("error", langStore.locale === 'th' ? "โหลดข้อมูลห้องไม่สำเร็จ" : "Failed to load room data"); }
   finally { loading.value = false; }
 };
 // -------------------------
@@ -88,9 +89,9 @@ const formatDateThai = (dateStr: string) => {
 const handleUpdateRoom = async () => {
   // Guard: only the actual team host (not admin, not regular member)
   if (!assertIsHost('แก้ไขข้อมูลทีม')) return;
-  if (!currentRoom.value || !editRoomForm.value.name.trim()) return showToast("error", "กรุณาใส่ชื่อทีม");
+  if (!currentRoom.value || !editRoomForm.value.name.trim()) return showToast("error", langStore.locale === 'th' ? "กรุณาใส่ชื่อทีม" : "Please enter a team name");
   if (editRoomForm.value.isPrivate && (!editRoomForm.value.code || editRoomForm.value.code.length !== 6)) {
-    return showToast("error", "กรุณาระบุ PIN ควบคุมห้องให้ครบ 6 หลัก");
+    return showToast("error", langStore.locale === 'th' ? "กรุณาระบุ PIN ควบคุมห้องให้ครบ 6 หลัก" : "Please enter a 6-digit PIN");
   }
   loading.value = true;
   try {
@@ -102,9 +103,9 @@ const handleUpdateRoom = async () => {
     if (res.ok) {
       await fetchCurrentRoom(currentRoom.value.id);
       showSettingsModal.value = false;
-      showToast("success", "อัปเดตห้องสำเร็จ");
-    } else { const err = await res.json(); showToast("error", err.error ?? "อัปเดตห้องไม่สำเร็จ"); }
-  } catch { showToast("error", "อัปเดตห้องล้มเหลว"); }
+      showToast("success", langStore.locale === 'th' ? "อัปเดตห้องสำเร็จ" : "Room updated successfully");
+    } else { const err = await res.json(); showToast("error", err.error ?? (langStore.locale === 'th' ? "อัปเดตห้องไม่สำเร็จ" : "Failed to update room")); }
+  } catch { showToast("error", langStore.locale === 'th' ? "อัปเดตห้องล้มเหลว" : "Failed to update room"); }
   finally { loading.value = false; }
 };
 const openSettings = () => {
@@ -120,23 +121,30 @@ const openSettings = () => {
   showSettingsModal.value = true;
 };
 const leaveRoom = async () => {
-  let confirmTitle = "คุณต้องการออกจากทีมใช่หรือไม่?";
-  let confirmHtml = "ข้อมูลกิจกรรมและสถิติต่างๆ ในทีมนี้ของคุณจะหายไป";
-  let confirmButtonText = "ยืนยันการออก";
+  let confirmTitle = langStore.locale === 'th' ? "คุณต้องการออกจากทีมใช่หรือไม่?" : "Do you want to leave the team?";
+  let confirmHtml = langStore.locale === 'th' ? "ข้อมูลกิจกรรมและสถิติต่างๆ ในทีมนี้ของคุณจะหายไป" : "Your activity data and statistics in this team will be lost";
+  let confirmButtonText = langStore.locale === 'th' ? "ยืนยันการออก" : "Confirm leave";
   if (isHost.value) {
     const hasMembers = currentRoom.value && currentRoom.value.members.length > 1;
     confirmTitle = hasMembers 
-      ? "ยืนยันการยุบทีมและออกจากระบบ?" 
-      : "ยืนยันการลบทีมและออกจากระบบ?";
-    confirmHtml = `
+      ? (langStore.locale === 'th' ? "ยืนยันการยุบทีมและออกจากระบบ?" : "Confirm disbanding and leaving?")
+      : (langStore.locale === 'th' ? "ยืนยันการลบทีมและออกจากระบบ?" : "Confirm deleting team and leaving?");
+    confirmHtml = langStore.locale === 'th' ? `
       <div style="text-align: left; font-size: 0.95rem; line-height: 1.6; color: #475569;">
         คุณเป็น <b>หัวหน้าทีม</b> การออกครั้งนี้จะส่งผลดังนี้:<br>
         • <span style="color: #ef4444;">สมาชิกทุกคนจะถูกเชิญออกจากทีม</span><br>
         • <span style="color: #ef4444;">กิจกรรมและภารกิจที่คุณสร้างจะถูกลบทั้งหมด</span><br>
         • <span style="color: #ef4444;">ข้อมูลการส่งงานของสมาชิกในกิจกรรมเหล่านั้นจะถูกลบ</span>
       </div>
+    ` : `
+      <div style="text-align: left; font-size: 0.95rem; line-height: 1.6; color: #475569;">
+        You are the <b>Team Leader</b>. Leaving will result in:<br>
+        • <span style="color: #ef4444;">All members will be removed from the team</span><br>
+        • <span style="color: #ef4444;">All activities and missions you created will be deleted</span><br>
+        • <span style="color: #ef4444;">Members' submissions for those activities will be deleted</span>
+      </div>
     `;
-    confirmButtonText = hasMembers ? "ยุบทีมและออกจากระบบ" : "ลบทีมและออกจากระบบ";
+    confirmButtonText = hasMembers ? (langStore.locale === 'th' ? "ยุบทีมและออกจากระบบ" : "Disband and leave") : (langStore.locale === 'th' ? "ลบทีมและออกจากระบบ" : "Delete team and leave");
   }
   const result = await swal.fire({
     title: confirmTitle,
@@ -144,7 +152,7 @@ const leaveRoom = async () => {
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: confirmButtonText,
-    cancelButtonText: "ยกเลิก",
+    cancelButtonText: langStore.locale === 'th' ? "ยกเลิก" : "Cancel",
     confirmButtonColor: "#ef4444",
     cancelButtonColor: "#94a3b8",
   });
@@ -163,17 +171,17 @@ const doLeaveRoom = async () => {
       const userRes = await fetch(`/api/users/${currentUser.value.id}`, { headers: { "x-user-id": String(currentUser.value.id) } });
       if (userRes.ok) authStore.setUser(await userRes.json());
       router.push("/create-teams");
-    } else { const err = await res.json(); showToast("error", err.error ?? "ออกจากทีมไม่สำเร็จ"); }
-  } catch { showToast("error", "ออกจากทีมล้มเหลว"); }
+    } else { const err = await res.json(); showToast("error", err.error ?? (langStore.locale === 'th' ? "ออกจากทีมไม่สำเร็จ" : "Failed to leave team")); }
+  } catch { showToast("error", langStore.locale === 'th' ? "ออกจากทีมล้มเหลว" : "Failed to leave team"); }
   finally { loading.value = false; }
 };
 const kickMember = async (userId: string, memberName: string) => {
   // Guard: only the actual team host can kick members
   if (!assertIsHost('เตะสมาชิก')) return;
   if (await showConfirm(
-    `ยืนยันการลบสมาชิก?`, 
-    `คุณต้องการเชิญ "${memberName}" ออกจากทีมใช่หรือไม่?`, 
-    "ลบสมาชิก",
+    langStore.locale === 'th' ? `ยืนยันการลบสมาชิก?` : `Confirm member removal?`, 
+    langStore.locale === 'th' ? `คุณต้องการเชิญ "${memberName}" ออกจากทีมใช่หรือไม่?` : `Do you want to remove "${memberName}" from the team?`, 
+    langStore.locale === 'th' ? "ลบสมาชิก" : "Remove",
     "warning"
   )) doKickMember(userId);
 };
@@ -188,18 +196,18 @@ const doKickMember = async (userId: string) => {
       headers: { "Content-Type": "application/json", "x-user-id": String(currentUser.value.id) },
       body: JSON.stringify({ teamId: currentRoom.value.id, userId, hostId: currentUser.value.id }),
     });
-    if (res.ok) { showToast("success", "เตะสมาชิกออกแล้ว"); await fetchCurrentRoom(currentRoom.value.id); }
-    else { const err = await res.json(); showToast("error", err.error ?? "ล้มเหลว"); }
-  } catch { showToast("error", "ล้มเหลว"); }
+    if (res.ok) { showToast("success", langStore.locale === 'th' ? "เตะสมาชิกออกแล้ว" : "Member removed"); await fetchCurrentRoom(currentRoom.value.id); }
+    else { const err = await res.json(); showToast("error", err.error ?? (langStore.locale === 'th' ? "ล้มเหลว" : "Failed")); }
+  } catch { showToast("error", langStore.locale === 'th' ? "ล้มเหลว" : "Failed"); }
   finally { loading.value = false; }
 };
 const transferHost = async (userId: string, memberName: string) => {
   // Guard: only the actual team host can transfer ownership
   if (!assertIsHost('โอนสิทธิ์หัวหน้าทีม')) return;
   if (await showConfirm(
-    `โอนสิทธิ์หัวหน้าทีม?`, 
-    `ต้องการมอบสิทธิ์การจัดการทีมให้แก่ "${memberName}" ใช่หรือไม่?`, 
-    "ยืนยันการโอน",
+    langStore.locale === 'th' ? `โอนสิทธิ์หัวหน้าทีม?` : `Transfer ownership?`, 
+    langStore.locale === 'th' ? `ต้องการมอบสิทธิ์การจัดการทีมให้แก่ "${memberName}" ใช่หรือไม่?` : `Do you want to transfer team ownership to "${memberName}"?`, 
+    langStore.locale === 'th' ? "ยืนยันการโอน" : "Confirm transfer",
     "info"
   )) doTransferHost(userId);
 };
@@ -215,16 +223,16 @@ const doTransferHost = async (targetUserId: string) => {
       body: JSON.stringify({ ...currentRoom.value, hostId: targetUserId }),
     });
     if (res.ok) {
-      showToast("success", "มอบสิทธิ์หัวหน้าทีมเรียบร้อยแล้ว");
+      showToast("success", langStore.locale === 'th' ? "มอบสิทธิ์หัวหน้าทีมเรียบร้อยแล้ว" : "Transferred ownership successfully");
       await fetchCurrentRoom(currentRoom.value.id);
-    } else { showToast("error", "ดำเนินการไม่สำเร็จ"); }
-  } catch { showToast("error", "ล้มเหลว"); }
+    } else { showToast("error", langStore.locale === 'th' ? "ดำเนินการไม่สำเร็จ" : "Action failed"); }
+  } catch { showToast("error", langStore.locale === 'th' ? "ล้มเหลว" : "Failed"); }
   finally { loading.value = false; }
 };
 const copyCode = async () => {
   if (!currentRoom.value) return;
-  try { await navigator.clipboard.writeText(currentRoom.value.code); showToast("success", `คัดลอกรหัส ${currentRoom.value.code} แล้ว`); }
-  catch { showToast("error", "คัดลอกไม่สำเร็จ"); }
+  try { await navigator.clipboard.writeText(currentRoom.value.code); showToast("success", langStore.locale === 'th' ? `คัดลอกรหัส ${currentRoom.value.code} แล้ว` : `Copied code ${currentRoom.value.code}`); }
+  catch { showToast("error", langStore.locale === 'th' ? "คัดลอกไม่สำเร็จ" : "Copy failed"); }
 };
 onMounted(() => {
   if (currentUser.value.teamId) fetchCurrentRoom(currentUser.value.teamId);
@@ -258,7 +266,7 @@ useRealtime({
       authStore.user.team_id = null;
       authStore.saveUser();
       router.push("/create-teams");
-      showToast("info", "ทีมนี้ถูกยุบแล้ว");
+      showToast("info", langStore.locale === 'th' ? "ทีมนี้ถูกยุบแล้ว" : "This team has been disbanded");
     }
   },
   onUserUpdated: (data) => {
@@ -268,7 +276,7 @@ useRealtime({
         authStore.user.team_id = null;
         authStore.saveUser();
         router.push("/create-teams");
-        showToast("info", "คุณไม่ได้อยู่ในทีมนี้แล้ว");
+        showToast("info", langStore.locale === 'th' ? "คุณไม่ได้อยู่ในทีมนี้แล้ว" : "You are no longer in this team");
       }
     }
     // Also refresh if any member's info changed
@@ -299,18 +307,18 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
               <div class="grid-header-bar flex justify-between items-center py-5 px-6 border-b border-slate-100">
                 <div class="flex items-center gap-3">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">ทีมของคุณ:</span>
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">{{ langStore.locale === 'th' ? 'ทีมของคุณ:' : 'Your Team:' }}</span>
                     <h3 class="font-black text-slate-800 text-xl m-0">{{ currentRoom.name }}</h3>
                   </div>
                   <div class="divider-v"></div>
                   <div class="member-count-badge">
                     <Users :size="14" />
-                    <span>{{ currentRoom.members.length }} / {{ currentRoom.maxMembers }} คน</span>
+                    <span>{{ currentRoom.members.length }} / {{ currentRoom.maxMembers }} {{ langStore.locale === 'th' ? 'คน' : 'members' }}</span>
                   </div>
                 </div>
                 <div class="flex items-center gap-2">
-                   <button v-if="isHost" @click="openSettings" class="icon-btn-circle-v2" title="ตั้งค่าทีม"><Settings :size="20"/></button>
-                   <button @click="leaveRoom" class="icon-btn-circle-v2 danger" title="ออกจากทีม"><LogOut :size="20"/></button>
+                   <button v-if="isHost" @click="openSettings" class="icon-btn-circle-v2" :title="langStore.locale === 'th' ? 'ตั้งค่าทีม' : 'Team Settings'"><Settings :size="20"/></button>
+                   <button @click="leaveRoom" class="icon-btn-circle-v2 danger" :title="langStore.locale === 'th' ? 'ออกจากทีม' : 'Leave Team'"><LogOut :size="20"/></button>
                 </div>
               </div>
               <!-- Pure Responsive Member Grid -->
@@ -325,18 +333,18 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
                         <img v-if="member.avatar" :src="member.avatar" loading="lazy" />
                         <span v-else>{{ (member.fname_th || member.nickname || 'U').charAt(0).toUpperCase() }}</span>
                       </div>
-                      <div v-if="member.id === currentRoom.hostId" class="host-badge-dot" title="หัวหน้าทีม">
+                      <div v-if="member.id === currentRoom.hostId" class="host-badge-dot" :title="langStore.locale === 'th' ? 'หัวหน้าทีม' : 'Team Leader'">
                         <Crown :size="10" />
                       </div>
                     </div>
                     <div class="member-info-minimal">
                       <span class="member-name-minimal">{{ member.fname_th || member.nickname }}</span>
-                      <span v-if="member.id === currentUser.id" class="me-text">(ฉัน)</span>
+                      <span v-if="member.id === currentUser.id" class="me-text">{{ langStore.locale === 'th' ? '(ฉัน)' : '(Me)' }}</span>
                     </div>
                     <!-- Host Actions Overlay -->
                     <div v-if="isHost && member.id !== currentUser.id" class="member-actions-minimal">
-                       <button @click="transferHost(member.id, member.fname_th || member.nickname || '')" class="mini-btn" title="โอนสิทธิ์หัวหน้าทีม"><Crown :size="14"/></button>
-                       <button @click="kickMember(member.id, member.fname_th || member.nickname || '')" class="mini-btn danger" title="เชิญออก"><UserMinus :size="14"/></button>
+                       <button @click="transferHost(member.id, member.fname_th || member.nickname || '')" class="mini-btn" :title="langStore.locale === 'th' ? 'โอนสิทธิ์หัวหน้าทีม' : 'Transfer Leader'"><Crown :size="14"/></button>
+                       <button @click="kickMember(member.id, member.fname_th || member.nickname || '')" class="mini-btn danger" :title="langStore.locale === 'th' ? 'เชิญออก' : 'Remove'"><UserMinus :size="14"/></button>
                     </div>
                   </div>
                 </div>
@@ -352,26 +360,26 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
         <div v-if="showSettingsModal" class="tn-overlay" style="z-index: 950;" @click.self="showSettingsModal = false">
           <div class="tn-sheet shadow-ultra" style="max-width: 520px;">
             <div class="tn-header" style="margin-bottom: 24px;">
-              <span class="tn-title">ตั้งค่าข้อมูลทีม</span>
+              <span class="tn-title">{{ langStore.locale === 'th' ? 'ตั้งค่าข้อมูลทีม' : 'Team Settings' }}</span>
               <button @click="showSettingsModal = false" class="tn-close" style="background: none;"><X :size="24" /></button>
             </div>
             <div class="tn-body w-full text-left">
                <div class="w-full mb-6 text-left">
-                  <input class="input-field w-full" v-model="editRoomForm.name" placeholder="ชื่อทีมสุขภาพ" maxlength="40" />
+                  <input class="input-field w-full" v-model="editRoomForm.name" :placeholder="langStore.locale === 'th' ? 'ชื่อทีมสุขภาพ' : 'Team Name'" maxlength="40" />
                </div>
                <div class="settings-stack w-full mb-6">
                   <div class="setting-row" @click="editRoomForm.isPrivate = !editRoomForm.isPrivate">
                     <div class="setting-info text-left">
-                      <span class="setting-title">รหัสผ่านสำหรับเข้ากลุ่ม</span>
+                      <span class="setting-title">{{ langStore.locale === 'th' ? 'รหัสผ่านสำหรับเข้ากลุ่ม' : 'Team Password' }}</span>
                     </div>
                     <div class="fancy-toggle" :class="{ 'on': editRoomForm.isPrivate }"><div class="fancy-knob"></div></div>
                   </div>
                   <div v-if="editRoomForm.isPrivate" class="pin-container is-active mt-3">
-                    <input class="input-field-sm w-full" v-model="editRoomForm.code" placeholder="PIN 6 หลัก" maxlength="6" style="text-transform: uppercase;" />
+                    <input class="input-field-sm w-full" v-model="editRoomForm.code" :placeholder="langStore.locale === 'th' ? 'PIN 6 หลัก' : '6-digit PIN'" maxlength="6" style="text-transform: uppercase;" />
                   </div>
                </div>
                <div class="w-full mb-8 text-left flex items-center" style="display: flex; align-items: center;">
-                  <label class="input-label mb-0" style="margin-bottom:0; min-width: 90px; font-size: 1.05rem; font-weight: 850;">สมาชิกสูงสุด</label>
+                  <label class="input-label mb-0" style="margin-bottom:0; min-width: 90px; font-size: 1.05rem; font-weight: 850;">{{ langStore.locale === 'th' ? 'สมาชิกสูงสุด' : 'Max Members' }}</label>
                   <div class="num-grid" style="flex: 1; margin-left: 12px; display: flex; gap: 8px;">
                     <button v-for="n in [2,3,4,5,6]" :key="n" @click="editRoomForm.maxMembers = n" :class="{ active: editRoomForm.maxMembers === n }" class="num-btn compact">
                       {{ n }}
@@ -380,7 +388,7 @@ watch(() => uiStore.lastRealtimeUpdate, () => {
                </div>
                <button class="primary-btn-solid w-full" @click="handleUpdateRoom" :disabled="loading">
                   <Loader2 v-if="loading" class="spin mr-2" :size="18" />
-                  <span class="btn-text">บันทึกการเปลี่ยนแปลง</span>
+                  <span class="btn-text">{{ langStore.locale === 'th' ? 'บันทึกการเปลี่ยนแปลง' : 'Save Changes' }}</span>
                </button>
             </div>
           </div>

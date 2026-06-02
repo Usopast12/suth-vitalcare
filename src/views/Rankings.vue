@@ -44,7 +44,7 @@
                                             <input
                                                 type="text"
                                                 v-model="activitySearch"
-                                                placeholder="ค้นหากิจกรรม..."
+                                                :placeholder="langStore.t('search_activity')"
                                                 class="dropdown-search-input"
                                             />
                                         </div>
@@ -65,7 +65,7 @@
                                                 <div
                                                     class="di-name text-primary font-bold"
                                                 >
-                                                    อันดับรวมทั้งหมด
+                                                    {{ langStore.t('rank_overall') }}
                                                 </div>
                                                 <div class="di-desc">
                                                     VitalCare System
@@ -90,7 +90,7 @@
                                                     {{ act.title }}
                                                 </div>
                                                 <div class="di-desc">
-                                                    กิจกรรมท้าทาย
+                                                    {{ langStore.t('challenge_activity') }}
                                                 </div>
                                             </div>
                                             <div
@@ -100,7 +100,7 @@
                                                 "
                                                 class="empty-search"
                                             >
-                                                ไม่พบกิจกรรม
+                                                {{ langStore.t('no_activity_found') }}
                                             </div>
                                             <div
                                                 v-if="
@@ -109,7 +109,7 @@
                                                 "
                                                 class="loading-more"
                                             >
-                                                กำลังโหลดเพิ่ม...
+                                                {{ langStore.t('loading_more') }}
                                             </div>
                                         </div>
                                     </div>
@@ -122,7 +122,7 @@
                     <div class="page-banner">
                         <div class="banner-text">
                             <h2>{{ currentActivityTitle }}</h2>
-                            <p>แข่งขันกับเพื่อนๆ และทำลายสถิติของตัวคุณเอง</p>
+                            <p>{{ langStore.t('rank_subtitle') }}</p>
                         </div>
                     </div>
                     <div class="tabs-container">
@@ -131,35 +131,31 @@
                             :class="{ active: activeTab === 'individual' }"
                             @click="switchTab('individual')"
                         >
-                            อันดับบุคคล
+                            {{ langStore.t('rank_individual') }}
                         </button>
                         <button
                             class="tab-btn"
                             :class="{ active: activeTab === 'team' }"
                             @click="switchTab('team')"
                         >
-                            อันดับทีม
+                            {{ langStore.t('rank_team') }}
                         </button>
                     </div>
 
 
                     <div class="leaderboard-card">
                         <div class="list-header">
-                            <div class="col-rank">อันดับ</div>
+                            <div class="col-rank">{{ langStore.t('rank_col') }}</div>
                             <div class="col-name">
-                                ชื่อ{{
-                                    activeTab === "individual"
-                                        ? "ผู้ใช้งาน"
-                                        : "ทีม"
-                                }}
+                                {{ activeTab === 'individual' ? langStore.t('rank_username') : langStore.t('rank_teamname') }}
                             </div>
                             <div class="col-score">
-                                {{ isPoints ? "แต้ม" : rankingUnitLong }}
+                                {{ isPoints ? langStore.t('points') : rankingUnitLong }}
                             </div>
                         </div>
                         <div v-if="loading" class="loading-state">
                             <div class="spinner"></div>
-                            <p>กำลังโหลดข้อมูล...</p>
+                            <p>{{ langStore.t('loading_data') }}</p>
                         </div>
                         <div
                             v-else-if="tableRows.length === 0 || !tableRows[0]"
@@ -179,7 +175,7 @@
                                     />
                                 </svg>
                             </div>
-                            <p>ยังไม่มีข้อมูลในกิจกรรมนี้</p>
+                            <p>{{ langStore.t('rank_no_data') }}</p>
                         </div>
                         <div v-else class="list-body">
                             <template
@@ -257,11 +253,7 @@
                                         <span class="score-val">{{
                                             formatDist(getDistance(item))
                                         }}</span>
-                                        <span class="score-unit">{{
-                                            isPoints
-                                                ? "คะแนน"
-                                                : rankingUnitShort
-                                        }}</span>
+                                        <span class="score-unit">{{ isPoints ? langStore.t('points') : rankingUnitShort }}</span>
                                     </div>
                                 </div>
                             </template>
@@ -291,6 +283,7 @@ import { useRankings } from "../composables/useRankings";
 import { ChevronRight, ChevronDown, Search } from "lucide-vue-next";
 import AppPagination from "../components/common/AppPagination.vue";
 import UserTitle from "../components/UserTitle.vue";
+import { langStore } from "../store/lang";
 
 const {
     PAGE_SIZE,
@@ -335,11 +328,11 @@ const handleDropdownScroll = (e) => {
 };
 
 const currentActivityTitle = computed(() => {
-    if (!selectedActivityId.value) return "อันดับรวมทั้งหมด";
+    if (!selectedActivityId.value) return langStore.t('rank_overall');
     const act = filteredActivities.value.find(
         (a) => String(a.id) === String(selectedActivityId.value),
     );
-    return act ? act.title : "จัดอันดับผู้ท้าชิง";
+    return act ? act.title : langStore.t('rankings');
 });
 
 const handleSelectActivity = (id) => {

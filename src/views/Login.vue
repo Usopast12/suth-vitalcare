@@ -6,8 +6,9 @@ import Swal from 'sweetalert2';
 import MainFooter from '../components/MainFooter.vue';
 import { authStore } from '../store/auth';
 import { backendLoginWithCaptcha } from '../lib/liff';
+import { langStore } from '../store/lang';
 const toast = {
-  error: (msg: string) => Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: msg, confirmButtonColor: '#F05A23' }),
+  error: (msg: string) => Swal.fire({ icon: 'error', title: langStore.t('error_title'), text: msg, confirmButtonColor: '#F05A23' }),
   success: (msg: string) => { /* Success toast removed per user request */ }
 };
 const router = useRouter();
@@ -140,7 +141,7 @@ onMounted(async () => {
 });
 const loginWithLine = async () => {
   if (!pdpaAccepted.value) {
-    toast.error('กรุณายอมรับเงื่อนไขการให้บริการและนโยบายความเป็นส่วนตัวก่อนเข้าสู่ระบบ');
+    toast.error(langStore.t('pdpa_must_accept'));
     return;
   }
   if (!liff) {
@@ -171,11 +172,11 @@ const togglePassword = () => {
 const handleLogin = async (e: Event) => {
   e.preventDefault();
   if (!pdpaAccepted.value) {
-     toast.error('กรุณายอมรับเงื่อนไขการให้บริการและนโยบายความเป็นส่วนตัวก่อนเข้าสู่ระบบ');
+     toast.error(langStore.t('pdpa_must_accept'));
      return;
   }
   if (!turnstileToken.value && siteKey !== '1x00000000000000000000AA') {
-     toast.error("กรุณายืนยันตัวตน (Captcha) ก่อนเข้าสู่ระบบ");
+     toast.error(langStore.t('captcha_required'));
      return;
   }
   try {
@@ -217,7 +218,7 @@ const handleLogin = async (e: Event) => {
   ">
     <img src="/logo.png" alt="Logo" style="width: 72px; border-radius: 16px;" />
     <p style="font-size: 1.1rem; font-weight: 600; color: #356768; margin: 0;">
-      กำลังเข้าสู่ระบบ...
+      {{ langStore.t('login_loading') }}
     </p>
     <div class="liff-spinner"></div>
   </div>
@@ -226,7 +227,7 @@ const handleLogin = async (e: Event) => {
       <div class="header-inner">
         <div class="brand">
           <img src="/logo.png" alt="Logo" class="mini-logo" />
-          <span class="header-title">เข้าสู่ระบบ</span>
+          <span class="header-title">{{ langStore.t('login') }}</span>
         </div>
       </div>
     </header>
@@ -235,7 +236,7 @@ const handleLogin = async (e: Event) => {
         <div class="hero-content">
           <img src="/logo.png" alt="Logo" class="hero-logo" />
           <h1 class="hero-title">VitalCare</h1>
-          <p class="hero-desc">ระบบส่งเสริมกิจกรรมสุขภาพ<br/>เเละติดตามพฤติกรรมสุขภาพของผู้ใช้</p>
+          <p class="hero-desc">{{ langStore.t('hero_desc').split('\n')[0] }}<br/>{{ langStore.t('hero_desc').split('\n')[1] }}</p>
         </div>
       </div>
       <div class="login-wrapper">
@@ -245,35 +246,35 @@ const handleLogin = async (e: Event) => {
               <img src="/logo.png" alt="Logo" class="logo" />
             </div>
             <div class="form-header desktop-only" style="display: none;">
-              <h2>เข้าสู่ระบบ</h2>
+              <h2>{{ langStore.t('login') }}</h2>
             </div>
             <form @submit="handleLogin" class="form-content" style="display: none;">
               <div class="input-group">
                 <div class="input-wrapper">
                   <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                  <input id="email" type="text" v-model="email" placeholder="หมายเลขโทรศัพท์ / Email / ชื่อผู้ใช้" required />
+                  <input id="email" type="text" v-model="email" :placeholder="langStore.t('email_or_phone')" required />
                 </div>
               </div>
               <div class="input-group">
                 <div class="input-wrapper">
                   <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  <input id="password" :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="รหัสผ่าน" required />
+                  <input id="password" :type="showPassword ? 'text' : 'password'" v-model="password" :placeholder="langStore.t('password')" required />
                   <div class="password-actions">
                     <button type="button" class="btn-toggle-password" @click="togglePassword" aria-label="Toggle password visibility">
                       <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
                       <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                     </button>
                     <div class="divider-vertical"></div>
-                    <a href="#" @click.prevent="router.push('/forgot-password')" class="forgot-link">ลืมรหัสผ่าน</a>
+                    <a href="#" @click.prevent="router.push('/forgot-password')" class="forgot-link">{{ langStore.t('forgot_password') }}</a>
                   </div>
                 </div>
               </div>
               <button type="submit" class="btn-primary" :class="{ 'btn-disabled': !pdpaAccepted }" :disabled="!pdpaAccepted">
-                เข้าสู่ระบบ
+                {{ langStore.t('login') }}
               </button>
             </form>
             <div class="divider" style="display: none;">
-              <span>หรือ</span>
+              <span>{{ langStore.t('or') }}</span>
             </div>
             <div class="social-login">
               <button
@@ -286,7 +287,7 @@ const handleLogin = async (e: Event) => {
                 <svg class="social-icon" viewBox="0 0 24 24" fill="#00C300" width="20" height="20">
                    <path d="M22 10.4c0-4.3-4.5-7.8-10-7.8S2 6.1 2 10.4c0 3.8 3.5 7.1 8 7.7.3.1.8.2.9.5.1.2.1.6 0 1l-.3 1.8c0 .1-.1.4.3.6.4.2.9-.1 1.2-.3 1.1-.9 6.2-3.8 8.1-6.1.8-1 1.8-2.6 1.8-5.2zM8.3 12.6H5.9c-.3 0-.6-.3-.6-.6V8.6c0-.3.3-.6.6-.6s.6.3.6.6v2.8h1.8c.3 0 .6.3.6.6s-.3.6-.6.6zm3.3 0h-1.2c-.3 0-.6-.3-.6-.6V8.6c0-.3.3-.6.6-.6s.6.3.6.6v3.4c0 .3-.3.6-.6.6zm4.8 0h-1.2l-1.9-2.7v2.2c0 .3-.3.6-.6.6s-.6-.3-.6-.6V8.6c0-.3.3-.6.6-.6h1.2l1.9 2.7V8.6c0-.3.3-.6.6-.6s.6.3.6.6v3.4c0 .3-.2.6-.6.6z"/>
                 </svg>
-                <span>เข้าสู่ระบบด้วย LINE</span>
+                <span>{{ langStore.t('login_with_line') }}</span>
               </button>
             </div>
             <!-- Cloudflare Turnstile — ใต้ปุ่ม LINE -->
@@ -303,7 +304,7 @@ const handleLogin = async (e: Event) => {
                     <svg v-if="acceptAll" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </span>
                 </span>
-                <span class="pdpa-label-text pdpa-label-bold">ยอมรับทั้งหมด</span>
+                <span class="pdpa-label-text pdpa-label-bold">{{ langStore.t('accept_all') }}</span>
               </label>
               <div class="pdpa-divider"></div>
               <!-- Accept Terms -->
@@ -314,7 +315,7 @@ const handleLogin = async (e: Event) => {
                     <svg v-if="acceptTerms" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </span>
                 </span>
-                <span class="pdpa-label-text">ยอมรับ <button type="button" class="pdpa-link" @click.stop="showTerms()">เงื่อนไขการให้บริการ</button></span>
+                <span class="pdpa-label-text">{{ langStore.t('accept') }} <button type="button" class="pdpa-link" @click.stop="showTerms()">{{ langStore.t('accept_terms') }}</button></span>
               </label>
               <!-- Accept Privacy -->
               <label class="pdpa-row" @click.stop>
@@ -324,7 +325,7 @@ const handleLogin = async (e: Event) => {
                     <svg v-if="acceptPrivacy" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </span>
                 </span>
-                <span class="pdpa-label-text">ยอมรับ <button type="button" class="pdpa-link" @click.stop="showPrivacyPolicy()">นโยบายความเป็นส่วนตัว (PDPA)</button></span>
+                <span class="pdpa-label-text">{{ langStore.t('accept') }} <button type="button" class="pdpa-link" @click.stop="showPrivacyPolicy()">{{ langStore.t('accept_privacy') }}</button></span>
               </label>
             </div>
           </div>

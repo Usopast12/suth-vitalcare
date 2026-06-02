@@ -23,6 +23,7 @@ export interface Task {
     evt?: string
     start?: string
     end?: string
+    use_ocr?: boolean | number | string
 }
 
 export interface Submission {

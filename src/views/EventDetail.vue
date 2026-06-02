@@ -6,12 +6,12 @@
   </div>
   <div v-else-if="loadError" class="error-page flex-center full-h">
     <AlertCircleIcon :size="40" class="error-ico text-orange-500" />
-    <p class="mt-4 text-slate-600 font-bold">ไม่พบข้อมูลกิจกรรม</p>
+    <p class="mt-4 text-slate-600 font-bold">{{ langStore.locale === 'th' ? 'ไม่พบข้อมูลกิจกรรม' : 'Event not found' }}</p>
     <button
       class="btn-back-err mt-4 px-6 py-2 bg-slate-100 text-slate-700 rounded-full hover:bg-slate-200"
       @click="handleBack"
     >
-      กลับหน้าหลัก
+      {{ langStore.locale === 'th' ? 'กลับหน้าหลัก' : 'Go Back' }}
     </button>
   </div>
   <div v-else-if="event" class="event-page pb-40 md:pb-12">
@@ -31,7 +31,7 @@
           class="notice-success w-full mb-4 bg-orange-50 text-orange-700 p-3 rounded-lg flex items-center gap-2 border border-orange-200"
         >
           <CheckCircleIcon :size="16" class="flex-shrink-0" />
-          <span class="text-sm">บันทึกข้อมูลเรียบร้อยแล้ว</span>
+          <span class="text-sm">{{ langStore.locale === 'th' ? 'บันทึกข้อมูลเรียบร้อยแล้ว' : 'Data saved successfully' }}</span>
         </div>
       </Transition>
       <div v-if="event" class="title-with-back">
@@ -55,24 +55,24 @@
           </div>
           <div class="mobile-details-block mobile-only-block mb-8 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
             <div v-if="event.organizer" class="inline-flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100 mb-4 max-w-full overflow-hidden">
-              <span class="font-bold text-sm text-slate-700 truncate min-w-0">จัดโดย: {{ event.organizer }}</span>
+              <span class="font-bold text-sm text-slate-700 truncate min-w-0">{{ langStore.locale === 'th' ? 'จัดโดย:' : 'Organized by:' }} {{ event.organizer }}</span>
             </div>
             <div class="flex flex-col gap-3 pb-4 border-b border-slate-100 mb-4">
               <div class="flex gap-2 min-w-0">
-                <span class="min-w-[100px] font-bold shrink-0">สิทธิ์การเข้าร่วม :</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'สิทธิ์การเข้าร่วม :' : 'Eligibility :' }}</span>
                 <div class="flex flex-wrap gap-1.5 flex-1 min-w-0">
-                  <span v-if="!allowedGroups || allowedGroups.length === 0 || allowedGroups.includes('general')" class="text-green-600 font-bold">ทุกคนสามารถเข้าร่วมได้</span>
+                  <span v-if="!allowedGroups || allowedGroups.length === 0 || allowedGroups.includes('general')" class="text-green-600 font-bold">{{ langStore.locale === 'th' ? 'ทุกคนสามารถเข้าร่วมได้' : 'Everyone can join' }}</span>
                   <span
                     v-else
                     v-for="g in allowedGroups"
                     :key="g"
                     class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-100"
-                  >{{ g === 'my_team' ? 'เฉพาะสมาชิกในทีมผู้จัด' : (g === 'other_teams' ? 'สมาชิกทุกทีม' : g) }}</span>
+                  >{{ g === 'my_team' ? (langStore.locale === 'th' ? 'เฉพาะสมาชิกในทีมผู้จัด' : 'Organizer team members only') : (g === 'other_teams' ? (langStore.locale === 'th' ? 'สมาชิกทุกทีม' : 'All team members') : g) }}</span>
                 </div>
               </div>
               <div class="flex gap-2 min-w-0" v-if="authStore.user">
-                <span class="min-w-[100px] font-bold shrink-0">สถานะของคุณ :</span>
-                <span class="text-slate-600 flex-1">{{ currentUserRoleLabel || 'บุคคลทั่วไป' }}</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'สถานะของคุณ :' : 'Your Status :' }}</span>
+                <span class="text-slate-600 flex-1">{{ currentUserRoleLabel || (langStore.locale === 'th' ? 'บุคคลทั่วไป' : 'General User') }}</span>
               </div>
             </div>
             <div v-if="!isRegistered && !hasPermissionToJoin" class="alert-box error mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
@@ -80,60 +80,60 @@
                 <AlertCircleIcon :size="20" class="mt-0.5 flex-shrink-0" />
                 <div class="flex-1 min-w-0">
                   <div class="mb-3 pb-2 border-b border-red-100">
-                    <div class="text-[10px] uppercase tracking-wider font-bold opacity-60 mb-0.5">สถานะปัจจุบันของคุณ</div>
+                    <div class="text-[10px] uppercase tracking-wider font-bold opacity-60 mb-0.5">{{ langStore.locale === 'th' ? 'สถานะปัจจุบันของคุณ' : 'Your Current Status' }}</div>
                     <div class="font-bold text-base break-words">{{ currentUserRoleLabel }}</div>
                   </div>
                   <div>
-                    <div class="text-[10px] uppercase tracking-wider font-bold opacity-60 mb-0.5">เหตุผล</div>
-                    <div class="font-bold text-sm break-words">{{ noPermissionReason || "คุณไม่มีสิทธิ์เข้าร่วมกิจกรรมนี้" }}</div>
+                    <div class="text-[10px] uppercase tracking-wider font-bold opacity-60 mb-0.5">{{ langStore.locale === 'th' ? 'เหตุผล' : 'Reason' }}</div>
+                    <div class="font-bold text-sm break-words">{{ noPermissionReason || (langStore.locale === 'th' ? "คุณไม่มีสิทธิ์เข้าร่วมกิจกรรมนี้" : "You don't have permission to join this event") }}</div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="rc-info-list mb-6 space-y-2 text-sm border-b border-slate-100 pb-5">
               <div class="flex gap-2 min-w-0">
-                <span class="min-w-[100px] font-bold shrink-0">วันเริ่มกิจกรรม :</span>
-                <span class="flex-1 break-words min-w-0">{{ formatDateThai(event.start_date) || "จัดต่อเนื่อง" }}</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'วันเริ่มกิจกรรม :' : 'Start Date :' }}</span>
+                <span class="flex-1 break-words min-w-0">{{ formatDateThai(event.start_date) || (langStore.locale === 'th' ? "จัดต่อเนื่อง" : "Continuous") }}</span>
               </div>
               <div class="flex gap-2 min-w-0">
-                <span class="min-w-[100px] font-bold shrink-0">วันสิ้นสุดกิจกรรม :</span>
-                <span class="flex-1 break-words min-w-0">{{ formatDateThai(event.end_date || event.start_date) || "จัดต่อเนื่อง" }}</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'วันสิ้นสุดกิจกรรม :' : 'End Date :' }}</span>
+                <span class="flex-1 break-words min-w-0">{{ formatDateThai(event.end_date || event.start_date) || (langStore.locale === 'th' ? "จัดต่อเนื่อง" : "Continuous") }}</span>
               </div>
               <div class="flex gap-2 min-w-0">
-                <span class="min-w-[100px] font-bold shrink-0">เวลาจัดกิจกรรม :</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'เวลาจัดกิจกรรม :' : 'Time :' }}</span>
                 <span class="flex-1 break-words min-w-0">
-                  {{ event.start_time?.slice(0, 5) || "08:00" }} – {{ event.end_time?.slice(0, 5) || "17:00" }} น.
+                  {{ event.start_time?.slice(0, 5) || "08:00" }} – {{ event.end_time?.slice(0, 5) || "17:00" }} {{ langStore.locale === 'th' ? 'น.' : '' }}
                 </span>
               </div>
               <div class="flex gap-2 min-w-0">
-                <span class="min-w-[100px] font-bold shrink-0">สถานที่จัด :</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'สถานที่จัด :' : 'Location :' }}</span>
                 <span class="flex-1 break-words min-w-0">{{ event.location_name || "Virtual" }}</span>
               </div>
               <div class="flex gap-2 min-w-0">
-                <span class="min-w-[100px] font-bold shrink-0">จำนวนรับสมัคร :</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'จำนวนรับสมัคร :' : 'Capacity :' }}</span>
                 <span class="text-orange-600 flex-1 min-w-0 flex items-center gap-2">
-                   {{ event.registration_count ?? event.filled ?? 0 }} / {{ isUnlimited ? "ไม่จำกัด" : event.max_slots || event.total || 0 }} คน
-                   <span v-if="slotFull" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200 animate-pulse">เต็มแล้ว</span>
+                   {{ event.registration_count ?? event.filled ?? 0 }} / {{ isUnlimited ? (langStore.locale === 'th' ? "ไม่จำกัด" : "Unlimited") : event.max_slots || event.total || 0 }} {{ langStore.locale === 'th' ? 'คน' : 'pax' }}
+                   <span v-if="slotFull" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200 animate-pulse">{{ langStore.locale === 'th' ? 'เต็มแล้ว' : 'Full' }}</span>
                 </span>
               </div>
             </div>
             <div class="rc-header mb-4 flex justify-between items-center gap-2 min-w-0">
-              <h2 class="text-lg font-bold text-slate-800 truncate flex-1 min-w-0">ช่วงรับสมัคร</h2>
-              <div v-if="slotFull" class="badge-status closed text-xs bg-red-100 text-red-700 px-2 py-1 rounded whitespace-nowrap shrink-0">กิจกรรมเต็ม</div>
-              <div v-else class="badge-status open text-xs bg-green-100 text-green-700 px-2 py-1 rounded whitespace-nowrap shrink-0">เปิดรับสมัคร</div>
+              <h2 class="text-lg font-bold text-slate-800 truncate flex-1 min-w-0">{{ langStore.locale === 'th' ? 'ช่วงรับสมัคร' : 'Registration Period' }}</h2>
+              <div v-if="slotFull" class="badge-status closed text-xs bg-red-100 text-red-700 px-2 py-1 rounded whitespace-nowrap shrink-0">{{ langStore.locale === 'th' ? 'กิจกรรมเต็ม' : 'Event Full' }}</div>
+              <div v-else class="badge-status open text-xs bg-green-100 text-green-700 px-2 py-1 rounded whitespace-nowrap shrink-0">{{ langStore.locale === 'th' ? 'เปิดรับสมัคร' : 'Open' }}</div>
             </div>
             <div class="rc-info-list space-y-2 text-sm min-w-0">
               <div class="flex gap-2 min-w-0">
-                <span class="min-w-[100px] font-bold shrink-0">เปิดรับสมัคร :</span>
-                <span class="flex-1 break-words min-w-0">{{ formatDateThai(event.registration_start_date || event.start_date) || "เปิดรับสมัครต่อเนื่อง" }}</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'เปิดรับสมัคร :' : 'Opens :' }}</span>
+                <span class="flex-1 break-words min-w-0">{{ formatDateThai(event.registration_start_date || event.start_date) || (langStore.locale === 'th' ? "เปิดรับสมัครต่อเนื่อง" : "Always Open") }}</span>
               </div>
               <div class="flex gap-2 min-w-0">
-                <span class="min-w-[100px] font-bold shrink-0">ปิดรับสมัคร :</span>
-                <span class="flex-1 break-words min-w-0">{{ formatDateThai(event.registration_end_date || event.end_date || event.start_date) || "เปิดรับสมัครต่อเนื่อง" }}</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'ปิดรับสมัคร :' : 'Closes :' }}</span>
+                <span class="flex-1 break-words min-w-0">{{ formatDateThai(event.registration_end_date || event.end_date || event.start_date) || (langStore.locale === 'th' ? "เปิดรับสมัครต่อเนื่อง" : "Always Open") }}</span>
               </div>
               <p class="text-xs text-slate-400 mt-2 flex items-start gap-1">
                 <AlertCircleIcon :size="12" class="mt-0.5 shrink-0" />
-                <span class="flex-1 break-words">หรือปิดรับสมัครทันทีเมื่อผู้สมัครครบเต็มจำนวน</span>
+                <span class="flex-1 break-words">{{ langStore.locale === 'th' ? 'หรือปิดรับสมัครทันทีเมื่อผู้สมัครครบเต็มจำนวน' : 'Or closes immediately when capacity is reached' }}</span>
               </p>
             </div>
           </div>
@@ -143,18 +143,18 @@
                 <ListTodoIcon :size="20" class="text-orange-600" />
               </div>
               <div class="gw-info">
-                <h4>ภารกิจของคุณ</h4>
-                <p>ทำสำเร็จแล้ว {{ completedMissionsCount }} / {{ totalMissionsCount }}</p>
+                <h4>{{ langStore.locale === 'th' ? 'ภารกิจของคุณ' : 'Your Missions' }}</h4>
+                <p>{{ langStore.locale === 'th' ? 'ทำสำเร็จแล้ว' : 'Completed' }} {{ completedMissionsCount }} / {{ totalMissionsCount }}</p>
               </div>
               <button
                 v-if="isRegistered && completedMissionsCount < totalMissionsCount"
                 class="btn-small btn-blue flex-shrink-0"
                 @click="goToMissions()"
               >
-                เข้าทำ
+                {{ langStore.locale === 'th' ? 'เข้าทำ' : 'Start' }}
               </button>
               <div class="font-bold text-green-600 flex-shrink-0 text-sm whitespace-nowrap" v-else-if="completedMissionsCount === totalMissionsCount">
-                สำเร็จ!
+                {{ langStore.locale === 'th' ? 'สำเร็จ!' : 'Done!' }}
                 <CheckCircleIcon :size="16" class="inline" />
               </div>
             </div>
@@ -164,10 +164,10 @@
                   <AwardIcon :size="20" class="text-orange-600" />
                 </div>
                 <div class="gw-info">
-                  <h4>เกียรติบัตร</h4>
-                  <p v-if="certStatus === 'issued'" class="text-green font-bold">ได้รับรางวัลแล้ว ✓</p>
-                  <p v-else-if="isEligible" class="text-orange font-bold animate-pulse">พร้อมกดรับ! ✨</p>
-                  <p v-else class="text-slate-400 text-xs">{{ certReason || "เงื่อนไขตามที่ผู้จัดกำหนด" }}</p>
+                  <h4>{{ langStore.locale === 'th' ? 'เกียรติบัตร' : 'Certificate' }}</h4>
+                  <p v-if="certStatus === 'issued'" class="text-green font-bold">{{ langStore.locale === 'th' ? 'ได้รับรางวัลแล้ว ✓' : 'Received ✓' }}</p>
+                  <p v-else-if="isEligible" class="text-orange font-bold animate-pulse">{{ langStore.locale === 'th' ? 'พร้อมกดรับ! ✨' : 'Ready to claim! ✨' }}</p>
+                  <p v-else class="text-slate-400 text-xs">{{ certReason || (langStore.locale === 'th' ? "เงื่อนไขตามที่ผู้จัดกำหนด" : "Based on organizer conditions") }}</p>
                 </div>
                 <button
                   class="btn-small flex-shrink-0"
@@ -175,7 +175,7 @@
                   @click="claimCert"
                   :disabled="!isRegistered || (!isEligible && certStatus !== 'issued')"
                 >
-                  {{ certStatus === "issued" ? "ดาวน์โหลด" : isEligible ? "กดรับเลย" : "ล็อค" }}
+                  {{ certStatus === "issued" ? (langStore.locale === 'th' ? "ดาวน์โหลด" : "Download") : isEligible ? (langStore.locale === 'th' ? "กดรับเลย" : "Claim Now") : (langStore.locale === 'th' ? "ล็อค" : "Locked") }}
                 </button>
               </div>
               <div v-if="isRegistered && certStatus !== 'issued' && certCriteria" class="w-full mt-3 pt-3 border-t border-slate-100 space-y-2">
@@ -185,7 +185,7 @@
                     <ClockIcon v-else :size="14" class="text-slate-300" />
                     <span :class="certCriteria.preTest.completed ? 'text-slate-600 font-medium' : 'text-slate-400'">{{ certCriteria.preTest.label }}</span>
                   </div>
-                  <span v-if="certCriteria.preTest.completed" class="text-[10px] text-green-600 font-bold">สำเร็จ</span>
+                  <span v-if="certCriteria.preTest.completed" class="text-[10px] text-green-600 font-bold">{{ langStore.locale === 'th' ? 'สำเร็จ' : 'Done' }}</span>
                 </div>
                 <div v-if="certCriteria.goal && goalConfigParsed.enabled" class="flex flex-col gap-1 text-xs">
                   <div class="flex items-center justify-between">
@@ -208,7 +208,7 @@
                     <ClockIcon v-else :size="14" class="text-slate-300" />
                     <span :class="certCriteria.postTest.completed ? 'text-slate-600 font-medium' : 'text-slate-400'">{{ certCriteria.postTest.label }}</span>
                   </div>
-                  <span v-if="certCriteria.postTest.completed" class="text-[10px] text-green-600 font-bold">สำเร็จ</span>
+                  <span v-if="certCriteria.postTest.completed" class="text-[10px] text-green-600 font-bold">{{ langStore.locale === 'th' ? 'สำเร็จ' : 'Done' }}</span>
                 </div>
               </div>
             </div>
@@ -217,16 +217,16 @@
                 <ClipboardListIcon :size="20" class="text-orange-600" />
               </div>
               <div class="gw-info">
-                <h4>แบบทดสอบก่อนเริ่ม</h4>
-                <p v-if="preTestCompleted" class="text-green font-bold text-sm">✓ ทำเสร็จแล้ว</p>
-                <p v-else class="text-orange font-bold text-sm">ยังไม่ได้ทำ</p>
+                <h4>{{ langStore.locale === 'th' ? 'แบบทดสอบก่อนเริ่ม' : 'Pre-test' }}</h4>
+                <p v-if="preTestCompleted" class="text-green font-bold text-sm">{{ langStore.locale === 'th' ? '✓ ทำเสร็จแล้ว' : '✓ Completed' }}</p>
+                <p v-else class="text-orange font-bold text-sm">{{ langStore.locale === 'th' ? 'ยังไม่ได้ทำ' : 'Not started' }}</p>
               </div>
               <button
                 v-if="isRegistered && !preTestCompleted"
                 class="btn-small btn-violet flex-shrink-0"
                 @click="goToAssessment('pre_test')"
               >
-                เข้าทำ
+                {{ langStore.locale === 'th' ? 'เข้าทำ' : 'Start' }}
               </button>
             </div>
             <div class="glass-widget full-width" v-if="assessmentConfig.post_test?.enabled">
@@ -234,17 +234,17 @@
                 <ClipboardCheckIcon :size="20" class="text-orange-600" />
               </div>
               <div class="gw-info">
-                <h4>แบบประเมินหลังจบ</h4>
-                <p v-if="postTestCompleted" class="text-green font-bold text-sm">✓ ทำเสร็จแล้ว</p>
-                <p v-else-if="!isEventStarted" class="text-sub text-xs">เปิดเมื่อเริ่ม</p>
-                <p v-else class="text-orange font-bold text-sm">ยังไม่ได้ทำ</p>
+                <h4>{{ langStore.locale === 'th' ? 'แบบประเมินหลังจบ' : 'Post-test' }}</h4>
+                <p v-if="postTestCompleted" class="text-green font-bold text-sm">{{ langStore.locale === 'th' ? '✓ ทำเสร็จแล้ว' : '✓ Completed' }}</p>
+                <p v-else-if="!isEventStarted" class="text-sub text-xs">{{ langStore.locale === 'th' ? 'เปิดเมื่อเริ่ม' : 'Opens on start' }}</p>
+                <p v-else class="text-orange font-bold text-sm">{{ langStore.locale === 'th' ? 'ยังไม่ได้ทำ' : 'Not started' }}</p>
               </div>
               <button
                 v-if="isRegistered && !postTestCompleted && isEventStarted && (isContinuousEvent || postTestEligible)"
                 class="btn-small btn-emerald flex-shrink-0"
                 @click="goToAssessment('post_test')"
               >
-                เข้าทำ
+                {{ langStore.locale === 'th' ? 'เข้าทำ' : 'Start' }}
               </button>
             </div>
             <div class="glass-widget full-width flex-col items-start" v-if="shouldShowTanita">
@@ -254,9 +254,9 @@
                     <ScaleIcon :size="20" class="text-orange-600" />
                   </div>
                   <div class="gw-info">
-                    <h4>บันทึกค่าองค์ประกอบของร่างกาย</h4>
+                    <h4>{{ langStore.locale === 'th' ? 'บันทึกค่าองค์ประกอบของร่างกาย' : 'Record Body Composition' }}</h4>
                     <p class="text-sub cursor-pointer hover:text-teal-600 transition" @click="openTanitaModal">
-                      ดูรายงานการวิเคราะห์
+                      {{ langStore.locale === 'th' ? 'ดูรายงานการวิเคราะห์' : 'View Analysis Report' }}
                     </p>
                   </div>
                 </div>
@@ -268,7 +268,7 @@
                   class="flex items-center justify-between bg-white/50 p-2 rounded-lg border border-slate-200/50 text-sm"
                 >
                   <span class="text-slate-600 font-semibold truncate flex-1">
-                    {{ Number(index) + 1 }}. {{ getTanitaLabel(dateItem) || 'รอบที่ ' + (Number(index) + 1) }}
+                    {{ Number(index) + 1 }}. {{ getTanitaLabel(dateItem) || (langStore.locale === 'th' ? 'รอบที่ ' : 'Round ') + (Number(index) + 1) }}
                     <span v-if="getTanitaDate(dateItem)" class="text-xs text-slate-400 ml-1">
                       ({{ formatDateThai(getTanitaDate(dateItem)) }})
                     </span>
@@ -278,16 +278,16 @@
                     class="btn-small btn-light-green py-1 px-2 flex-shrink-0 ml-2 flex items-center gap-1 font-bold text-[11px] rounded-md transition-all shadow-sm"
                     @click="openTanitaEntryModal(Number(index) + 1)"
                   >
-                    <CheckCircleIcon :size="14" class="inline" /> บันทึกแล้ว
+                    <CheckCircleIcon :size="14" class="inline" /> {{ langStore.locale === 'th' ? 'บันทึกแล้ว' : 'Recorded' }}
                   </button>
                   <button
                     v-else-if="isRegistered && isPastOrToday(dateItem)"
                     class="btn-small btn-orange py-1 px-3 flex-shrink-0 ml-2 shadow-sm hover:scale-105 transition-all"
                     @click="openTanitaEntryModal(Number(index) + 1)"
                   >
-                    บันทึกผล
+                    {{ langStore.locale === 'th' ? 'บันทึกผล' : 'Record' }}
                   </button>
-                  <span v-else class="text-sub text-xs flex-shrink-0 ml-2"><LockIcon :size="10" class="inline" /> รอถึงกำหนด</span>
+                  <span v-else class="text-sub text-xs flex-shrink-0 ml-2"><LockIcon :size="10" class="inline" /> {{ langStore.locale === 'th' ? 'รอถึงกำหนด' : 'Waiting' }}</span>
                 </div>
               </div>
             </div>
@@ -295,12 +295,12 @@
           <div v-if="event.inclusions" class="content-section highlight-box mt-6">
             <h3 class="section-title text-orange-600">
               <SparklesIcon :size="18" class="inline mr-1 flex-shrink-0" />
-              สิ่งที่จะได้รับ
+              {{ langStore.locale === 'th' ? 'สิ่งที่จะได้รับ' : 'What you will receive' }}
             </h3>
             <p class="prose">{{ event.inclusions }}</p>
           </div>
           <div v-if="event.rules_regulations" class="content-section mt-6">
-            <h3 class="section-title">กติกาและเงื่อนไข</h3>
+            <h3 class="section-title">{{ langStore.locale === 'th' ? 'กติกาและเงื่อนไข' : 'Rules and Conditions' }}</h3>
             <div class="prose" v-html="sanitizedRules"></div>
           </div>
           <div v-for="(sec, i) in parsedSections" :key="i" class="content-section mt-6">
@@ -311,11 +311,11 @@
           <div v-if="hasGoalConfig" id="goal-section" class="content-section goal-motivation-card mt-8">
             <div class="goal-card-header">
               <TrendingUpIcon class="goal-icon text-orange-500 flex-shrink-0" :size="24" />
-              <h2 class="goal-title text-orange-600">เป้าหมายและความคืบหน้า</h2>
+              <h2 class="goal-title text-orange-600">{{ langStore.locale === 'th' ? 'เป้าหมายและความคืบหน้า' : 'Goals and Progress' }}</h2>
             </div>
             <div v-if="goalConfigParsed.enabled" class="goal-hero-card" style="color: #ffffff !important;">
               <div class="gh-content text-center">
-                <div class="gh-label" style="color: rgba(255, 255, 255, 0.8) !important;">เป้าหมายรวม (TARGET)</div>
+                <div class="gh-label" style="color: rgba(255, 255, 255, 0.8) !important;">{{ langStore.locale === 'th' ? 'เป้าหมายรวม (TARGET)' : 'TOTAL TARGET' }}</div>
                 <div class="gh-value flex-center flex-wrap gap-1" style="color: #ffffff !important;">
                   {{ goalConfigParsed.target_value?.toLocaleString() }}
                   <span class="gh-unit" style="color: #ffffff !important;">{{ goalUnitLabel }}</span>
@@ -329,7 +329,7 @@
               <div class="spin-lg border-t-orange-500 border-4 border-slate-200 rounded-full w-8 h-8"></div>
             </div>
             <div v-else-if="goalData.length === 0" class="goal-empty p-8 text-center text-slate-400">
-              ยังไม่มีข้อมูลผู้เข้าร่วม
+              {{ langStore.locale === 'th' ? 'ยังไม่มีข้อมูลผู้เข้าร่วม' : 'No participant data yet' }}
             </div>
             <div v-else class="goal-table-container mt-6">
               <div class="gt-controls flex flex-col sm:flex-row gap-3 mb-4">
@@ -337,7 +337,7 @@
                   <SearchIcon :size="16" class="text-slate-400 flex-shrink-0" />
                   <input
                     v-model="goalSearchQuery"
-                    placeholder="ค้นหาชื่อ..."
+                    :placeholder="langStore.locale === 'th' ? 'ค้นหาชื่อ...' : 'Search name...'"
                     class="w-full bg-transparent border-none p-2 outline-none text-sm"
                     @input="goalCurrentPage = 1"
                   />
@@ -390,7 +390,7 @@
                     </div>
                     <div class="min-w-0">
                       <div class="font-bold text-slate-800 text-sm truncate">{{ getGoalName(item) }}</div>
-                      <span v-if="isGoalCurrentUser(item)" class="text-[10px] bg-orange-200 text-orange-800 px-2 py-0.5 rounded uppercase inline-block mt-0.5">อันดับของฉัน</span>
+                      <span v-if="isGoalCurrentUser(item)" class="text-[10px] bg-orange-200 text-orange-800 px-2 py-0.5 rounded uppercase inline-block mt-0.5">{{ langStore.locale === 'th' ? 'อันดับของฉัน' : 'My Rank' }}</span>
                     </div>
                   </div>
                   <div class="gt-col col-progress w-24 sm:w-32 md:w-48 px-2 flex-shrink-0 min-w-0">
@@ -404,7 +404,7 @@
                   </div>
                   <div class="gt-col col-status w-16 sm:w-20 text-right pr-1 flex-shrink-0 min-w-0">
                     <div class="text-xs sm:text-sm font-black text-primary truncate">{{ Number(item.points_achieved || 0).toLocaleString() }}</div>
-                    <div class="text-[10px] text-slate-400 font-bold">คะแนน</div>
+                    <div class="text-[10px] text-slate-400 font-bold">{{ langStore.locale === 'th' ? 'คะแนน' : 'Points' }}</div>
                   </div>
                 </div>
               </div>
@@ -423,84 +423,84 @@
         <div class="right-column desktop-only-block">
           <div class="registration-card shadow-sm border border-slate-100 p-6 rounded-2xl bg-white">
             <div v-if="event.organizer" class="inline-flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100 mb-4 max-w-full">
-              <span class="font-bold text-sm text-slate-700 truncate">จัดโดย: {{ event.organizer }}</span>
+              <span class="font-bold text-sm text-slate-700 truncate">{{ langStore.locale === 'th' ? 'จัดโดย:' : 'Organized by:' }} {{ event.organizer }}</span>
             </div>
             <div class="rc-info-list mb-6 space-y-2 text-sm border-b border-slate-100 pb-5">
               <div class="flex gap-2">
-                <span class="min-w-[100px] font-bold shrink-0">วันเริ่มกิจกรรม :</span>
-                <span class="flex-1 break-words">{{ formatDateThai(event.start_date) || "จัดต่อเนื่อง" }}</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'วันเริ่มกิจกรรม :' : 'Start Date :' }}</span>
+                <span class="flex-1 break-words">{{ formatDateThai(event.start_date) || (langStore.locale === 'th' ? "จัดต่อเนื่อง" : "Continuous") }}</span>
               </div>
               <div class="flex gap-2">
-                <span class="min-w-[100px] font-bold shrink-0">วันสิ้นสุดกิจกรรม :</span>
-                <span class="flex-1 break-words">{{ formatDateThai(event.end_date || event.start_date) || "จัดต่อเนื่อง" }}</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'วันสิ้นสุดกิจกรรม :' : 'End Date :' }}</span>
+                <span class="flex-1 break-words">{{ formatDateThai(event.end_date || event.start_date) || (langStore.locale === 'th' ? "จัดต่อเนื่อง" : "Continuous") }}</span>
               </div>
               <div class="flex gap-2">
-                <span class="min-w-[100px] font-bold shrink-0">เวลาจัดกิจกรรม :</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'เวลาจัดกิจกรรม :' : 'Time :' }}</span>
                 <span class="flex-1 break-words">
-                  {{ event.start_time?.slice(0, 5) || "08:00" }} – {{ event.end_time?.slice(0, 5) || "17:00" }} น.
+                  {{ event.start_time?.slice(0, 5) || "08:00" }} – {{ event.end_time?.slice(0, 5) || "17:00" }} {{ langStore.locale === 'th' ? 'น.' : '' }}
                 </span>
               </div>
               <div class="flex gap-2">
-                <span class="min-w-[100px] font-bold shrink-0">สถานที่จัด :</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'สถานที่จัด :' : 'Location :' }}</span>
                 <span class="flex-1 break-words">{{ event.location_name || "Virtual" }}</span>
               </div>
               <div class="flex gap-2">
-                <span class="min-w-[100px] font-bold shrink-0">จำนวนรับสมัคร :</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'จำนวนรับสมัคร :' : 'Capacity :' }}</span>
                 <span class="text-orange-600 flex-1 break-words flex items-center gap-2">
-                  {{ event.registration_count ?? event.filled ?? 0 }} / {{ isUnlimited ? "ไม่จำกัด" : event.max_slots || event.total || 0 }} คน
-                  <span v-if="slotFull" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200 animate-pulse">เต็มแล้ว</span>
+                  {{ event.registration_count ?? event.filled ?? 0 }} / {{ isUnlimited ? (langStore.locale === 'th' ? "ไม่จำกัด" : "Unlimited") : event.max_slots || event.total || 0 }} {{ langStore.locale === 'th' ? 'คน' : 'pax' }}
+                  <span v-if="slotFull" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600 border border-red-200 animate-pulse">{{ langStore.locale === 'th' ? 'เต็มแล้ว' : 'Full' }}</span>
                 </span>
               </div>
             </div>
             <div class="rc-header mb-4 flex justify-between items-center gap-2">
-              <h2 class="text-lg font-bold text-slate-800 truncate">ช่วงรับสมัคร</h2>
-              <div v-if="slotFull" class="badge-status closed text-xs bg-red-100 text-red-700 px-2 py-1 rounded whitespace-nowrap shrink-0">กิจกรรมเต็ม</div>
-              <div v-else class="badge-status open text-xs bg-green-100 text-green-700 px-2 py-1 rounded whitespace-nowrap shrink-0">เปิดรับสมัคร</div>
+              <h2 class="text-lg font-bold text-slate-800 truncate">{{ langStore.locale === 'th' ? 'ช่วงรับสมัคร' : 'Registration Period' }}</h2>
+              <div v-if="slotFull" class="badge-status closed text-xs bg-red-100 text-red-700 px-2 py-1 rounded whitespace-nowrap shrink-0">{{ langStore.locale === 'th' ? 'กิจกรรมเต็ม' : 'Event Full' }}</div>
+              <div v-else class="badge-status open text-xs bg-green-100 text-green-700 px-2 py-1 rounded whitespace-nowrap shrink-0">{{ langStore.locale === 'th' ? 'เปิดรับสมัคร' : 'Open' }}</div>
             </div>
             <div class="rc-info-list mb-6 space-y-2 text-sm">
               <div class="flex gap-2">
-                <span class="min-w-[100px] font-bold shrink-0">เปิดรับสมัคร :</span>
-                <span class="flex-1 break-words">{{ formatDateThai(event.registration_start_date || event.start_date) || "เปิดรับสมัครต่อเนื่อง" }}</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'เปิดรับสมัคร :' : 'Opens :' }}</span>
+                <span class="flex-1 break-words">{{ formatDateThai(event.registration_start_date || event.start_date) || (langStore.locale === 'th' ? "เปิดรับสมัครต่อเนื่อง" : "Always Open") }}</span>
               </div>
               <div class="flex gap-2">
-                <span class="min-w-[100px] font-bold shrink-0">ปิดรับสมัคร :</span>
-                <span class="flex-1 break-words">{{ formatDateThai(event.registration_end_date || event.end_date || event.start_date) || "เปิดรับสมัครต่อเนื่อง" }}</span>
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'ปิดรับสมัคร :' : 'Closes :' }}</span>
+                <span class="flex-1 break-words">{{ formatDateThai(event.registration_end_date || event.end_date || event.start_date) || (langStore.locale === 'th' ? "เปิดรับสมัครต่อเนื่อง" : "Always Open") }}</span>
               </div>
               <p class="text-xs text-slate-400 mt-2 flex items-start gap-1">
                 <AlertCircleIcon :size="12" class="mt-0.5 shrink-0" />
-                <span class="flex-1 break-words">หรือปิดรับสมัครทันทีเมื่อผู้สมัครครบเต็มจำนวน</span>
+                <span class="flex-1 break-words">{{ langStore.locale === 'th' ? 'หรือปิดรับสมัครทันทีเมื่อผู้สมัครครบเต็มจำนวน' : 'Or closes immediately when capacity is reached' }}</span>
               </p>
             </div>
-            <div class="action-section-sidebar mt-2">
-              <div class="flex flex-col gap-3 pb-4 border-b border-slate-100 mb-4">
-                <div class="flex gap-2 min-w-0">
-                  <span class="min-w-[100px] font-bold shrink-0">สิทธิ์การเข้าร่วม :</span>
-                  <div class="flex flex-wrap gap-1.5 flex-1 min-w-0">
-                    <span v-if="!allowedGroups || allowedGroups.length === 0 || allowedGroups.includes('general')" class="text-green-600 font-bold">ทุกคนสามารถเข้าร่วมได้</span>
-                    <span
-                      v-else
-                      v-for="g in allowedGroups"
-                      :key="g"
-                      class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-100"
-                    >{{ g === 'my_team' ? 'เฉพาะสมาชิกในทีมผู้จัด' : (g === 'other_teams' ? 'สมาชิกทุกทีม' : g) }}</span>
-                  </div>
-                </div>
-                <div class="flex gap-2 min-w-0" v-if="authStore.user">
-                  <span class="min-w-[100px] font-bold shrink-0">สถานะของคุณ :</span>
-                  <span class="text-slate-600 flex-1">{{ currentUserRoleLabel || 'บุคคลทั่วไป' }}</span>
+          <div class="action-section-sidebar mt-2">
+            <div class="flex flex-col gap-3 pb-4 border-b border-slate-100 mb-4">
+              <div class="flex gap-2 min-w-0">
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'สิทธิ์การเข้าร่วม :' : 'Eligibility :' }}</span>
+                <div class="flex flex-wrap gap-1.5 flex-1 min-w-0">
+                  <span v-if="!allowedGroups || allowedGroups.length === 0 || allowedGroups.includes('general')" class="text-green-600 font-bold">{{ langStore.locale === 'th' ? 'ทุกคนสามารถเข้าร่วมได้' : 'Everyone can join' }}</span>
+                  <span
+                    v-else
+                    v-for="g in allowedGroups"
+                    :key="g"
+                    class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-100"
+                  >{{ g === 'my_team' ? (langStore.locale === 'th' ? 'เฉพาะสมาชิกในทีมผู้จัด' : 'Organizer team members only') : (g === 'other_teams' ? (langStore.locale === 'th' ? 'สมาชิกทุกทีม' : 'All team members') : g) }}</span>
                 </div>
               </div>
-              <div v-if="!isRegistered && !hasPermissionToJoin" class="alert-box error mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
-                <div class="flex items-start gap-3">
-                  <AlertCircleIcon :size="20" class="mt-0.5 flex-shrink-0" />
-                  <div class="flex-1 min-w-0">
-                    <div class="mb-3 pb-2 border-b border-red-100">
-                      <div class="text-[10px] uppercase tracking-wider font-bold opacity-60 mb-0.5">สถานะปัจจุบันของคุณ</div>
-                      <div class="font-bold text-base break-words">{{ currentUserRoleLabel }}</div>
+              <div class="flex gap-2 min-w-0" v-if="authStore.user">
+                <span class="min-w-[100px] font-bold shrink-0">{{ langStore.locale === 'th' ? 'สถานะของคุณ :' : 'Your Status :' }}</span>
+                <span class="text-slate-600 flex-1">{{ currentUserRoleLabel || (langStore.locale === 'th' ? 'บุคคลทั่วไป' : 'General User') }}</span>
+              </div>
+            </div>
+            <div v-if="!isRegistered && !hasPermissionToJoin" class="alert-box error mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
+              <div class="flex items-start gap-3">
+                <AlertCircleIcon :size="20" class="mt-0.5 flex-shrink-0" />
+                <div class="flex-1 min-w-0">
+                  <div class="mb-3 pb-2 border-b border-red-100">
+                    <div class="text-[10px] uppercase tracking-wider font-bold opacity-60 mb-0.5">{{ langStore.locale === 'th' ? 'สถานะปัจจุบันของคุณ' : 'Your Current Status' }}</div>
+                    <div class="font-bold text-base break-words">{{ currentUserRoleLabel }}</div>
                     </div>
                     <div>
-                      <div class="text-[10px] uppercase tracking-wider font-bold opacity-60 mb-0.5">เหตุผล</div>
-                      <div class="font-bold text-sm break-words">{{ noPermissionReason || "คุณไม่มีสิทธิ์เข้าร่วมกิจกรรมนี้" }}</div>
+                      <div class="text-[10px] uppercase tracking-wider font-bold opacity-60 mb-0.5">{{ langStore.locale === 'th' ? 'เหตุผล' : 'Reason' }}</div>
+                      <div class="font-bold text-sm break-words">{{ noPermissionReason || (langStore.locale === 'th' ? "คุณไม่มีสิทธิ์เข้าร่วมกิจกรรมนี้" : "You don't have permission to join this event") }}</div>
                     </div>
                   </div>
                 </div>
@@ -514,19 +514,19 @@
                         <svg v-if="acceptDataDisclosure" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                       </span>
                     </span>
-                    <span class="pdpa-label-text">ยอมรับเงื่อนไขและยินยอมให้แสดงผลข้อมูลส่วนบุคคลในกิจกรรม</span>
+                    <span class="pdpa-label-text">{{ langStore.locale === 'th' ? 'ยอมรับเงื่อนไขและยินยอมให้แสดงผลข้อมูลส่วนบุคคลในกิจกรรม' : 'I agree to the terms and consent to sharing my personal data' }}</span>
                   </label>
                 </div>
                 <button class="btn-massive primary-orange w-full force-white-text" :class="{ 'btn-disabled': !acceptDataDisclosure }" style="color: #ffffff !important;" @click="joinActivity" :disabled="joining || slotFull || !hasPermissionToJoin || !acceptDataDisclosure">
                   <LoaderIcon v-if="joining" class="spin" />
-                  <span v-else-if="slotFull" style="color: #ffffff !important;">ที่นั่งเต็มแล้ว</span>
-                  <span v-else-if="!hasPermissionToJoin" style="color: #ffffff !important;"><LockIcon :size="18" class="mr-2 inline" style="color: #ffffff !important;" /> ไม่มีสิทธิ์เข้าร่วม</span>
-                  <span v-else style="color: #ffffff !important;"><ActivityIcon :size="18" class="mr-2 inline" style="color: #ffffff !important;" /> สมัครเข้าร่วมกิจกรรม</span>
+                  <span v-else-if="slotFull" style="color: #ffffff !important;">{{ langStore.locale === 'th' ? 'ที่นั่งเต็มแล้ว' : 'Fully booked' }}</span>
+                  <span v-else-if="!hasPermissionToJoin" style="color: #ffffff !important;"><LockIcon :size="18" class="mr-2 inline" style="color: #ffffff !important;" /> {{ langStore.locale === 'th' ? 'ไม่มีสิทธิ์เข้าร่วม' : 'No Permission' }}</span>
+                  <span v-else style="color: #ffffff !important;"><ActivityIcon :size="18" class="mr-2 inline" style="color: #ffffff !important;" /> {{ langStore.locale === 'th' ? 'สมัครเข้าร่วมกิจกรรม' : 'Join Event' }}</span>
                 </button>
               </template>
               <template v-else>
                 <button class="btn-outline-red w-full" @click="leaveActivity" :disabled="joining">
-                  ออกจากกิจกรรม
+                  {{ langStore.locale === 'th' ? 'ออกจากกิจกรรม' : 'Leave Event' }}
                 </button>
               </template>
             </div>
@@ -544,20 +544,20 @@
                 <svg v-if="acceptDataDisclosure" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               </span>
             </span>
-            <span class="pdpa-label-text">ยอมรับเงื่อนไขและยินยอมให้แสดงผลข้อมูลในกิจกรรม</span>
+            <span class="pdpa-label-text">{{ langStore.locale === 'th' ? 'ยอมรับเงื่อนไขและยินยอมให้แสดงผลข้อมูลในกิจกรรม' : 'I agree to the terms and consent' }}</span>
           </label>
         </div>
         <button class="mob-btn-primary force-white-text w-full" :class="{ 'btn-disabled': !acceptDataDisclosure }" style="color: #ffffff !important;" :disabled="slotFull || joining || !hasPermissionToJoin || !acceptDataDisclosure" @click="joinActivity">
           <LoaderIcon v-if="joining" class="spin" :size="18" />
-          <span v-else-if="!hasPermissionToJoin" style="color: #ffffff !important;">ไม่มีสิทธิ์เข้าร่วม</span>
-          <span v-else-if="slotFull" style="color: #ffffff !important;">กิจกรรมเต็มแล้ว</span>
-          <span v-else style="color: #ffffff !important;"><ActivityIcon :size="18" class="mr-2 inline" style="color: #ffffff !important;" /> สมัครเข้าร่วมกิจกรรม</span>
+          <span v-else-if="!hasPermissionToJoin" style="color: #ffffff !important;">{{ langStore.locale === 'th' ? 'ไม่มีสิทธิ์เข้าร่วม' : 'No Permission' }}</span>
+          <span v-else-if="slotFull" style="color: #ffffff !important;">{{ langStore.locale === 'th' ? 'กิจกรรมเต็มแล้ว' : 'Event Full' }}</span>
+          <span v-else style="color: #ffffff !important;"><ActivityIcon :size="18" class="mr-2 inline" style="color: #ffffff !important;" /> {{ langStore.locale === 'th' ? 'สมัครเข้าร่วมกิจกรรม' : 'Join Event' }}</span>
         </button>
       </template>
       <template v-else>
         <button class="mob-btn-primary secondary-red" :disabled="joining" @click="leaveActivity">
           <LoaderIcon v-if="joining" class="spin" :size="18" />
-          <span v-else>ออกจากกิจกรรม</span>
+          <span v-else>{{ langStore.locale === 'th' ? 'ออกจากกิจกรรม' : 'Leave Event' }}</span>
         </button>
       </template>
     </div>
@@ -566,33 +566,33 @@
         <div v-if="showTanitaModal" class="hc-overlay" @click.self="showTanitaModal = false">
           <div class="hc-sheet">
             <div class="hc-header">
-              <h2>รายงานร่างกาย</h2>
+              <h2>{{ langStore.locale === 'th' ? 'รายงานร่างกาย' : 'Body Report' }}</h2>
               <button class="hc-close" @click="showTanitaModal = false"><XIcon :size="20" stroke-width="3" /></button>
             </div>
             <div v-if="loadingTanita" class="p-10 flex-center">
               <div class="spin-lg border-t-orange-500 border-4 border-slate-200 rounded-full w-8 h-8"></div>
             </div>
             <div v-else-if="tanitaRecords.length === 0" class="p-10 text-center text-slate-500 font-bold">
-              ยังไม่มีข้อมูลร่างกาย
+              {{ langStore.locale === 'th' ? 'ยังไม่มีข้อมูลร่างกาย' : 'No body data available' }}
             </div>
             <div v-else class="hc-body">
               <div class="hc-glance-row">
                 <div class="hc-glance-card">
-                  <span class="hgc-lbl">น้ำหนัก</span>
+                  <span class="hgc-lbl">{{ langStore.locale === 'th' ? 'น้ำหนัก' : 'Weight' }}</span>
                   <span class="hgc-val">{{ Number(tanitaRecords[0].weight || 0).toFixed(1) }} <span class="text-sm text-slate-400">kg</span></span>
                 </div>
                 <div class="hc-glance-card">
-                  <span class="hgc-lbl">ไขมัน</span>
+                  <span class="hgc-lbl">{{ langStore.locale === 'th' ? 'ไขมัน' : 'Fat' }}</span>
                   <span class="hgc-val">{{ Number(tanitaRecords[0].fat_pc || 0).toFixed(1) }} <span class="text-sm text-slate-400">%</span></span>
                 </div>
                 <div class="hc-glance-card">
-                  <span class="hgc-lbl">กล้ามเนื้อ</span>
+                  <span class="hgc-lbl">{{ langStore.locale === 'th' ? 'กล้ามเนื้อ' : 'Muscle' }}</span>
                   <span class="hgc-val">{{ Number(tanitaRecords[0].muscle_mass || 0).toFixed(1) }} <span class="text-sm text-slate-400">kg</span></span>
                 </div>
               </div>
               <div class="hc-smart-insight mt-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                <h4 class="font-bold text-slate-800 mb-2 text-lg">💡 บทวิเคราะห์: {{ healthSummaryText }}</h4>
-                <p class="text-sm text-slate-500">สัดส่วนกล้ามเนื้อต่อไขมัน: {{ currentMuscleToFatRatio }} ({{ muscleFatTrendText }})</p>
+                <h4 class="font-bold text-slate-800 mb-2 text-lg">💡 {{ langStore.locale === 'th' ? 'บทวิเคราะห์:' : 'Analysis:' }} {{ healthSummaryText }}</h4>
+                <p class="text-sm text-slate-500">{{ langStore.locale === 'th' ? 'สัดส่วนกล้ามเนื้อต่อไขมัน:' : 'Muscle to Fat Ratio:' }} {{ currentMuscleToFatRatio }} ({{ muscleFatTrendText }})</p>
               </div>
             </div>
           </div>
@@ -615,14 +615,14 @@
                   <p class="ap-desc">
                     {{
                       popup.type === "pre_test"
-                        ? "กรุณาทำแบบทดสอบก่อนเริ่มกิจกรรม"
+                        ? (langStore.locale === 'th' ? "กรุณาทำแบบทดสอบก่อนเริ่มกิจกรรม" : "Please complete the pre-test before starting")
                         : popup.type === "post_test"
-                          ? "กรุณาทำแบบประเมินหลังจบกิจกรรม"
-                          : "ถึงรอบบันทึกผลองค์ประกอบร่างกายแล้ว"
+                          ? (langStore.locale === 'th' ? "กรุณาทำแบบประเมินหลังจบกิจกรรม" : "Please complete the post-test")
+                          : (langStore.locale === 'th' ? "ถึงรอบบันทึกผลองค์ประกอบร่างกายแล้ว" : "Time to record body composition")
                     }}
                   </p>
-                  <button class="ap-btn-primary" @click="goToAssessment(popup)">เข้าทำแบบฟอร์ม</button>
-                  <button class="ap-btn-secondary mt-2" @click="dismissAllPopups">ข้ามไปก่อน</button>
+                  <button class="ap-btn-primary" @click="goToAssessment(popup)">{{ langStore.locale === 'th' ? 'เข้าทำแบบฟอร์ม' : 'Start Form' }}</button>
+                  <button class="ap-btn-secondary mt-2" @click="dismissAllPopups">{{ langStore.locale === 'th' ? 'ข้ามไปก่อน' : 'Skip for now' }}</button>
                 </div>
               </div>
             </div>
@@ -638,6 +638,7 @@ import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2";
 import { authStore } from "../store/auth";
+import { langStore } from "../store/lang";
 import {
   ArrowLeft as ArrowLeftIcon,
   CheckCircle as CheckCircleIcon,
@@ -774,15 +775,15 @@ const openTanitaEntryModal = (roundIndex: number) => {
 };
 // Custom Sort Dropdown
 const isSortDropdownOpen = ref(false);
-const sortOptions = [
-  { value: "progress_desc", label: "ความคืบหน้า (มาก-น้อย)", icon: "TrendingUpIcon" },
-  { value: "progress_asc", label: "ความคืบหน้า (น้อย-มาก)", icon: "TrendingDownIcon" },
-  { value: "points_desc", label: "คะแนนสะสมสูงสุด", icon: "TrophyIcon" },
-  { value: "points_asc", label: "คะแนนสะสมน้อยสุด", icon: "TargetIcon" },
-  { value: "name_asc", label: "ชื่อ (ก-ฮ)", icon: "UserIcon" },
-];
+const sortOptions = computed(() => [
+  { value: "progress_desc", label: langStore.locale === 'th' ? "ความคืบหน้า (มาก-น้อย)" : "Progress (High-Low)", icon: "TrendingUpIcon" },
+  { value: "progress_asc", label: langStore.locale === 'th' ? "ความคืบหน้า (น้อย-มาก)" : "Progress (Low-High)", icon: "TrendingDownIcon" },
+  { value: "points_desc", label: langStore.locale === 'th' ? "คะแนนสะสมสูงสุด" : "Highest Points", icon: "TrophyIcon" },
+  { value: "points_asc", label: langStore.locale === 'th' ? "คะแนนสะสมน้อยสุด" : "Lowest Points", icon: "TargetIcon" },
+  { value: "name_asc", label: langStore.locale === 'th' ? "ชื่อ (ก-ฮ)" : "Name (A-Z)", icon: "UserIcon" },
+]);
 const currentSortLabel = computed(() => {
-  return sortOptions.find(o => o.value === goalSortBy.value)?.label || "จัดเรียง";
+  return sortOptions.value.find(o => o.value === goalSortBy.value)?.label || (langStore.locale === 'th' ? "จัดเรียง" : "Sort");
 });
 const selectSort = (val: string) => {
   goalSortBy.value = val;

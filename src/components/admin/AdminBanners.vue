@@ -1205,7 +1205,7 @@ const openLink = (url: string) => window.open(url, "_blank");
                                         :checked="!!form.is_active"
                                         @change="
                                             form.is_active =
-                                                $event.target.checked
+                                                ($event.target as HTMLInputElement).checked
                                         "
                                         class="sr-only peer"
                                     />

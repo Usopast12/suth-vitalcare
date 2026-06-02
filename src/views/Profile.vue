@@ -30,41 +30,41 @@
         </div>
         <div class="menu-list" :class="{ 'mobile-grid': isMobileScreen }">
           <div class="menu-header" v-if="isMobileScreen">
-            <div class="menu-title">รายการของฉัน</div>
-            <div class="menu-more pc-only">ดูทั้งหมด</div>
+            <div class="menu-title">{{ langStore.t('my_list') }}</div>
+            <div class="menu-more pc-only">{{ langStore.t('view_all') }}</div>
           </div>
           <div class="menu-items-container" :class="{ 'horizontal-scroll': isMobileScreen }">
             <div class="menu-item mi-dashboard" :class="{ 'active': !isMobileScreen && activeTab === 'dashboard' }" @click="openTab('dashboard')">
               <div class="menu-icon-wrap m-purple-gradient"><LayoutDashboard class="menu-icon" /></div>
-              <div class="menu-label">แดชบอร์ด</div>
+              <div class="menu-label">{{ langStore.t('dashboard_tab') }}</div>
             </div>
             <div class="menu-item mi-general" :class="{ 'active': !isMobileScreen && activeTab === 'general' }" @click="openTab('general')">
               <div class="menu-icon-wrap m-blue"><User class="menu-icon" /></div>
-              <div class="menu-label">ข้อมูลของฉัน</div>
+              <div class="menu-label">{{ langStore.t('my_info') }}</div>
             </div>
             <div class="menu-item mi-contact" :class="{ 'active': !isMobileScreen && activeTab === 'contact' }" @click="openTab('contact')">
               <div class="menu-icon-wrap m-orange"><Phone class="menu-icon" /></div>
-              <div class="menu-label">ข้อมูลติดต่อ</div>
+              <div class="menu-label">{{ langStore.t('contact_info') }}</div>
             </div>
             <div class="menu-item mi-tanita" :class="{ 'active': !isMobileScreen && activeTab === 'tanita' }" @click="openTab('tanita')">
               <div class="menu-icon-wrap m-green"><Activity class="menu-icon" /></div>
-              <div class="menu-label">ข้อมูลองค์ประกอบร่างกาย</div>
+              <div class="menu-label">{{ langStore.t('body_composition') }}</div>
             </div>
             <div class="menu-item mi-calendar" :class="{ 'active': !isMobileScreen && activeTab === 'calendar' }" @click="openTab('calendar')">
               <div class="menu-icon-wrap m-pink"><Calendar class="menu-icon" /></div>
-              <div class="menu-label">ปฏิทินภารกิจ</div>
+              <div class="menu-label">{{ langStore.t('mission_calendar') }}</div>
             </div>
             <div class="menu-item mi-titles" :class="{ 'active': !isMobileScreen && activeTab === 'titles' }" @click="openTab('titles')">
               <div class="menu-icon-wrap m-yellow"><Award class="menu-icon" /></div>
-              <div class="menu-label">ฉายา</div>
+              <div class="menu-label">{{ langStore.t('titles_tab') }}</div>
             </div>
             <div class="menu-item mi-events" :class="{ 'active': !isMobileScreen && activeTab === 'events' }" @click="openTab('events')">
               <div class="menu-icon-wrap m-red"><LayoutGrid class="menu-icon" /></div>
-              <div class="menu-label">กิจกรรมที่สมัคร</div>
+              <div class="menu-label">{{ langStore.t('registered_events') }}</div>
             </div>
             <div class="menu-item pc-only logout-item" @click="handleLogout" v-if="!isMobileScreen">
               <div class="menu-icon-wrap m-slate"><LogOut class="menu-icon" /></div>
-              <div class="menu-label">ออกจากระบบ</div>
+              <div class="menu-label">{{ langStore.t('logout') }}</div>
             </div>
           </div>
         </div>
@@ -78,7 +78,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
                 </button>
               </div>
-              <button v-if="!isMobileScreen && (activeTab === 'calendar' || activeTab === 'dashboard')" class="icon-btn-toggle" @click="toggleSidebar" :title="isSidebarVisible ? 'ซ่อนเมนู' : 'แสดงเมนู'">
+              <button v-if="!isMobileScreen && (activeTab === 'calendar' || activeTab === 'dashboard')" class="icon-btn-toggle" @click="toggleSidebar" :title="isSidebarVisible ? (langStore.t('hide_menu')) : (langStore.t('show_menu'))">
                 <PanelLeftClose v-if="isSidebarVisible" />
                 <PanelLeft v-else />
               </button>
@@ -99,19 +99,19 @@
                   </div>
                 </div>
 
-                <button v-if="canEditTab && !editing" class="btn-text text-o" @click="startEdit">แก้ไข</button>
+                <button v-if="canEditTab && !editing" class="btn-text text-o" @click="startEdit">{{ langStore.t('edit') }}</button>
               </div>
             </div>
             <!-- Stats Preview Bar -->
             <div class="stats-preview-bar" v-if="activeTab === 'general'">
               <div class="stat-item">
-                <div class="stat-label">น้ำหนัก</div>
-                <div class="stat-val">{{ latestWeight }} <small>กก.</small></div>
+                <div class="stat-label">{{ langStore.t('weight_label') }}</div>
+                <div class="stat-val">{{ latestWeight }} <small>{{ langStore.t('kg') }}</small></div>
               </div>
               <div class="stat-divider"></div>
               <div class="stat-item">
-                <div class="stat-label">ส่วนสูง</div>
-                <div class="stat-val">{{ latestHeight }} <small>ซม.</small></div>
+                <div class="stat-label">{{ langStore.t('height_label') }}</div>
+                <div class="stat-val">{{ latestHeight }} <small>{{ langStore.t('cm') }}</small></div>
               </div>
               <div class="stat-divider"></div>
               <div class="stat-item">
@@ -148,7 +148,7 @@
                       </div>
                     </div>
                     <button class="btn-outline-sm mt-4" @click="triggerUpload" :disabled="isUploading" v-if="!isMobileScreen">
-                      <span v-if="!isUploading">เปลี่ยนรูปโปรไฟล์</span>
+                      <span v-if="!isUploading">{{ langStore.t('change_profile_picture') }}</span>
                       <Loader2 v-else class="spin" :size="16" />
                     </button>
                   </div>
@@ -172,9 +172,9 @@
                         </template>
                         <template v-else-if="f.type === 'date_be'">
                           <div class="fi-date-be" :class="{'mobile-date-grid': isMobileScreen}">
-                            <div class="pc-custom-sel s-d"><CustomSelect v-model="form_be.day" :options="dayOptions" :label="editing ? 'วัน' : ''" /></div>
-                            <div class="pc-custom-sel s-m"><CustomSelect v-model="form_be.month" :options="monthOptions" :label="editing ? 'เดือน' : ''" /></div>
-                            <div class="pc-custom-sel s-y"><CustomSelect v-model="form_be.year" :options="yearOptions" :label="editing ? 'ปี' : ''" /></div>
+                            <div class="pc-custom-sel s-d"><CustomSelect v-model="form_be.day" :options="dayOptions" :label="editing ? (langStore.t('day')) : ''" /></div>
+                            <div class="pc-custom-sel s-m"><CustomSelect v-model="form_be.month" :options="monthOptions" :label="editing ? (langStore.t('month')) : ''" /></div>
+                            <div class="pc-custom-sel s-y"><CustomSelect v-model="form_be.year" :options="yearOptions" :label="editing ? (langStore.t('year')) : ''" /></div>
                           </div>
                         </template>
                         <div v-else class="floating-input-group">
@@ -185,10 +185,10 @@
                     </div>
                     <div class="shopee-f-row editing-row" v-if="editing && !isMobileScreen">
                       <div class="shopee-f-val flex gap-3">
-                        <button class="btn-outline w-auto px-6" @click="cancelEdit">ยกเลิก</button>
+                        <button class="btn-outline w-auto px-6" @click="cancelEdit">{{ langStore.t('cancel') }}</button>
                         <button class="btn-primary w-auto px-8" @click="saveEdit" :disabled="isSubmitting">
                           <Loader2 v-if="isSubmitting" class="spin mr-2" :size="16" />
-                          <span v-else>บันทึก</span>
+                          <span v-else>{{ langStore.t('save') }}</span>
                         </button>
                       </div>
                     </div>
@@ -199,22 +199,22 @@
                 <div class="shopee-f-row" v-for="f in contactFields" :key="f.key" :class="{ 'editing-row': editing }">
                   <div class="shopee-f-label" v-if="!editing">{{ f.label }}</div>
                   <div class="shopee-f-val">
-                    <span v-if="!editing">{{ f.key === 'underlying_disease' ? (form[f.key] || 'ไม่มีโรคประจำตัว') : (f.key === 'phone' ? formatPhone(form[f.key]) : (form[f.key] || '–')) }}</span>
+                    <span v-if="!editing">{{ f.key === 'underlying_disease' ? (form[f.key] || (langStore.t('no_underlying_disease'))) : (f.key === 'phone' ? formatPhone(form[f.key]) : (form[f.key] || '–')) }}</span>
                     <template v-else-if="f.key === 'underlying_disease'">
                       <div class="disease-selector">
                         <div class="disease-btns">
-                          <button class="d-btn" :class="{active: underlyingDiseaseState === 'no'}" @click="setDisease('no')">ไม่มี</button>
-                          <button class="d-btn" :class="{active: underlyingDiseaseState === 'yes'}" @click="setDisease('yes')">มี</button>
+                          <button class="d-btn" :class="{active: underlyingDiseaseState === 'no'}" @click="setDisease('no')">{{ langStore.t('no') }}</button>
+                          <button class="d-btn" :class="{active: underlyingDiseaseState === 'yes'}" @click="setDisease('yes')">{{ langStore.t('yes') }}</button>
                         </div>
                         <div v-if="underlyingDiseaseState === 'yes'" class="floating-input-group mt-2">
                           <input class="fi" type="text" v-model="form[f.key]" placeholder=" " />
-                          <label class="floating-label" v-if="editing">ระบุโรคประจำตัว</label>
+                          <label class="floating-label" v-if="editing">{{ langStore.t('specify_underlying_disease') }}</label>
                         </div>
                       </div>
                     </template>
                     <div v-else-if="f.key === 'email'" class="floating-input-group">
                       <input class="fi" type="email" v-model="form[f.key]" placeholder=" " />
-                      <label class="floating-label" v-if="editing">อีเมล</label>
+                      <label class="floating-label" v-if="editing">{{ langStore.t('email') }}</label>
                     </div>
                     <div v-else class="floating-input-group">
                       <input class="fi" :type="f.type || 'text'" v-model="form[f.key]" placeholder=" " />
@@ -224,10 +224,10 @@
                 </div>
                 <div class="shopee-f-row editing-row" v-if="editing && !isMobileScreen">
                   <div class="shopee-f-val flex gap-3">
-                    <button class="btn-outline w-auto px-6" @click="cancelEdit">ยกเลิก</button>
+                    <button class="btn-outline w-auto px-6" @click="cancelEdit">{{ langStore.t('cancel') }}</button>
                     <button class="btn-primary w-auto px-8" @click="saveEdit" :disabled="isSubmitting">
                       <Loader2 v-if="isSubmitting" class="spin mr-2" :size="16" />
-                      <span v-else>บันทึก</span>
+                      <span v-else>{{ langStore.t('save') }}</span>
                     </button>
                   </div>
                 </div>
@@ -236,10 +236,10 @@
                 <div v-if="tanita" class="tanita-wrap-v2">
                   <!-- Header top row with last update and CTA button -->
                   <div class="tanita-top-bar">
-                    <span class="update-time text-[11px] text-gray-400 font-medium">อัปเดตล่าสุด: {{ formatDate(tanita.recorded_at) }}</span>
+                    <span class="update-time text-[11px] text-gray-400 font-medium">{{ langStore.t('last_update') }} {{ formatDate(tanita.recorded_at) }}</span>
                     <button class="btn-outline-tanita-v2" @click="openTanitaModal(true)">
                       <Pencil :size="13" class="mr-1.5" />
-                      อัปเดตผลร่างกาย
+                      {{ langStore.t('update_body_data') }}
                     </button>
                   </div>
 
@@ -249,41 +249,41 @@
                     <div class="tanita-dashboard-left flex flex-col gap-4">
                       <div class="section-title-wrap">
                         <Award :size="16" class="text-orange-500" />
-                        <h3 class="section-title">สรุปเป้าหมายการบริโภครายวัน</h3>
+                        <h3 class="section-title">{{ langStore.t('daily_consumption_target') }}</h3>
                       </div>
                       
                       <!-- Bento Grid for Core Fitness Targets -->
                       <div class="bento-fitness-targets">
                         <div class="bento-card bento-calories" v-if="insightSweetSpot">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('คำแนะนำแคลอรี่', insightSweetSpot.action + '<br><br><a href=\'https://www.ptpioneer.com/personal-training/tools/total-daily-energy-expenditure-calculator-tdee-calculator/\' target=\'_blank\' class=\'text-orange-500 font-bold hover:underline\'>🔗 อ้างอิงสูตรคำนวณ TDEE & BMR</a>')">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup(langStore.t('calorie_recommendation'), insightSweetSpot.action + langStore.t('tdee_ref'))">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="bento-icon-bg bg-orange-50">
                             <Zap :size="18" class="text-orange-500" />
                           </div>
-                          <div class="bento-label text-slate-500 pr-8">เป้าหมายแคลอรี่</div>
+                          <div class="bento-label text-slate-500 pr-8">{{ langStore.t('calorie_target') }}</div>
                           <div class="bento-value text-slate-800">{{ insightSweetSpot.value }}</div>
                         </div>
 
                         <div class="bento-card bento-water">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('เป้าหมายน้ำดื่ม', 'ดื่มน้ำช่วยกระตุ้นการเผาผลาญและการไหลเวียนของโลหิต โดยการคำนวณตาม น้ำหนักตัว (กก.) x 30 (มล.) = ปริมาณน้ำที่ควรดื่ม (มิลลิลิตร)')">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup(langStore.t('water_target'), langStore.t('water_recommendation'))">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="bento-icon-bg bg-blue-50">
                             <Droplets :size="18" class="text-blue-500" />
                           </div>
-                          <div class="bento-label text-slate-500 pr-8">เป้าหมายน้ำดื่ม</div>
+                          <div class="bento-label text-slate-500 pr-8">{{ langStore.t('water_target') }}</div>
                           <div class="bento-value text-slate-800">{{ recommendedWater }}</div>
                         </div>
 
                         <div class="bento-card bento-protein" v-if="insightProtein">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('เป้าหมายโปรตีน', insightProtein.action + '<br><br><a href=\'https://www.ironman.com/news/protein-non-negotiable-macro\' target=\'_blank\' class=\'text-blue-500 font-bold hover:underline\'>🔗 อ้างอิงเป้าหมายโปรตีนรายวัน</a>')">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup(langStore.t('protein_target'), insightProtein.action + langStore.t('protein_ref'))">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="bento-icon-bg bg-red-50">
                             <Flame :size="18" class="text-red-500" />
                           </div>
-                          <div class="bento-label text-slate-500 pr-8">เป้าหมายโปรตีน</div>
+                          <div class="bento-label text-slate-500 pr-8">{{ langStore.t('protein_target') }}</div>
                           <div class="bento-value text-slate-800">{{ insightProtein.value }}</div>
                         </div>
                       </div>
@@ -292,19 +292,19 @@
                       <div class="simulator-card">
                         <div class="sim-header mb-3">
                           <Target :size="15" class="text-gray-500" />
-                          <span>จำลองเป้าหมายและกิจกรรม</span>
+                          <span>{{ langStore.t('simulate_target') }}</span>
                         </div>
                         <div class="sim-controls-grid">
                           <CustomSelect 
                             v-model="dashboardGoal" 
                             :options="goalOptions" 
-                            label="เป้าหมายจำลอง"
+                            :label="langStore.t('simulated_goal')"
                             class="sim-select"
                           />
                           <CustomSelect 
                             v-model="dashboardActivity" 
                             :options="activityOptions" 
-                            label="ระดับกิจกรรมจำลอง"
+                            :label="langStore.t('simulated_activity_level')"
                             class="sim-select"
                           />
                         </div>
@@ -312,11 +312,11 @@
 
                       <!-- BMI Visualizer (Moved to balance layout) -->
                       <div class="bmi-compact-card relative">
-                        <button class="tooltip-btn" @click.stop="showInfoPopup('ดัชนีมวลกาย (BMI)', bmiImage.desc)">
+                        <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup(langStore.t('bmi'), bmiImage.desc)">
                           <Lightbulb :size="14" />
                         </button>
                         <div class="bmi-compact-header pr-8">
-                          <span class="bmi-compact-title">ดัชนีมวลกาย (BMI)</span>
+                          <span class="bmi-compact-title">{{ langStore.t('bmi') }}</span>
                           <div class="bmi-compact-value-row">
                             <span class="bmi-compact-badge" :style="bmiImage.badgeStyle">{{ bmiImage.badge }}</span>
                             <span class="bmi-compact-num">BMI {{ profileBMI }}</span>
@@ -329,11 +329,11 @@
                           
                           <!-- Numbers and Ranges Labeling for the scale -->
                           <div class="bmi-scale-labels mt-2.5 flex justify-between text-[9px] text-gray-400 font-semibold px-0.5 relative">
-                            <span>ผอม (&lt;18.5)</span>
-                            <span>ปกติ (18.5)</span>
-                            <span>ท้วม (23.0)</span>
-                            <span>อ้วน1 (25.0)</span>
-                            <span>อ้วน2 (30.0+)</span>
+                            <span>{{ langStore.t('bmi_under') }} (&lt;18.5)</span>
+                            <span>{{ langStore.t('bmi_normal') }} (18.5)</span>
+                            <span>{{ langStore.t('bmi_over') }} (23.0)</span>
+                            <span>{{ langStore.t('bmi_obese1') }} (25.0)</span>
+                            <span>{{ langStore.t('bmi_obese2') }} (30.0+)</span>
                           </div>
                         </div>
                       </div>
@@ -342,38 +342,38 @@
                     <!-- Right Column: Detailed Body Metrics Grid & BMI Scale -->
                     <div class="tanita-dashboard-right flex flex-col gap-4">
                       <div class="section-title-wrap">
-                        <Scale :size="16" class="text-orange-500" />
-                        <h3 class="section-title">องค์ประกอบร่างกายอย่างละเอียด</h3>
+                        <Scale :size="16" class="text-slate-500" />
+                        <h3 class="section-title">{{ langStore.t('detailed_body_composition') }}</h3>
                       </div>
 
                       <!-- Grid for Metrics -->
                       <div class="metrics-grid">
                         <!-- Weight -->
                         <div class="metric-coach-card">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('น้ำหนักตัว', weightRecommendation)">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup(langStore.t('body_weight'), weightRecommendation)">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="m-card-header flex items-center mt-1 pr-10">
-                            <div class="flex items-center gap-1.5 text-blue-500">
-                              <Scale :size="14" class="shrink-0" />
-                              <span class="m-title-mini text-slate-500">น้ำหนักตัว</span>
+                            <div class="flex items-center gap-1.5 text-slate-500">
+                              <Scale :size="14" class="shrink-0 text-blue-500" />
+                              <span class="m-title-mini">{{ langStore.t('body_weight') }}</span>
                             </div>
                           </div>
                           <div class="m-val-mini mt-1 text-slate-800">
-                            {{ latestWeight }} <span class="m-unit-mini text-slate-400">กก.</span>
+                            {{ latestWeight }} <span class="m-unit-mini text-slate-400">{{ langStore.t('kg') }}</span>
                           </div>
                           <span class="m-status-badge mt-1" :style="bmiImage.badgeStyle" v-if="profileBMI !== '–'">{{ bmiImage.badge }}</span>
                         </div>
 
                         <!-- Fat Percent -->
                         <div class="metric-coach-card">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('เปอร์เซ็นต์ไขมัน', fatRecommendation)">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup(langStore.t('fat_percentage'), fatRecommendation)">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="m-card-header flex items-center mt-1 pr-10">
-                            <div class="flex items-center gap-1.5 text-orange-500">
-                              <Flame :size="14" class="shrink-0" />
-                              <span class="m-title-mini text-slate-500">เปอร์เซ็นต์ไขมัน</span>
+                            <div class="flex items-center gap-1.5 text-slate-500">
+                              <Flame :size="14" class="shrink-0 text-orange-500" />
+                              <span class="m-title-mini">{{ langStore.t('fat_percentage') }}</span>
                             </div>
                           </div>
                           <div class="m-val-mini mt-1 text-slate-800">
@@ -384,68 +384,68 @@
 
                         <!-- Visceral Fat -->
                         <div class="metric-coach-card">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('ไขมันช่องท้อง', visceralRecommendation)">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup(langStore.t('visceral_fat'), visceralRecommendation)">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="m-card-header flex items-center mt-1 pr-10">
-                            <div class="flex items-center gap-1.5 text-orange-500">
-                              <Activity :size="14" class="shrink-0" />
-                              <span class="m-title-mini text-slate-500">ไขมันช่องท้อง</span>
+                            <div class="flex items-center gap-1.5 text-slate-500">
+                              <Activity :size="14" class="shrink-0 text-orange-500" />
+                              <span class="m-title-mini">{{ langStore.t('visceral_fat') }}</span>
                             </div>
                           </div>
                           <div class="m-val-mini mt-1 text-slate-800">
-                            ระดับ {{ tanita.visceral_fat || '–' }}
+                            {{ langStore.t('level') }} {{ tanita.visceral_fat || '–' }}
                           </div>
-                          <span class="m-status-badge mt-1" :class="tanita.visceral_fat >= 10 ? 'danger' : 'success'" v-if="tanita.visceral_fat">{{ tanita.visceral_fat >= 10 ? 'ควรลด' : 'ปกติ' }}</span>
+                          <span class="m-status-badge mt-1" :class="tanita.visceral_fat >= 10 ? 'danger' : 'success'" v-if="tanita.visceral_fat">{{ tanita.visceral_fat >= 10 ? (langStore.t('reduce')) : (langStore.t('bmi_normal')) }}</span>
                         </div>
 
                         <!-- Total Body Water -->
                         <div class="metric-coach-card">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('ระดับน้ำในร่างกาย', waterRecommendation)">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup(langStore.t('total_body_water'), waterRecommendation)">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="m-card-header flex items-center mt-1 pr-10">
-                            <div class="flex items-center gap-1.5 text-blue-500">
-                              <Droplets :size="14" class="shrink-0" />
-                              <span class="m-title-mini text-slate-500">ระดับน้ำในร่างกาย</span>
+                            <div class="flex items-center gap-1.5 text-slate-500">
+                              <Droplets :size="14" class="shrink-0 text-blue-500" />
+                              <span class="m-title-mini">{{ langStore.t('total_body_water') }}</span>
                             </div>
                           </div>
                           <div class="m-val-mini mt-1 text-slate-800">
                             {{ tanita.tbw_pc || '–' }} <span class="m-unit-mini text-slate-400">%</span>
                           </div>
-                          <span class="m-status-badge mt-1" :class="insightHydration?.value?.includes('ต่ำ') ? 'danger' : 'success'" v-if="insightHydration">{{ insightHydration.value.includes('ต่ำ') ? 'ควรดื่มเพิ่ม' : 'ปกติ' }}</span>
+                          <span class="m-status-badge mt-1" :class="insightHydration?.value?.includes('ต่ำ') ? 'danger' : 'success'" v-if="insightHydration">{{ insightHydration.value.includes('ต่ำ') ? (langStore.t('drink_more')) : (langStore.t('bmi_normal')) }}</span>
                         </div>
 
                         <!-- Muscle Mass -->
                         <div class="metric-coach-card">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('มวลกล้ามเนื้อ', 'ช่วยกระตุ้นระบบเผาผลาญ ควรออกกำลังกายแรงต้านเพื่อรักษามวลกล้ามเนื้อไว้')">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup(langStore.t('muscle_mass'), langStore.t('muscle_recommendation'))">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="m-card-header flex items-center mt-1 pr-10">
-                            <div class="flex items-center gap-1.5 text-red-500">
-                              <Dumbbell :size="14" class="shrink-0" />
-                              <span class="m-title-mini text-slate-500">มวลกล้ามเนื้อ</span>
+                            <div class="flex items-center gap-1.5 text-slate-500">
+                              <Dumbbell :size="14" class="shrink-0 text-red-500" />
+                              <span class="m-title-mini">{{ langStore.t('muscle_mass') }}</span>
                             </div>
                           </div>
                           <div class="m-val-mini mt-1 text-slate-800">
-                            {{ tanita.muscle_mass || '–' }} <span class="m-unit-mini text-slate-400">กก.</span>
+                            {{ tanita.muscle_mass || '–' }} <span class="m-unit-mini text-slate-400">{{ langStore.t('kg') }}</span>
                           </div>
-                          <span class="m-status-badge success mt-1">ปกติ</span>
+                          <span class="m-status-badge success mt-1">{{ langStore.t('bmi_normal') }}</span>
                         </div>
 
                         <!-- Metabolic Age -->
                         <div class="metric-coach-card">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('อายุเซลล์', 'อายุเซลล์ควรเท่ากับหรือน้อยกว่าอายุจริง บ่งบอกสุขภาพการฟื้นฟูของเซลล์ที่ดี')">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup(langStore.t('metabolic_age'), langStore.t('metabolic_recommendation'))">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="m-card-header flex items-center mt-1 pr-10">
-                            <div class="flex items-center gap-1.5 text-orange-500">
-                              <Zap :size="14" class="shrink-0" />
-                              <span class="m-title-mini text-slate-500">อายุเซลล์</span>
+                            <div class="flex items-center gap-1.5 text-slate-500">
+                              <Zap :size="14" class="shrink-0 text-orange-500" />
+                              <span class="m-title-mini">{{ langStore.t('metabolic_age') }}</span>
                             </div>
                           </div>
                           <div class="m-val-mini mt-1 text-slate-800">
-                            {{ tanita.metabolic_age || '–' }} <span class="m-unit-mini text-slate-400">ปี</span>
+                            {{ tanita.metabolic_age || '–' }} <span class="m-unit-mini text-slate-400">{{ langStore.t('year') }}</span>
                           </div>
                         </div>
                       </div>
@@ -455,8 +455,8 @@
                 </div>
                 <div v-else class="empty-state">
                   <Activity :size="48" class="text-gray-300 mb-3" />
-                  <span class="text-gray-500 mb-2">ยังไม่มีข้อมูลองค์ประกอบร่างกาย</span>
-                  <button class="btn-primary" @click="openTanitaModal(false)">+ เพิ่มข้อมูลสุขภาพ</button>
+                  <span class="text-gray-500 mb-2">{{ langStore.t('no_body_data') }}</span>
+                  <button class="btn-primary" @click="openTanitaModal(false)">+ {{ langStore.t('add_health_data') }}</button>
                 </div>
               </div>
               <div v-if="activeTab === 'events'" class="tab-content">
@@ -474,7 +474,7 @@
                           <ImageIcon :size="32" class="fallback-icon" />
                         </div>
                         <div class="dark-badge">
-                          {{ getActivityStatus(reg.event) === 'full' ? 'เต็มแล้ว' : getActivityStatus(reg.event) === 'closed' ? 'ปิดรับสมัคร' : 'กำลังเปิดรับ' }}
+                          {{ getActivityStatus(reg.event) === 'full' ? (langStore.t('status_full')) : getActivityStatus(reg.event) === 'closed' ? (langStore.t('status_closed')) : (langStore.t('status_open')) }}
                         </div>
                         <button class="heart-btn" :class="{'active': favoriteIds.has(reg.event.id)}" @click.stop="toggleFavorite($event, reg.event.id)">
                           <Heart :size="18" :fill="favoriteIds.has(reg.event.id) ? '#F05A23' : 'none'" />
@@ -484,11 +484,11 @@
                         <h4 class="title">{{ reg.event.title }}</h4>
                         <div class="meta-row text-primary">
                           <Award :size="14" />
-                          <span>คะแนน: {{ getEventScore(reg.event.id).toLocaleString() }} คะแนน</span>
+                          <span>{{ langStore.t('points_label') }} {{ getEventScore(reg.event.id).toLocaleString() }} {{ langStore.t('points') }}</span>
                         </div>
                         <div class="meta-row" v-if="hasGoal(reg.event)">
                           <Target :size="14" /> 
-                          <span>เป้าหมาย: {{ formatGoalTarget(reg.event) }}</span>
+                          <span>{{ langStore.t('goal_label') }} {{ formatGoalTarget(reg.event) }}</span>
                         </div>
                         <div class="meta-row">
                           <Calendar :size="14" />
@@ -498,13 +498,13 @@
                     </div>
                   </div>
                   <div class="flex justify-center mt-8">
-                    <button class="btn-outline-sm px-8" @click="router.push('/?section=mine')">ดูทั้งหมด</button>
+                    <button class="btn-outline-sm px-8" @click="router.push('/?section=mine')">{{ langStore.t('view_all') }}</button>
                   </div>
                 </div>
                 <div v-else class="empty-state">
                   <Calendar :size="48" class="text-gray-300 mb-3" />
-                  <span class="text-gray-500 mb-4">ยังไม่ได้สมัครกิจกรรมใด</span>
-                  <button class="btn-primary" @click="router.push('/'); closeTab()">ดูแคมเปญกิจกรรม</button>
+                  <span class="text-gray-500 mb-4">{{ langStore.t('no_registered_events') }}</span>
+                  <button class="btn-primary" @click="router.push('/'); activeTab = null">{{ langStore.t('browse_events') }}</button>
                 </div>
               </div>
 
@@ -529,7 +529,7 @@
                         <div v-if="isCalDropdownOpen" class="cal-activity-dropdown">
                           <div class="cal-dropdown-search">
                             <Search :size="16" />
-                            <input v-model="calActivitySearch" type="text" placeholder="ค้นหากิจกรรม..." />
+                            <input v-model="calActivitySearch" type="text" :placeholder="langStore.t('search_events')" />
                           </div>
                           <div class="cal-dropdown-list">
                             <div 
@@ -539,7 +539,7 @@
                             >
                               <div class="item-icon-box"><LayoutGrid :size="16" /></div>
                               <div class="item-info">
-                                <div class="item-name">แสดงภารกิจทั้งหมด</div>
+                                <div class="item-name">{{ langStore.t('show_all_missions') }}</div>
                                 <div class="item-sub">VitalCare System</div>
                               </div>
                             </div>
@@ -556,7 +556,7 @@
                               </div>
                               <div class="item-info">
                                 <div class="item-name">{{ reg.event.title }}</div>
-                                <div class="item-sub">กิจกรรมที่คุณสมัคร</div>
+                                <div class="item-sub">{{ langStore.t('your_registered_event') }}</div>
                               </div>
                             </div>
                           </div>
@@ -580,11 +580,11 @@
                     <div class="calendar-legend mt-4">
                       <div class="legend-item">
                         <div class="legend-color" style="background: #10b981;"></div>
-                        <span class="legend-text">ส่งแล้ว</span>
+                        <span class="legend-text">{{ langStore.t('submitted') }}</span>
                       </div>
                       <div class="legend-item">
                         <div class="legend-color" style="background: #3b82f6;"></div>
-                        <span class="legend-text">รอส่งวันนี้</span>
+                        <span class="legend-text">{{ langStore.t('due_today') }}</span>
                       </div>
                       <!-- <div class="legend-item">
                         <div class="legend-color" style="background: #f59e0b;"></div>
@@ -592,17 +592,17 @@
                       </div> -->
                       <div class="legend-item">
                         <div class="legend-color" style="background: #ef4444;"></div>
-                        <span class="legend-text">ขาดส่ง</span>
+                        <span class="legend-text">{{ langStore.t('missed') }}</span>
                       </div>
                       <div class="legend-item">
                         <div class="legend-color" style="background: #94a3b8;"></div>
-                        <span class="legend-text">ยังไม่ถึงกำหนด</span>
+                        <span class="legend-text">{{ langStore.t('not_due_yet') }}</span>
                       </div>
                     </div>
                     
                     <!-- Mission Stats Summary -->
                     <div class="mission-stats-summary mt-6">
-                      <div class="section-title-sm mb-4">สรุปการส่งภารกิจทั้งหมด</div>
+                      <div class="section-title-sm mb-4">{{ langStore.t('all_mission_summary') }}</div>
                       <div v-if="missionStats.length" class="stats-grid-simple">
                         <div v-for="stat in missionStats" :key="stat.taskId" class="stat-row">
                           <div class="stat-info">
@@ -611,22 +611,22 @@
                           </div>
                           <div class="stat-metrics">
                             <div class="metric">
-                              <span class="m-label">ส่งแล้ว</span>
+                              <span class="m-label">{{ langStore.t('submitted') }}</span>
                               <span class="m-val success">{{ stat.completed }}</span>
                             </div>
                             <div class="metric">
-                              <span class="m-label">ขาดส่ง</span>
+                              <span class="m-label">{{ langStore.t('missed') }}</span>
                               <span class="m-val danger">{{ stat.missed }}</span>
                             </div>
                             <div class="metric">
-                              <span class="m-label">เป้าหมาย</span>
+                              <span class="m-label">{{ langStore.t('target') }}</span>
                               <span class="m-val">{{ stat.expected }}</span>
                             </div>
                           </div>
                         </div>
                       </div>
                       <div v-else class="empty-mini">
-                        <p>ยังไม่มีข้อมูลสรุปภารกิจ</p>
+                        <p>{{ langStore.t('no_mission_summary') }}</p>
                       </div>
                     </div>
                   </div>
@@ -642,7 +642,7 @@
                   <div class="titles-header-box">
                     <div class="titles-stats-row">
                       <div class="titles-count-info">
-                        <span class="count-label">ปลดล็อกฉายาแล้ว</span>
+                        <span class="count-label">{{ langStore.t('titles_unlocked') }}</span>
                         <span class="count-value">{{ unlockedCount }} / {{ totalCount }}</span>
                       </div>
                       <div class="titles-progress-container">
@@ -698,21 +698,21 @@
                           @click="equipTitle(user.id, title.is_equipped ? null : title.id)"
                         >
                           <Check v-if="title.is_equipped" :size="14" />
-                          {{ title.is_equipped ? 'ใช้อยู่' : 'ใช้งาน' }}
+                          {{ title.is_equipped ? (langStore.t('equipped')) : (langStore.t('equip')) }}
                         </button>
                         <button 
                           v-else-if="title.unlock_type === 'open' || title.unlock_type === 'conditions'" 
                           class="btn-mini-claim"
                           @click="handleClaim(title)"
                         >
-                          ปลดล็อก
+                          {{ langStore.t('unlock') }}
                         </button>
                         <button 
                           v-else-if="title.unlock_type === 'code'" 
                           class="btn-mini-claim btn-mini-code"
                           @click="handleClaim(title)"
                         >
-                          <Lock :size="12" /> รหัส
+                          <Lock :size="12" /> {{ langStore.t('code') }}
                         </button>
                         <div v-else class="lock-icon-only">
                           <Lock :size="16" />
@@ -723,7 +723,7 @@
                   
                   <div v-if="filteredTitles.length === 0" class="empty-mini">
                     <Award :size="32" class="opacity-20" />
-                    <p>ไม่พบฉายาที่คุณค้นหา</p>
+                    <p>{{ langStore.t('no_titles_found') }}</p>
                   </div>
                 </div>
               </div>
@@ -732,7 +732,7 @@
               <button class="btn-outline w-full" @click="cancelEdit">ยกเลิก</button>
               <button class="btn-primary w-full" @click="saveEdit" :disabled="isSubmitting">
                 <Loader2 v-if="isSubmitting" class="spin mr-2" :size="18" />
-                <span v-else>บันทึกข้อมูล</span>
+                {{ langStore.locale === 'th' ? '\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25' : 'Save Data' }}
               </button>
             </div>
           </div>
@@ -746,7 +746,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
                 </button>
               </div>
-              <div class="tn-title">{{ tanita ? 'แก้ไขข้อมูลสุขภาพ' : 'เพิ่มข้อมูลสุขภาพ' }}</div>
+              <div class="tn-title">{{ tanita ? (langStore.t('edit_health_data')) : (langStore.t('add_health_data')) }}</div>
               <button class="tn-close" v-if="!isMobileScreen" @click="showTanitaModal = false" aria-label="ปิด">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
@@ -754,11 +754,11 @@
             <div class="tn-mode-bar">
               <button class="tn-mode-btn" :class="{ active: tanitaInputMethod === 'manual' }" @click="tanitaInputMethod = 'manual'">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                กรอกเอง
+                {{ langStore.t('manual_input') }}
               </button>
               <button class="tn-mode-btn" :class="{ active: tanitaInputMethod === 'ai' }" @click="tanitaInputMethod = 'ai'">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                AI อ่านจากรูป
+                {{ langStore.t('ai_scan') }}
               </button>
             </div>
             <div class="tn-body">
@@ -776,8 +776,8 @@
                     @drop.prevent="handleTanitaDrop"
                   >
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-                    <span>{{ isTanitaDragging ? 'วางรูปที่นี่' : 'อัปโหลดรูปใบวัดองค์ประกอบร่างกาย' }}</span>
-                    <span class="tn-sub">รองรับ drag & drop — AI จะกรอกข้อมูลให้อัตโนมัติ</span>
+                    <span>{{ isTanitaDragging ? (langStore.t('drop_here')) : (langStore.t('upload_body_composition_sheet')) }}</span>
+                    <span class="tn-sub">{{ langStore.t('supports_drag_drop') }}</span>
                   </label>
                 </div>
               </div>
@@ -820,7 +820,7 @@
               <button class="tn-btn-cancel" @click="showTanitaModal = false">ยกเลิก</button>
               <button class="tn-btn-save" @click="submitTanitaForm" :disabled="isSavingTanita">
                 <Loader2 v-if="isSavingTanita" class="spin" :size="14" />
-                <span v-else>บันทึกข้อมูล</span>
+                {{ langStore.locale === 'th' ? '\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25' : 'Save Data' }}
               </button>
             </div>
           </div>
@@ -915,6 +915,7 @@ import {
 import Swal from 'sweetalert2'
 import { authStore } from '../store/auth'
 import { uiStore } from '../store/ui'
+import { langStore } from '../store/lang'
 import { logoutLiff } from '../lib/liff'
 import { useFavorites } from '../composables/useFavorites'
 import CustomSelect from '../components/CustomSelect.vue'
@@ -2901,3 +2902,6 @@ onUnmounted(() => {
   .tanita-dashboard-right { gap: 12px !important; }
 }
 </style>
+
+
+

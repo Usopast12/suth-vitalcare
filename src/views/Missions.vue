@@ -8,6 +8,7 @@ import {
   FolderOpen, Target, Clock, Wand2, ChevronDown,
   Activity, Heart, ImageIcon, CalendarDays, Users, Star
 } from 'lucide-vue-next'
+import { langStore } from '../store/lang'
 // ดึง Logic จาก Composable
 const route = useRoute()
 const {
@@ -21,7 +22,6 @@ const {
   isEditingMode,
   uploadedImageUrl,
   handleImageError,
-  triggerFileInput,
   metricMode,
   valNum,
   valSteps,
@@ -57,6 +57,12 @@ const {
   celebrationTaskTitle,
   tableData
 } = useMissions()
+
+const triggerFileInput = () => {
+  if (fileInput.value) {
+    fileInput.value.click();
+  }
+}
 
 const getLocalYYYYMMDD = (d: Date) => {
   const year = d.getFullYear()
@@ -307,8 +313,8 @@ const getActivityStatus = (act: any) => {
 
             <!-- Stats metadata below the bar -->
             <div class="flex justify-between items-center text-xs text-slate-400 font-semibold mt-2">
-              <span>ความเร็ว: {{ (1.2 + (analyzingProgress / 40)).toFixed(1) }} MB/s</span>
-              <span>ประมวลผล: {{ Math.round(analyzingProgress * 12.5) }} / 1,250 KB</span>
+              <span>{{ langStore.locale === 'th' ? 'ความเร็ว:' : 'Speed:' }} {{ (1.2 + (analyzingProgress / 40)).toFixed(1) }} MB/s</span>
+              <span>{{ langStore.locale === 'th' ? 'ประมวลผล:' : 'Processed:' }} {{ Math.round(analyzingProgress * 12.5) }} / 1,250 KB</span>
             </div>
           </div>
         </div>
@@ -323,8 +329,8 @@ const getActivityStatus = (act: any) => {
             <Star :size="24" class="text-orange-500 fill-current" />
           </div>
           <div class="dash-info">
-            <span class="dash-label text-slate-500 font-bold text-xs uppercase tracking-wider">แต้มสะสมทั้งหมด</span>
-            <span class="dash-value text-orange-600 font-black text-2xl">{{ totalPoints.toLocaleString() }} <span class="text-sm font-bold text-slate-400">แต้ม</span></span>
+            <span class="dash-label text-slate-500 font-bold text-xs uppercase tracking-wider">{{ langStore.locale === 'th' ? 'แต้มสะสมทั้งหมด' : 'Total Points' }}</span>
+            <span class="dash-value text-orange-600 font-black text-2xl">{{ totalPoints.toLocaleString() }} <span class="text-sm font-bold text-slate-400">{{ langStore.t('points') }}</span></span>
           </div>
         </div>
 
@@ -333,9 +339,9 @@ const getActivityStatus = (act: any) => {
             <span class="streak-emoji">{{ activeStreak > 0 ? '🔥' : '❄️' }}</span>
           </div>
           <div class="dash-info">
-            <span class="dash-label text-slate-500 font-bold text-xs uppercase tracking-wider">ความต่อเนื่อง</span>
+            <span class="dash-label text-slate-500 font-bold text-xs uppercase tracking-wider">{{ langStore.locale === 'th' ? 'ความต่อเนื่อง' : 'Streak' }}</span>
             <span class="dash-value font-black text-2xl" :class="activeStreak > 0 ? 'text-red-500' : 'text-slate-400'">
-              {{ activeStreak }} <span class="text-sm font-bold text-slate-400">วันติดต่อกัน</span>
+              {{ activeStreak }} <span class="text-sm font-bold text-slate-400">{{ langStore.t('streak_days') }}</span>
             </span>
           </div>
         </div>
@@ -349,14 +355,14 @@ const getActivityStatus = (act: any) => {
           <input 
             type="text" 
             v-model="taskSearch" 
-            placeholder="ค้นหากิจกรรมที่คุณเข้าร่วม..." 
+            :placeholder="langStore.locale === 'th' ? 'ค้นหากิจกรรมที่คุณเข้าร่วม...' : 'Search your activities...'" 
             class="modern-search-input" 
           />
         </div>
       </div>
       <div class="mission-grid-wrapper">
         <div class="section-title-row mb-4">
-          <h3 class="text-xl font-bold">กิจกรรมของคุณ ({{ step1Activities.length }})</h3>
+          <h3 class="text-xl font-bold">{{ langStore.locale === 'th' ? 'กิจกรรมของคุณ' : 'Your Activities' }} ({{ step1Activities.length }})</h3>
         </div>
         <div v-if="paginatedStep1.length > 0" class="flat-grid">
             <div 
@@ -372,18 +378,18 @@ const getActivityStatus = (act: any) => {
                   <ImageIcon :size="32" class="fallback-icon" />
                 </div>
                 <div class="dark-badge" :class="getActivityStatus(act)">
-                  <template v-if="getActivityStatus(act) === 'ended'">สิ้นสุดกิจกรรม</template>
-                  <template v-else>กำลังดำเนินการ</template>
+                  <template v-if="getActivityStatus(act) === 'ended'">{{ langStore.locale === 'th' ? 'สิ้นสุดกิจกรรม' : 'Ended' }}</template>
+                  <template v-else>{{ langStore.locale === 'th' ? 'กำลังดำเนินการ' : 'Ongoing' }}</template>
                 </div>
               </div>
             <div class="info-box">
               <h4 class="card-title">{{ act.title }}</h4>
 
               <!-- แถบแสดงความคืบหน้ารายกิจกรรม -->
-              <div class="activity-progress-wrap mt-1 mb-3">
-                <div class="flex justify-between items-center text-xs font-bold text-slate-500 mb-1">
-                  <span>ความคืบหน้า</span>
-                  <span>{{ getActivityProgress(act.title).done }}/{{ getActivityProgress(act.title).total }} ภารกิจ ({{ getActivityProgress(act.title).percent }}%)</span>
+              <div class="activity-progress-wrap">
+                <div class="prog-label-row">
+                  <span>{{ langStore.locale === 'th' ? 'ความคืบหน้า' : 'Progress' }}</span>
+                  <span>{{ getActivityProgress(act.title).done }}/{{ getActivityProgress(act.title).total }} ({{ getActivityProgress(act.title).percent }}%)</span>
                 </div>
                 <div class="activity-progress-bg">
                   <div class="activity-progress-fill" :style="{ width: getActivityProgress(act.title).percent + '%' }"></div>
@@ -391,29 +397,25 @@ const getActivityStatus = (act: any) => {
               </div>
 
               <div class="meta-row text-orange-600">
-                <Target :size="14" class="meta-icon" />
-                <span>มีทั้งหมด: {{ getTaskCount(act.title) }} ภารกิจ</span>
+                <Target :size="13" class="meta-icon" />
+                <span>{{ getTaskCount(act.title) }} {{ langStore.locale === 'th' ? 'ภารกิจ' : 'tasks' }}</span>
               </div>
-              <div class="points-badge-row mt-2">
+              <div class="points-badge-row">
                 <div class="points-badge">
-                  <Star :size="12" class="fill-current" />
-                  <span>{{ getActivityPoints(act.title).toLocaleString() }} แต้มสะสม</span>
+                  <Star :size="11" class="fill-current" />
+                  <span>{{ getActivityPoints(act.title).toLocaleString() }} {{ langStore.locale === 'th' ? 'แต้ม' : 'pts' }}</span>
                 </div>
-              </div>
-              <div class="meta-row">
-                <CalendarDays :size="14" class="meta-icon" />
-                <span>จัดกิจกรรม: {{ formatDateDDMMYYYY(act.start_date) }} - {{ formatDateDDMMYYYY(act.end_date) }}</span>
               </div>
             </div>
           </div>
         </div>
         <div v-else class="shop-empty py-20">
-          <h3 class="text-slate-500 font-medium">ไม่พบกิจกรรมที่ค้นหา</h3>
+          <h3 class="text-slate-500 font-medium">{{ langStore.locale === 'th' ? 'ไม่พบกิจกรรมที่ค้นหา' : 'No activities found' }}</h3>
         </div>
         <div class="pagination mt-8" v-if="step1TotalPages > 1">
-          <button :disabled="step1Page === 1" @click="step1Page--" class="pag-btn">« ก่อนหน้า</button>
-          <span class="page-info">หน้า {{ step1Page }} / {{ step1TotalPages }}</span>
-          <button :disabled="step1Page === step1TotalPages" @click="step1Page++" class="pag-btn">ถัดไป »</button>
+          <button :disabled="step1Page === 1" @click="step1Page--" class="pag-btn">&laquo; {{ langStore.locale === 'th' ? 'ก่อนหน้า' : 'Prev' }}</button>
+          <span class="page-info">{{ langStore.locale === 'th' ? 'หน้า' : 'Page' }} {{ step1Page }} / {{ step1TotalPages }}</span>
+          <button :disabled="step1Page === step1TotalPages" @click="step1Page++" class="pag-btn">{{ langStore.locale === 'th' ? 'ถัดไป' : 'Next' }} &raquo;</button>
         </div>
       </div>
     </div>
@@ -421,18 +423,18 @@ const getActivityStatus = (act: any) => {
       <div class="mb-6 px-mobile">
         <button class="back-btn" @click="goStep1">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-5 h-5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-          กลับไปหน้ากิจกรรม
+          {{ langStore.locale === 'th' ? 'กลับไปหน้ากิจกรรม' : 'Back to activities' }}
         </button>
       </div>
       <div class="page-banner mb-6">
         <div class="banner-text">
           <h2 class="text-2xl font-bold truncate" :title="selectedActivity?.title">{{ selectedActivity?.title }}</h2>
-          <p class="opacity-90 mt-1">เลือกภารกิจที่คุณต้องการส่งผลงาน</p>
+          <p class="opacity-90 mt-1">{{ langStore.locale === 'th' ? 'เลือกภารกิจที่คุณต้องการส่งผลงาน' : 'Select a mission to submit your work' }}</p>
         </div>
       </div>
       <div class="activity-list-container">
         <div class="list-header-bar">
-          <div class="list-title">ภารกิจที่มีให้ทำ ({{ step2Tasks.length }})</div>
+          <div class="list-title">{{ langStore.locale === 'th' ? 'ภารกิจที่มีให้ทำ' : 'Available Missions' }} ({{ step2Tasks.length }})</div>
         </div>
         <div class="activity-list-body">
           <template v-if="paginatedStep2.length > 0">
@@ -443,24 +445,29 @@ const getActivityStatus = (act: any) => {
               @click="goStep3(row)"
             >
               <div class="ar-left">
-                <div class="ar-system-name">{{ row.dateLabel }} • +{{ row.points }} แต้ม</div>
+                <div class="ar-system-name">{{ row.dateLabel }} &bull; +{{ row.points }} {{ langStore.t('points') }}</div>
               </div>
               <div class="ar-middle">
                 <div class="flex items-center gap-3">
                   <span class="ar-subject">{{ row.taskName }}</span>
-                  <span class="status-pill" :class="row.statusCode">{{ row.statusText }}</span>
+                  <span class="status-pill" :class="row.statusCode">
+                    <template v-if="row.statusCode === 'done'">{{ langStore.t('mission_completed') }}</template>
+                    <template v-else-if="row.statusCode === 'pending'">{{ langStore.t('mission_pending_review') }}</template>
+                    <template v-else-if="row.statusCode === 'rejected'">{{ langStore.t('rejected') }}</template>
+                    <template v-else>{{ row.statusText }}</template>
+                  </span>
                 </div>
               </div>
             </div>
           </template>
           <div v-else class="empty-search">
-            ไม่มีภารกิจให้ทำในขณะนี้
+            {{ langStore.locale === 'th' ? 'ไม่มีภารกิจให้ทำในขณะนี้' : 'No missions available right now' }}
           </div>
         </div>
         <div class="pagination" v-if="step2TotalPages > 1">
-          <button :disabled="step2Page === 1" @click="step2Page--">« ก่อนหน้า</button>
-          <span class="page-info">หน้า {{ step2Page }} / {{ step2TotalPages }}</span>
-          <button :disabled="step2Page === step2TotalPages" @click="step2Page++">ถัดไป »</button>
+          <button :disabled="step2Page === 1" @click="step2Page--">&laquo; {{ langStore.locale === 'th' ? 'ก่อนหน้า' : 'Prev' }}</button>
+          <span class="page-info">{{ langStore.locale === 'th' ? 'หน้า' : 'Page' }} {{ step2Page }} / {{ step2TotalPages }}</span>
+          <button :disabled="step2Page === step2TotalPages" @click="step2Page++">{{ langStore.locale === 'th' ? 'ถัดไป' : 'Next' }} &raquo;</button>
         </div>
       </div>
     </div>
@@ -469,7 +476,7 @@ const getActivityStatus = (act: any) => {
         <div class="header-container">
           <button class="back-btn" @click="backToStep2">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-5 h-5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            กลับไปหน้ารายการภารกิจ
+            {{ langStore.locale === 'th' ? 'กลับไปหน้ารายการภารกิจ' : 'Back to missions list' }}
           </button>
         </div>
       </header>
@@ -480,16 +487,16 @@ const getActivityStatus = (act: any) => {
               <h2>{{ activeTask.note }}</h2>
               <div class="mt-4 flex flex-col gap-2 text-sm opacity-90 font-medium">
                 <div class="flex items-center gap-2">
-                  <span class="text-white/70">วันส่ง:</span>
+                  <span class="text-white/70">{{ langStore.locale === 'th' ? 'วันส่ง:' : 'Submission Date:' }}</span>
                   <span>{{ formatDateDDMMYYYY(selectedDate) }}</span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <span class="text-white/70">ชื่อกิจกรรม:</span>
+                  <span class="text-white/70">{{ langStore.locale === 'th' ? 'ชื่อกิจกรรม:' : 'Activity:' }}</span>
                   <span>{{ activeTask.evt }}</span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <span class="text-white/70">คะแนนที่ได้:</span>
-                  <span class="font-bold underline decoration-2 underline-offset-4">{{ activeTask.points }} แต้ม</span>
+                  <span class="text-white/70">{{ langStore.locale === 'th' ? 'คะแนนที่ได้:' : 'Points awarded:' }}</span>
+                  <span class="font-bold underline decoration-2 underline-offset-4">{{ activeTask.points }} {{ langStore.t('points') }}</span>
                 </div>
               </div>
             </div>
@@ -498,7 +505,7 @@ const getActivityStatus = (act: any) => {
             <div class="detail-body">
                 <div v-if="editingSubmissionId && !isEditingMode" class="readonly-view">
                   <div class="success-banner">
-                    <CheckCircle2 class="w-6 h-6" /> ส่งภารกิจเรียบร้อยแล้ว
+                    <CheckCircle2 class="w-6 h-6" /> {{ langStore.locale === 'th' ? 'ส่งภารกิจเรียบร้อยแล้ว' : 'Mission submitted successfully' }}
                   </div>
                   <!-- แสดงรูปภาพถ้ามี -->
                   <div class="proof-image-box shadow-sm" v-if="uploadedImageUrl">
@@ -506,19 +513,19 @@ const getActivityStatus = (act: any) => {
                   </div>
                   <!-- แสดงข้อความที่ตอบถ้ามี -->
                   <div v-if="textResponse" class="recorded-data shadow-sm">
-                    <label>ข้อความที่คุณตอบไว้</label>
+                    <label>{{ langStore.locale === 'th' ? 'ข้อความที่คุณตอบไว้' : 'Your text response' }}</label>
                     <div class="val-display text-response-display">{{ textResponse }}</div>
                   </div>
                   <!-- แสดงตัวเลขถ้าเป็น manual/steps/time -->
                   <div v-if="!textResponse && activeTask?.submission_type !== 'photo'" class="recorded-data shadow-sm">
-                    <label>ผลลัพธ์ที่คุณบันทึกไว้</label>
+                    <label>{{ langStore.locale === 'th' ? 'ผลลัพธ์ที่คุณบันทึกไว้' : 'Your recorded result' }}</label>
                     <div class="val-display">
-                      {{ metricMode === 'time' ? `${valH} ชม. ${valM} นาที` : (metricMode === 'steps' ? Number(valSteps).toLocaleString() : valNum) }}
-                      <span class="unit">{{ metricMode === 'steps' ? 'ก้าว' : (metricMode === 'time' ? '' : activeTask?.metric_unit) }}</span>
+                      {{ metricMode === 'time' ? `${valH} ${langStore.locale === 'th' ? 'ชม.' : 'h'} ${valM} ${langStore.locale === 'th' ? 'นาที' : 'm'}` : (metricMode === 'steps' ? Number(valSteps).toLocaleString() : valNum) }}
+                      <span class="unit">{{ metricMode === 'steps' ? (langStore.locale === 'th' ? 'ก้าว' : 'steps') : (metricMode === 'time' ? '' : activeTask?.metric_unit) }}</span>
                     </div>
                   </div>
                   <button v-if="isToday(selectedDate)" class="action-btn outline-btn mt-4" @click="isEditingMode = true">
-                    แก้ไขข้อมูลการส่ง
+                    {{ langStore.locale === 'th' ? 'แก้ไขข้อมูลการส่ง' : 'Edit Submission' }}
                   </button>
                 </div>
                 <template v-else-if="isToday(selectedDate) && isTaskAllowedOnDate(activeTask, selectedDate)">
@@ -529,23 +536,23 @@ const getActivityStatus = (act: any) => {
                       <img v-if="uploadedImageUrl" :src="uploadedImageUrl + '?t=' + imageTimestamp" class="uploaded-preview" @error="handleImageError" />
                       <div v-else class="upload-placeholder">
                         <div class="icon-circle shadow-sm"><UploadCloud class="w-8 h-8 text-orange-500" /></div>
-                        <p><strong>แตะเพื่ออัปโหลดรูปหลักฐาน</strong></p>
-                        <span>(รองรับไฟล์ JPG, PNG)</span>
+                        <p><strong>{{ langStore.locale === 'th' ? 'แตะเพื่ออัปโหลดรูปหลักฐาน' : 'Tap to upload proof image' }}</strong></p>
+                        <span>{{ langStore.locale === 'th' ? '(รองรับไฟล์ JPG, PNG)' : '(Supports JPG, PNG)' }}</span>
                       </div>
                       <div v-if="isUploading || isAnalyzing" class="upload-overlay">
                         <span class="upload-loader"></span>
-                        <span>{{ isUploading ? 'กำลังอัปโหลด...' : 'AI กำลังวิเคราะห์รูปภาพ...' }}</span>
+                        <span>{{ isUploading ? (langStore.locale === 'th' ? 'กำลังอัปโหลด...' : 'Uploading...') : (langStore.locale === 'th' ? 'AI กำลังวิเคราะห์รูปภาพ...' : 'AI is analyzing image...') }}</span>
                       </div>
                     </div>
                   </template>
                   <!-- === TEXT response area === -->
                   <template v-if="activeTask?.submission_type === 'text' || activeTask?.submission_type === 'both'">
                     <div class="input-group shadow-sm" style="margin-top: 12px;">
-                      <label class="input-label">✍️ พิมพ์ข้อความตอบกลับ</label>
+                      <label class="input-label">✍️ {{ langStore.locale === 'th' ? 'พิมพ์ข้อความตอบกลับ' : 'Type your text response' }}</label>
                       <textarea
                         v-model="textResponse"
                         rows="5"
-                        placeholder="พิมพ์คำตอบหรือข้อความของคุณที่นี่..."
+                        :placeholder="langStore.locale === 'th' ? 'พิมพ์คำตอบหรือข้อความของคุณที่นี่...' : 'Type your response here...'"
                         class="styled-textarea"
                       ></textarea>
                     </div>
@@ -554,54 +561,54 @@ const getActivityStatus = (act: any) => {
                   <template v-if="['manual', 'photo', 'both'].includes(activeTask?.submission_type) || (!activeTask?.submission_type)">
                     <div class="input-group shadow-sm">
                       <label class="input-label">
-                        {{ metricMode === 'steps' ? 'ระบุจำนวนก้าว' : (metricMode === 'time' ? 'ระบุระยะเวลา' : 'ระบุผลลัพธ์ที่ทำได้') }}
+                        {{ metricMode === 'steps' ? (langStore.locale === 'th' ? 'ระบุจำนวนก้าว' : 'Enter number of steps') : (metricMode === 'time' ? (langStore.locale === 'th' ? 'ระบุระยะเวลา' : 'Enter duration') : (langStore.locale === 'th' ? 'ระบุผลลัพธ์ที่ทำได้' : 'Enter your result')) }}
                       </label>
                       <div v-if="isEditingMode && oldSubmissionValue" class="text-sm text-gray-500 mb-2 mt-[-5px]">
-                        ค่าเดิมที่บันทึกไว้: <span class="font-semibold text-orange-600">{{ oldSubmissionValue }} <span v-if="metricMode === 'steps'">ก้าว</span><span v-else-if="metricMode !== 'time'">{{ activeTask?.metric_unit }}</span></span>
+                        {{ langStore.locale === 'th' ? 'ค่าเดิมที่บันทึกไว้:' : 'Previously recorded value:' }} <span class="font-semibold text-orange-600">{{ oldSubmissionValue }} <span v-if="metricMode === 'steps'">{{ langStore.locale === 'th' ? 'ก้าว' : 'steps' }}</span><span v-else-if="metricMode !== 'time'">{{ activeTask?.metric_unit }}</span></span>
                       </div>
                       <div v-if="metricMode === 'number' || metricMode === 'steps'" class="field-row">
-                        <div v-if="uploadedImageUrl && isOcrEnabled" class="field-ai-wrapper" :class="{ 'opacity-50 pointer-events-none': isAnalyzing || isSubmitting }" title="ใช้ AI วิเคราะห์อีกครั้ง" @click="() => !isAnalyzing && !isSubmitting && handleAIAnalysis()">
+                        <div v-if="uploadedImageUrl && isOcrEnabled" class="field-ai-wrapper" :class="{ 'opacity-50 pointer-events-none': isAnalyzing || isSubmitting }" :title="langStore.locale === 'th' ? 'ใช้ AI วิเคราะห์อีกครั้ง' : 'Use AI to analyze again'" @click="() => !isAnalyzing && !isSubmitting && handleAIAnalysis()">
                           <Wand2 class="field-ai-icon" :class="{ 'ai-icon-spin': isAnalyzing }" />
                         </div>
                         <input v-if="metricMode === 'steps'" v-model="valSteps" type="number" placeholder="0" class="styled-input" />
                         <input v-else v-model="valNum" type="number" step="any" placeholder="0" class="styled-input" />
-                        <span class="field-unit">{{ metricMode === 'steps' ? 'ก้าว' : activeTask?.metric_unit }}</span>
+                        <span class="field-unit">{{ metricMode === 'steps' ? (langStore.locale === 'th' ? 'ก้าว' : 'steps') : activeTask?.metric_unit }}</span>
                       </div>
                       <div v-if="metricMode === 'time'" class="time-inputs">
-                        <div v-if="uploadedImageUrl && isOcrEnabled" class="field-ai-wrapper mr-2" :class="{ 'opacity-50 pointer-events-none': isAnalyzing || isSubmitting }" title="ใช้ AI วิเคราะห์อีกครั้ง" @click="() => !isAnalyzing && !isSubmitting && handleAIAnalysis()">
+                        <div v-if="uploadedImageUrl && isOcrEnabled" class="field-ai-wrapper mr-2" :class="{ 'opacity-50 pointer-events-none': isAnalyzing || isSubmitting }" :title="langStore.locale === 'th' ? 'ใช้ AI วิเคราะห์อีกครั้ง' : 'Use AI to analyze again'" @click="() => !isAnalyzing && !isSubmitting && handleAIAnalysis()">
                           <Wand2 class="field-ai-icon" :class="{ 'ai-icon-spin': isAnalyzing }" />
                         </div>
-                        <div class="time-box"><input v-model="valH" type="number" placeholder="0" class="styled-input text-center" /><span>ชั่วโมง</span></div>
+                        <div class="time-box"><input v-model="valH" type="number" placeholder="0" class="styled-input text-center" /><span>{{ langStore.locale === 'th' ? 'ชั่วโมง' : 'hr' }}</span></div>
                         <span class="colon">:</span>
-                        <div class="time-box"><input v-model="valM" type="number" placeholder="0" class="styled-input text-center" /><span>นาที</span></div>
+                        <div class="time-box"><input v-model="valM" type="number" placeholder="0" class="styled-input text-center" /><span>{{ langStore.locale === 'th' ? 'นาที' : 'min' }}</span></div>
                         <span class="colon">:</span>
-                        <div class="time-box"><input v-model="valS" type="number" placeholder="0" class="styled-input text-center" /><span>วินาที</span></div>
+                        <div class="time-box"><input v-model="valS" type="number" placeholder="0" class="styled-input text-center" /><span>{{ langStore.locale === 'th' ? 'วินาที' : 'sec' }}</span></div>
                       </div>
                     </div>
                   </template>
                   <!-- === AI hint for photo-based types === -->
                   <div v-if="isAnalyzing && isOcrEnabled" class="ai-status-hint">
-                    <span>Typhoon AI กำลังช่วยคุณวิเคราะห์หลักฐาน...</span>
+                    <span>{{ langStore.locale === 'th' ? 'Typhoon AI กำลังช่วยคุณวิเคราะห์หลักฐาน...' : 'Typhoon AI is analyzing your proof...' }}</span>
                   </div>
                   <div class="action-footer">
                     <button class="action-btn primary-btn shadow-md" :disabled="isSubmitting || isAnalyzing" @click="submitTask">
                       <span v-if="isSubmitting" class="loader"></span>
-                      <span v-else>{{ editingSubmissionId ? 'ยืนยันการแก้ไข' : 'ส่งผลงานภารกิจ' }}</span>
+                      <span v-else>{{ editingSubmissionId ? (langStore.locale === 'th' ? 'ยืนยันการแก้ไข' : 'Confirm Edit') : langStore.t('submit') }}</span>
                     </button>
                     <button v-if="editingSubmissionId" class="action-btn ghost-btn" @click="cancelEditing">
-                      ยกเลิกการแก้ไข
+                      {{ langStore.t('cancel') }}
                     </button>
                   </div>
                 </template>
                 <div v-else class="expired-notice shadow-sm">
                   <div class="expired-icon"><Clock class="w-10 h-10 text-slate-400" /></div>
                   <template v-if="isToday(selectedDate) && !isTaskAllowedOnDate(activeTask, selectedDate)">
-                    <h3>ยังไม่ถึงวันอนุญาตให้ส่ง</h3>
-                    <p>ภารกิจนี้ไม่เปิดให้ส่งในวันนี้ กรุณาตรวจสอบวันในหน้า "วันที่ทำได้"</p>
+                    <h3>{{ langStore.locale === 'th' ? 'ยังไม่ถึงวันอนุญาตให้ส่ง' : 'Not allowed yet' }}</h3>
+                    <p>{{ langStore.locale === 'th' ? 'ภารกิจนี้ไม่เปิดให้ส่งในวันนี้ กรุณาตรวจสอบวันในหน้า "วันที่ทำได้"' : 'This mission is not open for submission today.' }}</p>
                   </template>
                   <template v-else>
-                    <h3>หมดเวลาส่งภารกิจ</h3>
-                    <p>ภารกิจนี้สามารถส่งได้เฉพาะในวันที่กำหนดเท่านั้น</p>
+                    <h3>{{ langStore.locale === 'th' ? 'หมดเวลาส่งภารกิจ' : 'Submission Expired' }}</h3>
+                    <p>{{ langStore.locale === 'th' ? 'ภารกิจนี้สามารถส่งได้เฉพาะในวันที่กำหนดเท่านั้น' : 'This mission can only be submitted on its designated date.' }}</p>
                   </template>
                 </div>
               </div>
@@ -625,17 +632,17 @@ const getActivityStatus = (act: any) => {
             ></div>
           </div>
 
-          <h2 class="celebration-title">ยินดีด้วย! ส่งภารกิจสำเร็จ 🎉</h2>
-          <p class="celebration-desc">คุณได้ทำภารกิจ <strong>"{{ celebrationTaskTitle }}"</strong> เสร็จสมบูรณ์แล้ว</p>
+          <h2 class="celebration-title">{{ langStore.locale === 'th' ? 'ยินดีด้วย! ส่งภารกิจสำเร็จ 🎉' : 'Congratulations! Mission submitted 🎉' }}</h2>
+          <p class="celebration-desc" v-html="langStore.locale === 'th' ? `คุณได้ทำภารกิจ <strong>&quot;${celebrationTaskTitle}&quot;</strong> เสร็จสมบูรณ์แล้ว` : `You have successfully completed the mission <strong>&quot;${celebrationTaskTitle}&quot;</strong>.`"></p>
           
           <div class="points-gain-badge">
             <Star class="fill-current" :size="16" />
-            <span>ได้รับ +{{ celebrationPoints }} แต้ม!</span>
+            <span>{{ langStore.locale === 'th' ? 'ได้รับ' : 'Earned' }} +{{ celebrationPoints }} {{ langStore.t('points') }}!</span>
           </div>
 
 
           <button class="celebration-btn" @click="showCelebration = false">
-            รับทราบและลุยต่อ! 💪
+            {{ langStore.locale === 'th' ? 'รับทราบและลุยต่อ! 💪' : 'Acknowledge & Continue! 💪' }}
           </button>
         </div>
       </div>
@@ -794,40 +801,51 @@ const getActivityStatus = (act: any) => {
   padding: 8px 4px 0; 
   display: flex; 
   flex-direction: column; 
-  gap: 4px; 
+  gap: 3px; 
 }
 .card-title {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   color: #111827; 
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.4;
+  line-height: 1.3;
 }
+/* Progress label row */
+.prog-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748B;
+  margin-bottom: 4px;
+}
+.activity-progress-wrap { width: 100%; margin-bottom: 6px; }
 .points-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   background: #ECFDF5;
   color: #059669;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 99px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   border: 1px solid #A7F3D0;
 }
 .meta-row { 
   display: flex; 
   align-items: flex-start; 
-  gap: 6px; 
-  font-size: 13px; 
+  gap: 5px; 
+  font-size: 11px; 
   color: #6B7280; 
-  margin-bottom: 4px; 
-  line-height: 1.4;
+  margin-bottom: 2px; 
+  line-height: 1.3;
 }
 .meta-row.text-orange-600 { color: var(--primary); font-weight: 600; }
 .meta-icon { 

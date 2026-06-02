@@ -332,10 +332,10 @@ const getMetricLabel = (type: string) => {
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div class="flex items-center gap-2 sm:gap-4 w-full">
           <div class="search-pill-container flex-1 min-w-0 w-full">
-            <Search class="search-icon flex-shrink-0" :size="18" />
+            <Search class="search-icon flex-shrink-0" ::size="18" />
             <input v-model="localSearchQuery" type="text" placeholder="ค้นหาชื่อฉายา หรือระดับ..." class="w-full bg-transparent outline-none text-sm font-bold" />
             <button v-if="localSearchQuery" @click="clearSearch" class="btn-clear-search flex-shrink-0">
-              <X :size="14" />
+              <X ::size="14" />
             </button>
           </div>
         </div>
@@ -353,7 +353,7 @@ const getMetricLabel = (type: string) => {
 
       <div v-else-if="processedTitles.length === 0" class="py-24 text-center bg-white rounded-3xl border border-dashed border-slate-300 flex flex-col items-center justify-center">
         <div class="w-20 h-20 bg-white border border-slate-100 rounded-full flex items-center justify-center mb-5">
-           <Search :size="32" class="text-slate-300" />
+           <Search ::size="32" class="text-slate-300" />
         </div>
         <p class="text-slate-800 font-bold text-xl mb-2">ไม่พบข้อมูลฉายา</p>
       </div>
@@ -366,7 +366,7 @@ const getMetricLabel = (type: string) => {
                 <th class="p-4 w-14 text-center border-r border-slate-100 sticky left-0 bg-white z-20">
                   <div @click="toggleAll" class="w-5 h-5 mx-auto rounded-full border-2 flex items-center justify-center cursor-pointer transition-all"
                     :class="isAllSelected ? 'bg-orange-500 border-orange-500' : 'bg-white border-slate-300'">
-                    <Check v-if="isAllSelected" :size="12" class="text-white" stroke-width="4" />
+                    <Check v-if="isAllSelected" ::size="12" class="text-white" stroke-width="4" />
                   </div>
                 </th>
                 <th class="p-4 min-w-[240px] sticky left-14 bg-white z-20 border-r border-slate-100">
@@ -391,7 +391,7 @@ const getMetricLabel = (type: string) => {
                 <td class="p-4 text-center border-r border-slate-50 sticky left-0 bg-white group-hover:bg-slate-50/80 transition-colors z-10">
                   <div @click.stop="toggleOne(title.id!)" class="w-5 h-5 mx-auto rounded-full border-2 flex items-center justify-center cursor-pointer transition-all"
                      :class="selectedIds.includes(title.id!) ? 'bg-orange-500 border-orange-500' : 'bg-white border-slate-300'">
-                    <Check v-if="selectedIds.includes(title.id!)" :size="12" class="text-white" stroke-width="4" />
+                    <Check v-if="selectedIds.includes(title.id!)" ::size="12" class="text-white" stroke-width="4" />
                   </div>
                 </td>
                 <td class="p-4 sticky left-14 bg-white group-hover:bg-slate-50/80 transition-colors z-10 border-r border-slate-50 max-w-[240px]">
@@ -403,7 +403,7 @@ const getMetricLabel = (type: string) => {
                       size="md"
                     />
                     <p v-if="title.rarity !== 'secret'" class="text-[12px] text-slate-400 truncate max-w-xs font-medium">{{ title.description || '-' }}</p>
-                    <p v-else class="text-[12px] text-purple-400 truncate max-w-xs font-bold flex items-center gap-1"><EyeOff size="12" /> ซ่อนจากผู้ใช้ทั่วไป</p>
+                    <p v-else class="text-[12px] text-purple-400 truncate max-w-xs font-bold flex items-center gap-1"><EyeOff :size="12" /> ซ่อนจากผู้ใช้ทั่วไป</p>
                   </div>
                 </td>
                 <td class="p-4 text-center">
@@ -428,7 +428,7 @@ const getMetricLabel = (type: string) => {
                   <button @click.stop="toggleMenu(title.id!, $event)" 
                     class="w-10 h-10 mx-auto flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-xl transition-all action-menu-wrapper"
                     :class="{ 'bg-slate-200 text-slate-700': localActiveMenuId === title.id }">
-                    <MoreVertical :size="20" />
+                    <MoreVertical ::size="20" />
                   </button>
                 </td>
               </tr>
@@ -441,7 +441,7 @@ const getMetricLabel = (type: string) => {
         <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
           class="rounded-full border border-slate-200 bg-white text-slate-500 hover:text-orange-500 hover:border-orange-500 disabled:opacity-30 disabled:hover:text-slate-500 disabled:hover:border-slate-200 transition-all flex items-center justify-center flex-shrink-0"
           style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; padding: 0;">
-          <ChevronLeft :size="18" />
+          <ChevronLeft ::size="18" />
         </button>
         <div class="flex items-center gap-1.5">
           <button v-for="(p, index) in visiblePages" :key="index" @click="typeof p === 'number' ? changePage(p) : null"
@@ -459,7 +459,7 @@ const getMetricLabel = (type: string) => {
         <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages"
           class="rounded-full border border-slate-200 bg-white text-slate-500 hover:text-orange-500 hover:border-orange-500 disabled:opacity-30 disabled:hover:text-slate-500 disabled:hover:border-slate-200 transition-all flex items-center justify-center flex-shrink-0"
           style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; padding: 0;">
-          <ChevronRight :size="18" />
+          <ChevronRight ::size="18" />
         </button>
       </div>
       
@@ -479,7 +479,7 @@ const getMetricLabel = (type: string) => {
           </div>
           <div class="flex items-center gap-2 py-1">
             <button @click="bulkDelete" class="bg-rose-500 text-white px-3 sm:px-4 h-9 sm:h-10 rounded-xl text-xs sm:text-[13px] font-bold flex items-center gap-1.5 sm:gap-2 hover:bg-rose-600 transition-all shrink-0">
-              <Trash2 :size="16" />
+              <Trash2 ::size="16" />
               <span class="hidden sm:inline">ลบข้อมูล</span><span class="sm:hidden">ลบ</span>
             </button>
           </div>
@@ -488,7 +488,7 @@ const getMetricLabel = (type: string) => {
       <template v-else>
         <button @click="openModal()" 
           class="bg-orange-500 text-white w-48 py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-orange-600 shadow-none transition-transform hover:-translate-y-1">
-          <Plus :size="20" stroke-width="3" />
+          <Plus ::size="20" stroke-width="3" />
           สร้างฉายาใหม่
         </button>
       </template>
@@ -501,14 +501,14 @@ const getMetricLabel = (type: string) => {
              :style="{ top: localMenuPos.top + 'px', right: localMenuPos.right + 'px' }" @click.stop>
           <div class="py-2">
             <button @click="duplicateTitle(titles.find(t => t.id === localActiveMenuId)!); localActiveMenuId = null" class="w-full px-4 py-2.5 text-left text-sm font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 transition-colors flex items-center gap-3">
-              <div class="p-1.5 bg-slate-50 rounded-lg text-slate-500"><Copy :size="16" /></div> คัดลอก
+              <div class="p-1.5 bg-slate-50 rounded-lg text-slate-500"><Copy ::size="16" /></div> คัดลอก
             </button>
             <button @click="openModal(titles.find(t => t.id === localActiveMenuId)!); localActiveMenuId = null" class="w-full px-4 py-2.5 text-left text-sm font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 transition-colors flex items-center gap-3">
-              <div class="p-1.5 bg-slate-50 rounded-lg text-slate-500"><Edit2 :size="16" /></div> แก้ไข
+              <div class="p-1.5 bg-slate-50 rounded-lg text-slate-500"><Edit2 ::size="16" /></div> แก้ไข
             </button>
             <div class="h-px bg-slate-100 my-1 mx-4"></div>
             <button @click="handleDelete(localActiveMenuId); localActiveMenuId = null" class="w-full px-4 py-2.5 text-left text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors flex items-center gap-3">
-              <div class="p-1.5 bg-rose-100/50 rounded-lg text-rose-500"><Trash2 :size="16" /></div> ลบถาวร
+              <div class="p-1.5 bg-rose-100/50 rounded-lg text-rose-500"><Trash2 ::size="16" /></div> ลบถาวร
             </button>
           </div>
         </div>
@@ -522,10 +522,10 @@ const getMetricLabel = (type: string) => {
             
             <div class="modal-header">
               <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
-                <div class="p-2 bg-orange-50 rounded-xl"><Medal :size="20" class="text-orange-500" /></div> 
+                <div class="p-2 bg-orange-50 rounded-xl"><Medal ::size="20" class="text-orange-500" /></div> 
                 {{ formData.id ? 'แก้ไขข้อมูลฉายา' : 'สร้างฉายาใหม่' }}
               </h3>
-              <button @click="closeModal" class="p-2 text-slate-400 hover:text-slate-700 rounded-full transition-colors"><X :size="20" /></button>
+              <button @click="closeModal" class="p-2 text-slate-400 hover:text-slate-700 rounded-full transition-colors"><X ::size="20" /></button>
             </div>
 
             <div class="modal-body flex flex-col gap-12 bg-white px-6 sm:px-10 py-10 font-sarabun">
@@ -580,7 +580,7 @@ const getMetricLabel = (type: string) => {
 
                   <div v-if="formData.rarity === 'secret'" class="md:col-span-2 p-5 bg-purple-50/50 border border-purple-100 rounded-2xl">
                     <label class="text-[13px] font-bold flex items-center gap-1.5 text-purple-800 mb-3">
-                      <EyeOff size="16" class="text-purple-500" /> คำใบ้สำหรับผู้ใช้ <span class="text-xs font-normal text-purple-400 ml-1">(แสดงเมื่อยังไม่ปลดล็อค)</span>
+                      <EyeOff :size="16" class="text-purple-500" /> คำใบ้สำหรับผู้ใช้ <span class="text-xs font-normal text-purple-400 ml-1">(แสดงเมื่อยังไม่ปลดล็อค)</span>
                     </label>
                     <input v-model="formData.hint" type="text" class="w-full px-5 py-3.5 bg-white border border-purple-200 rounded-2xl text-slate-700 focus:border-purple-500 outline-none transition-all text-base placeholder:text-slate-300" placeholder="เช่น 'ตื่นก่อนนกฮูก ขยับก่อนใคร...'">
                   </div>
@@ -619,7 +619,7 @@ const getMetricLabel = (type: string) => {
                      เงื่อนไขการปลดล็อค
                   </h5>
                   <button @click="addCondition" class="text-[13px] font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-xl transition-colors flex items-center gap-1.5">
-                    <Plus size="16" /> เพิ่มเงื่อนไข
+                    <Plus :size="16" /> เพิ่มเงื่อนไข
                   </button>
                 </div>
 
@@ -632,7 +632,7 @@ const getMetricLabel = (type: string) => {
                     class="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col gap-6 relative group transition-all"
                   >
                     <button @click="removeCondition(index)" class="absolute top-4 right-4 w-8 h-8 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full flex items-center justify-center transition-all z-10">
-                      <X size="18" stroke-width="2.5" />
+                      <X :size="18" stroke-width="2.5" />
                     </button>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
@@ -643,19 +643,19 @@ const getMetricLabel = (type: string) => {
                             class="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-2xl focus:border-orange-500 outline-none text-sm text-slate-900 transition-all flex items-center justify-between hover:border-slate-300"
                             :class="{ 'border-orange-500 ring-1 ring-orange-500/20': activeDropdown === `action-${index}` }">
                             <span class="font-bold">{{ getActionLabel(cond.actionType) }}</span>
-                            <ChevronDown :size="18" class="text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': activeDropdown === `action-${index}` }" />
+                            <ChevronDown ::size="18" class="text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': activeDropdown === `action-${index}` }" />
                           </button>
                           
                           <transition name="fade">
                             <div v-if="activeDropdown === `action-${index}`" class="absolute z-[100] mt-2 w-full bg-white border border-slate-100 rounded-2xl shadow-xl py-2 animate-in fade-in zoom-in-95">
                               <button @click="cond.actionType = 'login'; activeDropdown = null" class="w-full px-5 py-3 text-left text-sm font-bold transition-colors flex justify-between items-center" :class="cond.actionType === 'login' ? 'text-orange-600 bg-orange-50/50' : 'text-slate-700 hover:bg-slate-50'">
-                                เข้าใช้งานระบบ <Check v-if="cond.actionType === 'login'" size="16" />
+                                เข้าใช้งานระบบ <Check v-if="cond.actionType === 'login'" :size="16" />
                               </button>
                               <button @click="cond.actionType = 'submit_activity'; activeDropdown = null" class="w-full px-5 py-3 text-left text-sm font-bold transition-colors flex justify-between items-center" :class="cond.actionType === 'submit_activity' ? 'text-orange-600 bg-orange-50/50' : 'text-slate-700 hover:bg-slate-50'">
-                                ส่งกิจกรรมสำเร็จ <Check v-if="cond.actionType === 'submit_activity'" size="16" />
+                                ส่งกิจกรรมสำเร็จ <Check v-if="cond.actionType === 'submit_activity'" :size="16" />
                               </button>
                               <button @click="cond.actionType = 'any_activity'; activeDropdown = null" class="w-full px-5 py-3 text-left text-sm font-bold transition-colors flex justify-between items-center" :class="cond.actionType === 'any_activity' ? 'text-orange-600 bg-orange-50/50' : 'text-slate-700 hover:bg-slate-50'">
-                                ทำกิจกรรมใดๆ <Check v-if="cond.actionType === 'any_activity'" size="16" />
+                                ทำกิจกรรมใดๆ <Check v-if="cond.actionType === 'any_activity'" :size="16" />
                               </button>
                             </div>
                           </transition>
@@ -669,19 +669,19 @@ const getMetricLabel = (type: string) => {
                             class="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-2xl focus:border-orange-500 outline-none text-sm text-slate-900 transition-all flex items-center justify-between hover:border-slate-300"
                             :class="{ 'border-orange-500 ring-1 ring-orange-500/20': activeDropdown === `metric-${index}` }">
                             <span class="font-bold">{{ getMetricLabel(cond.type) }}</span>
-                            <ChevronDown :size="18" class="text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': activeDropdown === `metric-${index}` }" />
+                            <ChevronDown ::size="18" class="text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': activeDropdown === `metric-${index}` }" />
                           </button>
                           
                           <transition name="fade">
                             <div v-if="activeDropdown === `metric-${index}`" class="absolute z-[100] mt-2 w-full bg-white border border-slate-100 rounded-2xl shadow-xl py-2 animate-in fade-in zoom-in-95">
                               <button @click="setMetricType(cond, 'count')" class="w-full px-5 py-3 text-left text-sm font-bold transition-colors flex justify-between items-center" :class="cond.type === 'count' ? 'text-orange-600 bg-orange-50/50' : 'text-slate-700 hover:bg-slate-50'">
-                                ยอดสะสม (ครั้ง) <Check v-if="cond.type === 'count'" size="16" />
+                                ยอดสะสม (ครั้ง) <Check v-if="cond.type === 'count'" :size="16" />
                               </button>
                               <button @click="setMetricType(cond, 'streak')" class="w-full px-5 py-3 text-left text-sm font-bold transition-colors flex justify-between items-center" :class="cond.type === 'streak' ? 'text-orange-600 bg-orange-50/50' : 'text-slate-700 hover:bg-slate-50'">
-                                ต่อเนื่อง (วัน) <Check v-if="cond.type === 'streak'" size="16" />
+                                ต่อเนื่อง (วัน) <Check v-if="cond.type === 'streak'" :size="16" />
                               </button>
                               <button @click="setMetricType(cond, 'time')" class="w-full px-5 py-3 text-left text-sm font-bold transition-colors flex justify-between items-center" :class="cond.type === 'time' ? 'text-orange-600 bg-orange-50/50' : 'text-slate-700 hover:bg-slate-50'">
-                                เฉพาะช่วงเวลา <Check v-if="cond.type === 'time'" size="16" />
+                                เฉพาะช่วงเวลา <Check v-if="cond.type === 'time'" :size="16" />
                               </button>
                             </div>
                           </transition>
@@ -709,8 +709,8 @@ const getMetricLabel = (type: string) => {
             <div class="modal-footer">
               <button @click="closeModal" class="flex-1 sm:flex-none px-6 py-3 text-sm font-bold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">ยกเลิก</button>
               <button @click="handleSave" :disabled="submitting" class="flex-1 sm:flex-none px-8 py-3 text-sm font-bold text-white bg-orange-500 rounded-xl hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50">
-                <Loader2 v-if="submitting" size="18" class="animate-spin" />
-                <Save v-else size="18" /> 
+                <Loader2 v-if="submitting" ::size="18" class="animate-spin" />
+                <Save v-else ::size="18" /> 
                 {{ submitting ? "กำลังบันทึก..." : "บันทึกข้อมูล" }}
               </button>
             </div>

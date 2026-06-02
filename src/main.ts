@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import "./index.css";
 import { initLiff } from "./lib/liff";
+import { langStore } from "./store/lang";
 
 // Global fetch wrapper:
 // 1) Auto-attach x-client-silent-errors=1 for all /api requests
@@ -107,6 +108,9 @@ if (shouldSilenceClientConsole) {
     },
     true,
   );
+
+  // Init language from localStorage / browser preference
+  langStore.init();
 
   app.use(router).mount("#root");
 
