@@ -18,7 +18,8 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "npx playwright test",
     "test:e2e:ui": "npx playwright test --ui",
-    "seed:event-random": "tsx scripts/test-random-event.ts"
+    "seed:event-random": "tsx scripts/test-random-event.ts",
+    "seed:streak-user78": "tsx scripts/test-streak-user78.ts"
   },
   "dependencies": {
     "@line/bot-sdk": "^10.6.0",

@@ -255,7 +255,7 @@
                       <!-- Bento Grid for Core Fitness Targets -->
                       <div class="bento-fitness-targets">
                         <div class="bento-card bento-calories" v-if="insightSweetSpot">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('คำแนะนำแคลอรี่', insightSweetSpot.action + '<br><br><a href=\'https://www.ptpioneer.com/personal-training/tools/total-daily-energy-expenditure-calculator-tdee-calculator/\' target=\'_blank\' class=\'text-orange-500 font-bold hover:underline\'>🔗 อ้างอิงสูตรคำนวณ TDEE & BMR</a>')">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup('คำแนะนำแคลอรี่', insightSweetSpot.action + '<br><br><a href=\'https://www.ptpioneer.com/personal-training/tools/total-daily-energy-expenditure-calculator-tdee-calculator/\' target=\'_blank\' class=\'text-orange-500 font-bold hover:underline\'>🔗 อ้างอิงสูตรคำนวณ TDEE & BMR</a>')">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="bento-icon-bg bg-orange-50">
@@ -266,7 +266,7 @@
                         </div>
 
                         <div class="bento-card bento-water">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('เป้าหมายน้ำดื่ม', 'ดื่มน้ำช่วยกระตุ้นการเผาผลาญและการไหลเวียนของโลหิต โดยการคำนวณตาม น้ำหนักตัว (กก.) x 30 (มล.) = ปริมาณน้ำที่ควรดื่ม (มิลลิลิตร)')">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup('เป้าหมายน้ำดื่ม', 'ดื่มน้ำช่วยกระตุ้นการเผาผลาญและการไหลเวียนของโลหิต โดยการคำนวณตาม น้ำหนักตัว (กก.) x 30 (มล.) = ปริมาณน้ำที่ควรดื่ม (มิลลิลิตร)')">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="bento-icon-bg bg-blue-50">
@@ -277,7 +277,7 @@
                         </div>
 
                         <div class="bento-card bento-protein" v-if="insightProtein">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('เป้าหมายโปรตีน', insightProtein.action + '<br><br><a href=\'https://www.ironman.com/news/protein-non-negotiable-macro\' target=\'_blank\' class=\'text-blue-500 font-bold hover:underline\'>🔗 อ้างอิงเป้าหมายโปรตีนรายวัน</a>')">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup('เป้าหมายโปรตีน', insightProtein.action + '<br><br><a href=\'https://www.ironman.com/news/protein-non-negotiable-macro\' target=\'_blank\' class=\'text-blue-500 font-bold hover:underline\'>🔗 อ้างอิงเป้าหมายโปรตีนรายวัน</a>')">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="bento-icon-bg bg-red-50">
@@ -312,7 +312,7 @@
 
                       <!-- BMI Visualizer (Moved to balance layout) -->
                       <div class="bmi-compact-card relative">
-                        <button class="tooltip-btn" @click.stop="showInfoPopup('ดัชนีมวลกาย (BMI)', bmiImage.desc)">
+                        <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup('ดัชนีมวลกาย (BMI)', bmiImage.desc)">
                           <Lightbulb :size="14" />
                         </button>
                         <div class="bmi-compact-header pr-8">
@@ -342,7 +342,7 @@
                     <!-- Right Column: Detailed Body Metrics Grid & BMI Scale -->
                     <div class="tanita-dashboard-right flex flex-col gap-4">
                       <div class="section-title-wrap">
-                        <Scale :size="16" class="text-orange-500" />
+                        <Scale :size="16" class="text-slate-500" />
                         <h3 class="section-title">องค์ประกอบร่างกายอย่างละเอียด</h3>
                       </div>
 
@@ -350,13 +350,13 @@
                       <div class="metrics-grid">
                         <!-- Weight -->
                         <div class="metric-coach-card">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('น้ำหนักตัว', weightRecommendation)">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup('น้ำหนักตัว', weightRecommendation)">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="m-card-header flex items-center mt-1 pr-10">
-                            <div class="flex items-center gap-1.5 text-blue-500">
-                              <Scale :size="14" class="shrink-0" />
-                              <span class="m-title-mini text-slate-500">น้ำหนักตัว</span>
+                            <div class="flex items-center gap-1.5 text-slate-500">
+                              <Scale :size="14" class="shrink-0 text-blue-500" />
+                              <span class="m-title-mini">น้ำหนักตัว</span>
                             </div>
                           </div>
                           <div class="m-val-mini mt-1 text-slate-800">
@@ -367,13 +367,13 @@
 
                         <!-- Fat Percent -->
                         <div class="metric-coach-card">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('เปอร์เซ็นต์ไขมัน', fatRecommendation)">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup('เปอร์เซ็นต์ไขมัน', fatRecommendation)">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="m-card-header flex items-center mt-1 pr-10">
-                            <div class="flex items-center gap-1.5 text-orange-500">
-                              <Flame :size="14" class="shrink-0" />
-                              <span class="m-title-mini text-slate-500">เปอร์เซ็นต์ไขมัน</span>
+                            <div class="flex items-center gap-1.5 text-slate-500">
+                              <Flame :size="14" class="shrink-0 text-orange-500" />
+                              <span class="m-title-mini">เปอร์เซ็นต์ไขมัน</span>
                             </div>
                           </div>
                           <div class="m-val-mini mt-1 text-slate-800">
@@ -384,13 +384,13 @@
 
                         <!-- Visceral Fat -->
                         <div class="metric-coach-card">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('ไขมันช่องท้อง', visceralRecommendation)">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup('ไขมันช่องท้อง', visceralRecommendation)">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="m-card-header flex items-center mt-1 pr-10">
-                            <div class="flex items-center gap-1.5 text-orange-500">
-                              <Activity :size="14" class="shrink-0" />
-                              <span class="m-title-mini text-slate-500">ไขมันช่องท้อง</span>
+                            <div class="flex items-center gap-1.5 text-slate-500">
+                              <Activity :size="14" class="shrink-0 text-orange-500" />
+                              <span class="m-title-mini">ไขมันช่องท้อง</span>
                             </div>
                           </div>
                           <div class="m-val-mini mt-1 text-slate-800">
@@ -401,13 +401,13 @@
 
                         <!-- Total Body Water -->
                         <div class="metric-coach-card">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('ระดับน้ำในร่างกาย', waterRecommendation)">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup('ระดับน้ำในร่างกาย', waterRecommendation)">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="m-card-header flex items-center mt-1 pr-10">
-                            <div class="flex items-center gap-1.5 text-blue-500">
-                              <Droplets :size="14" class="shrink-0" />
-                              <span class="m-title-mini text-slate-500">ระดับน้ำในร่างกาย</span>
+                            <div class="flex items-center gap-1.5 text-slate-500">
+                              <Droplets :size="14" class="shrink-0 text-blue-500" />
+                              <span class="m-title-mini">ระดับน้ำในร่างกาย</span>
                             </div>
                           </div>
                           <div class="m-val-mini mt-1 text-slate-800">
@@ -418,13 +418,13 @@
 
                         <!-- Muscle Mass -->
                         <div class="metric-coach-card">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('มวลกล้ามเนื้อ', 'ช่วยกระตุ้นระบบเผาผลาญ ควรออกกำลังกายแรงต้านเพื่อรักษามวลกล้ามเนื้อไว้')">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup('มวลกล้ามเนื้อ', 'ช่วยกระตุ้นระบบเผาผลาญ ควรออกกำลังกายแรงต้านเพื่อรักษามวลกล้ามเนื้อไว้')">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="m-card-header flex items-center mt-1 pr-10">
-                            <div class="flex items-center gap-1.5 text-red-500">
-                              <Dumbbell :size="14" class="shrink-0" />
-                              <span class="m-title-mini text-slate-500">มวลกล้ามเนื้อ</span>
+                            <div class="flex items-center gap-1.5 text-slate-500">
+                              <Dumbbell :size="14" class="shrink-0 text-red-500" />
+                              <span class="m-title-mini">มวลกล้ามเนื้อ</span>
                             </div>
                           </div>
                           <div class="m-val-mini mt-1 text-slate-800">
@@ -435,13 +435,13 @@
 
                         <!-- Metabolic Age -->
                         <div class="metric-coach-card">
-                          <button class="tooltip-btn" @click.stop="showInfoPopup('อายุเซลล์', 'อายุเซลล์ควรเท่ากับหรือน้อยกว่าอายุจริง บ่งบอกสุขภาพการฟื้นฟูของเซลล์ที่ดี')">
+                          <button class="tooltip-btn text-slate-400 hover:text-yellow-500 transition-colors" @click.stop="showInfoPopup('อายุเซลล์', 'อายุเซลล์ควรเท่ากับหรือน้อยกว่าอายุจริง บ่งบอกสุขภาพการฟื้นฟูของเซลล์ที่ดี')">
                             <Lightbulb :size="14" />
                           </button>
                           <div class="m-card-header flex items-center mt-1 pr-10">
-                            <div class="flex items-center gap-1.5 text-orange-500">
-                              <Zap :size="14" class="shrink-0" />
-                              <span class="m-title-mini text-slate-500">อายุเซลล์</span>
+                            <div class="flex items-center gap-1.5 text-slate-500">
+                              <Zap :size="14" class="shrink-0 text-orange-500" />
+                              <span class="m-title-mini">อายุเซลล์</span>
                             </div>
                           </div>
                           <div class="m-val-mini mt-1 text-slate-800">
