@@ -383,7 +383,7 @@ const getActivityStatus = (act: any) => {
                 </div>
               </div>
             <div class="info-box">
-              <h4 class="card-title">{{ act.title }}</h4>
+              <h4 class="card-title" v-auto-translate="act.title"></h4>
 
               <!-- แถบแสดงความคืบหน้ารายกิจกรรม -->
               <div class="activity-progress-wrap">
@@ -428,7 +428,7 @@ const getActivityStatus = (act: any) => {
       </div>
       <div class="page-banner mb-6">
         <div class="banner-text">
-          <h2 class="text-2xl font-bold truncate" :title="selectedActivity?.title">{{ selectedActivity?.title }}</h2>
+          <h2 class="text-2xl font-bold truncate" v-auto-translate-title="selectedActivity?.title" v-auto-translate="selectedActivity?.title"></h2>
           <p class="opacity-90 mt-1">{{ langStore.locale === 'th' ? 'เลือกภารกิจที่คุณต้องการส่งผลงาน' : 'Select a mission to submit your work' }}</p>
         </div>
       </div>
@@ -449,7 +449,7 @@ const getActivityStatus = (act: any) => {
               </div>
               <div class="ar-middle">
                 <div class="flex items-center gap-3">
-                  <span class="ar-subject">{{ row.taskName }}</span>
+                  <span class="ar-subject" v-auto-translate="row.taskName"></span>
                   <span class="status-pill" :class="row.statusCode">
                     <template v-if="row.statusCode === 'done'">{{ langStore.t('mission_completed') }}</template>
                     <template v-else-if="row.statusCode === 'pending'">{{ langStore.t('mission_pending_review') }}</template>
@@ -484,7 +484,7 @@ const getActivityStatus = (act: any) => {
         <main class="main-content">
           <div class="page-banner banner-task mb-6">
             <div class="banner-text">
-              <h2>{{ activeTask.note }}</h2>
+              <h2 v-auto-translate="activeTask.note"></h2>
               <div class="mt-4 flex flex-col gap-2 text-sm opacity-90 font-medium">
                 <div class="flex items-center gap-2">
                   <span class="text-white/70">{{ langStore.locale === 'th' ? 'วันส่ง:' : 'Submission Date:' }}</span>
@@ -492,7 +492,7 @@ const getActivityStatus = (act: any) => {
                 </div>
                 <div class="flex items-center gap-2">
                   <span class="text-white/70">{{ langStore.locale === 'th' ? 'ชื่อกิจกรรม:' : 'Activity:' }}</span>
-                  <span>{{ activeTask.evt }}</span>
+                  <span v-auto-translate="activeTask.evt"></span>
                 </div>
                 <div class="flex items-center gap-2">
                   <span class="text-white/70">{{ langStore.locale === 'th' ? 'คะแนนที่ได้:' : 'Points awarded:' }}</span>
@@ -633,7 +633,10 @@ const getActivityStatus = (act: any) => {
           </div>
 
           <h2 class="celebration-title">{{ langStore.locale === 'th' ? 'ยินดีด้วย! ส่งภารกิจสำเร็จ 🎉' : 'Congratulations! Mission submitted 🎉' }}</h2>
-          <p class="celebration-desc" v-html="langStore.locale === 'th' ? `คุณได้ทำภารกิจ <strong>&quot;${celebrationTaskTitle}&quot;</strong> เสร็จสมบูรณ์แล้ว` : `You have successfully completed the mission <strong>&quot;${celebrationTaskTitle}&quot;</strong>.`"></p>
+          <p class="celebration-desc">
+            <span v-if="langStore.locale === 'th'">คุณได้ทำภารกิจ <strong>"{{ celebrationTaskTitle }}"</strong> เสร็จสมบูรณ์แล้ว</span>
+            <span v-else>You have successfully completed the mission <strong v-auto-translate="celebrationTaskTitle"></strong>.</span>
+          </p>
           
           <div class="points-gain-badge">
             <Star class="fill-current" :size="16" />

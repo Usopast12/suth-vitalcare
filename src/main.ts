@@ -4,6 +4,7 @@ import router from "./router";
 import "./index.css";
 import { initLiff } from "./lib/liff";
 import { langStore } from "./store/lang";
+import { vAutoTranslate, vAutoTranslateTitle } from "./directives/autoTranslate";
 
 // Global fetch wrapper:
 // 1) Auto-attach x-client-silent-errors=1 for all /api requests
@@ -111,6 +112,9 @@ if (shouldSilenceClientConsole) {
 
   // Init language from localStorage / browser preference
   langStore.init();
+
+  app.directive('auto-translate', vAutoTranslate);
+  app.directive('auto-translate-title', vAutoTranslateTitle);
 
   app.use(router).mount("#root");
 

@@ -1,4 +1,5 @@
 import { ref, computed, watch } from 'vue'
+import { langStore } from '../store/lang'
 export function useProfileEvents(user, activeTabRef) {
   const registrations = ref([])
   const userSubmissions = ref([])
@@ -41,10 +42,10 @@ export function useProfileEvents(user, activeTabRef) {
   const calYear = computed(() => calDate.value.getFullYear())
 
   const calMonthLabel = computed(() => {
-    return new Intl.DateTimeFormat('th-TH', { month: 'long' }).format(calDate.value)
+    return new Intl.DateTimeFormat(langStore.locale === 'en' ? 'en-US' : 'th-TH', { month: 'long' }).format(calDate.value)
   })
   const calYearLabel = computed(() => {
-    return calDate.value.getFullYear() + 543
+    return langStore.locale === 'en' ? calDate.value.getFullYear() : calDate.value.getFullYear() + 543
   })
 
   function prevMonth() {
@@ -363,15 +364,24 @@ export function useProfileEvents(user, activeTabRef) {
     return 'open';
   };
   const MONTHS_TH = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
+  const MONTHS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
   function formatDate(dateStr) {
     if (!dateStr) return '–'
     const d = new Date(dateStr)
-    return `${d.getDate()} ${MONTHS_TH[d.getMonth()]} ${d.getFullYear() + 543}`
+    const isEn = langStore.locale === 'en'
+    const m = isEn ? MONTHS_EN[d.getMonth()] : MONTHS_TH[d.getMonth()]
+    const y = isEn ? d.getFullYear() : d.getFullYear() + 543
+    return `${d.getDate()} ${m} ${y}`
   }
   function formatDateRange(start, end) {
     if (!start) return '–'
     const s = new Date(start), e = new Date(end)
-    if (s.getMonth() === e.getMonth()) return `${s.getDate()} – ${e.getDate()} ${MONTHS_TH[s.getMonth()]} ${s.getFullYear() + 543}`
+    const isEn = langStore.locale === 'en'
+    if (s.getMonth() === e.getMonth()) {
+      const m = isEn ? MONTHS_EN[s.getMonth()] : MONTHS_TH[s.getMonth()]
+      const y = isEn ? s.getFullYear() : s.getFullYear() + 543
+      return `${s.getDate()} – ${e.getDate()} ${m} ${y}`
+    }
     return `${formatDate(start)} – ${formatDate(end)}`
   }
   function formatEventRemaining(event) {
@@ -379,10 +389,11 @@ export function useProfileEvents(user, activeTabRef) {
     const now = new Date()
     const start = new Date(event.start_date)
     const end = new Date(event.end_date)
+    const isEn = langStore.locale === 'en'
     if (now > end) return formatDateRange(event.start_date, event.end_date)
-    if (now < start) return `เริ่มในอีก ${Math.ceil((start.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))} วัน`
+    if (now < start) return isEn ? `Starts in ${Math.ceil((start.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))} days` : `เริ่มในอีก ${Math.ceil((start.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))} วัน`
     const days = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-    return days <= 0 ? 'วันสุดท้าย' : `เหลืออีก ${days} วัน`
+    return days <= 0 ? (isEn ? 'Last day' : 'วันสุดท้าย') : (isEn ? `${days} days left` : `เหลืออีก ${days} วัน`)
   }
   function getEventScore(eventId) {
     return userSubmissions.value.filter(s => {

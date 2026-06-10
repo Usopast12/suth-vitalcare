@@ -555,7 +555,7 @@
                                 <ImageIcon v-else :size="14" />
                               </div>
                               <div class="item-info">
-                                <div class="item-name">{{ reg.event.title }}</div>
+                                <div class="item-name" v-auto-translate="reg.event.title"></div>
                                 <div class="item-sub">{{ langStore.t('your_registered_event') }}</div>
                               </div>
                             </div>
@@ -606,8 +606,8 @@
                       <div v-if="missionStats.length" class="stats-grid-simple">
                         <div v-for="stat in missionStats" :key="stat.taskId" class="stat-row">
                           <div class="stat-info">
-                            <div class="stat-t-name">{{ stat.taskName }}</div>
-                            <div class="stat-e-name">{{ stat.eventName }}</div>
+                            <div class="stat-t-name" v-auto-translate="stat.taskName"></div>
+                            <div class="stat-e-name" v-auto-translate="stat.eventName"></div>
                           </div>
                           <div class="stat-metrics">
                             <div class="metric">
@@ -657,7 +657,7 @@
                       <input 
                         v-model="titleSearchQuery" 
                         type="text" 
-                        placeholder="ค้นหาชื่อฉายา..." 
+                        :placeholder="langStore.t('search_title_name')" 
                         class="title-search-input"
                       />
                     </div>
@@ -729,10 +729,10 @@
               </div>
             </div>
            <div class="card-footer" v-if="editing && isMobileScreen">
-              <button class="btn-outline w-full" @click="cancelEdit">ยกเลิก</button>
+              <button class="btn-outline w-full" @click="cancelEdit">{{ langStore.t('cancel') }}</button>
               <button class="btn-primary w-full" @click="saveEdit" :disabled="isSubmitting">
                 <Loader2 v-if="isSubmitting" class="spin mr-2" :size="18" />
-                {{ langStore.locale === 'th' ? '\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25' : 'Save Data' }}
+                {{ langStore.t('save_data') }}
               </button>
             </div>
           </div>
@@ -747,7 +747,7 @@
                 </button>
               </div>
               <div class="tn-title">{{ tanita ? (langStore.t('edit_health_data')) : (langStore.t('add_health_data')) }}</div>
-              <button class="tn-close" v-if="!isMobileScreen" @click="showTanitaModal = false" aria-label="ปิด">
+              <button class="tn-close" v-if="!isMobileScreen" @click="showTanitaModal = false" :aria-label="langStore.t('close')">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
@@ -782,45 +782,45 @@
                 </div>
               </div>
               <div class="tn-grid-3">
-                <div class="tn-f-group"><input type="number" v-model="tanitaForm.height" placeholder=" "/><label>ส่วนสูง (cm)</label></div>
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.weight" placeholder=" "/><label>น้ำหนัก (kg)</label></div>
-                <div class="tn-f-group"><input type="text" v-model="tanitaForm.bodyType" placeholder=" "/><label>ประเภทร่างกาย</label></div>
+                <div class="tn-f-group"><input type="number" v-model="tanitaForm.height" placeholder=" "/><label>{{ langStore.t('height_cm') }}</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.weight" placeholder=" "/><label>{{ langStore.t('weight_kg') }}</label></div>
+                <div class="tn-f-group"><input type="text" v-model="tanitaForm.bodyType" placeholder=" "/><label>{{ langStore.t('body_type') }}</label></div>
               </div>
               <div class="tn-grid-2" style="margin-bottom:4px">
                 <div class="tn-f-group">
                   <input type="number" v-model="tanitaForm.age" placeholder=" "/>
-                  <label>อายุ (ปี) <span style="font-size:10px;color:#94a3b8">(จากวันเกิด)</span></label>
+                  <label>{{ langStore.t('age_years') }} <span style="font-size:10px;color:#94a3b8">({{ langStore.t('from_birthdate') }})</span></label>
                 </div>
               </div>
-              <div class="tn-divider-label">องค์ประกอบร่างกาย</div>
+              <div class="tn-divider-label">{{ langStore.t('body_composition') }}</div>
               <div class="tn-grid-2">
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.fatPercent" placeholder=" "/><label>ไขมัน (%)</label></div>
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.fatMass" placeholder=" "/><label>มวลไขมัน (kg)</label></div>
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.ffm" placeholder=" "/><label>มวลไร้ไขมัน FFM (kg)</label></div>
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.muscleMass" placeholder=" "/><label>มวลกล้ามเนื้อ (kg)</label></div>
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.bodyWaterMass" placeholder=" "/><label>มวลน้ำ (kg)</label></div>
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.bodyWaterPercent" placeholder=" "/><label>น้ำในร่างกาย (%)</label></div>
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.boneMass" placeholder=" "/><label>มวลกระดูก (kg)</label></div>
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.clothesWeight" placeholder=" "/><label>น้ำหนักเสื้อผ้า (kg)</label></div>
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.waist_cm" placeholder=" "/><label>รอบเอว (cm)</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.fatPercent" placeholder=" "/><label>{{ langStore.t('fat_percent') }}</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.fatMass" placeholder=" "/><label>{{ langStore.t('fat_mass_kg') }}</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.ffm" placeholder=" "/><label>{{ langStore.t('ffm_kg') }}</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.muscleMass" placeholder=" "/><label>{{ langStore.t('muscle_mass_kg') }}</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.bodyWaterMass" placeholder=" "/><label>{{ langStore.t('body_water_mass_kg') }}</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.bodyWaterPercent" placeholder=" "/><label>{{ langStore.t('body_water_percent') }}</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.boneMass" placeholder=" "/><label>{{ langStore.t('bone_mass_kg') }}</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.clothesWeight" placeholder=" "/><label>{{ langStore.t('clothes_weight_kg') }}</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.waist_cm" placeholder=" "/><label>{{ langStore.t('waist_cm') }}</label></div>
               </div>
-              <div class="tn-divider-label">ระบบเผาผลาญ & ดัชนีสุขภาพ</div>
+              <div class="tn-divider-label">{{ langStore.t('metabolism_health_index') }}</div>
               <div class="tn-grid-2">
                 <div class="tn-f-group"><input type="number" v-model="tanitaForm.bmrKj" placeholder=" "/><label>BMR (kJ)</label></div>
                 <div class="tn-f-group"><input type="number" v-model="tanitaForm.bmrKcal" placeholder=" "/><label>BMR (kcal)</label></div>
-                <div class="tn-f-group"><input type="number" v-model="tanitaForm.metabolicAge" placeholder=" "/><label>อายุเมตาบอลิก (ปี)</label></div>
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.visceralFat" placeholder=" "/><label>ไขมันช่องท้อง</label></div>
+                <div class="tn-f-group"><input type="number" v-model="tanitaForm.metabolicAge" placeholder=" "/><label>{{ langStore.t('metabolic_age_years') }}</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.visceralFat" placeholder=" "/><label>{{ langStore.t('visceral_fat') }}</label></div>
                 <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.bmi" placeholder=" "/><label>BMI</label></div>
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.idealWeight" placeholder=" "/><label>น้ำหนักที่เหมาะสม (kg)</label></div>
-                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.obesityDegree" placeholder=" "/><label>ระดับความอ้วน (%)</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.idealWeight" placeholder=" "/><label>{{ langStore.t('ideal_weight_kg') }}</label></div>
+                <div class="tn-f-group"><input type="number" step="0.1" v-model="tanitaForm.obesityDegree" placeholder=" "/><label>{{ langStore.t('obesity_degree') }}</label></div>
                 <div class="tn-f-group"><input type="number" v-model="tanitaForm.physiqueRating" placeholder=" "/><label>Physique Rating</label></div>
               </div>
             </div>
             <div class="tn-footer">
-              <button class="tn-btn-cancel" @click="showTanitaModal = false">ยกเลิก</button>
+              <button class="tn-btn-cancel" @click="showTanitaModal = false">{{ langStore.t('cancel') }}</button>
               <button class="tn-btn-save" @click="submitTanitaForm" :disabled="isSavingTanita">
                 <Loader2 v-if="isSavingTanita" class="spin" :size="14" />
-                {{ langStore.locale === 'th' ? '\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25' : 'Save Data' }}
+                {{ langStore.t('save_data') }}
               </button>
             </div>
           </div>
@@ -837,8 +837,8 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
                 </button>
               </div>
-              <div class="tn-title">ภารกิจวันที่ {{ formatDate(selectedDate) }}</div>
-              <button class="tn-close" v-if="!isMobileScreen" @click="showMissionPopup = false" aria-label="ปิด">
+              <div class="tn-title">{{ langStore.t('mission_date') }} {{ formatDate(selectedDate) }}</div>
+              <button class="tn-close" v-if="!isMobileScreen" @click="showMissionPopup = false" :aria-label="langStore.t('close')">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
@@ -854,23 +854,23 @@
                     <span v-else class="m-emoji">📋</span>
                   </div>
                   <div class="m-info">
-                    <div class="m-title">{{ m.task?.note || 'ภารกิจ' }}</div>
+                    <div class="m-title">{{ m.task?.note || langStore.t('mission') }}</div>
                     <div class="m-meta">{{ m.event?.title }}</div>
                   </div>
                   <div class="m-badge" :class="m.status">
                     {{ 
-                      m.status === 'approved' ? 'ส่งแล้ว' : 
-                      m.status === 'pending' ? 'รอตรวจสอบ' : 
-                      m.status === 'rejected' ? 'ปฏิเสธ' :
-                      m.status === 'missed' ? 'ไม่ส่ง' : 
-                      m.status === 'active' ? 'รอส่ง' : 'ยังไม่ถึง'
+                      m.status === 'approved' ? langStore.t('submitted') : 
+                      m.status === 'pending' ? langStore.t('mission_pending_review') : 
+                      m.status === 'rejected' ? langStore.t('rejected') :
+                      m.status === 'missed' ? langStore.t('missed') : 
+                      m.status === 'active' ? langStore.t('due_today') : langStore.t('not_due_yet')
                     }}
                   </div>
                 </div>
               </div>
               <div v-else class="empty-mini py-12">
                 <VenetianMask :size="32" class="opacity-20 mb-2" />
-                <span class="text-gray-500 font-medium">ไม่มีกิจกรรมในวันนี้</span>
+                <span class="text-gray-500 font-medium">{{ langStore.t('no_activities_today') }}</span>
               </div>
             </div>
 
@@ -882,17 +882,17 @@
                   :disabled="currentPopupPage === 1" 
                   @click="currentPopupPage--"
                 >
-                  ย้อนกลับ
+                  {{ langStore.t('prev_step') }}
                 </button>
                 <span class="pagination-indicator">
-                  หน้า {{ currentPopupPage }} / {{ totalPopupPages }}
+                  {{ langStore.t('page_label') }} {{ currentPopupPage }} / {{ totalPopupPages }}
                 </span>
                 <button 
                   class="btn-pagination-next" 
                   :disabled="currentPopupPage === totalPopupPages" 
                   @click="currentPopupPage++"
                 >
-                  ถัดไป
+                  {{ langStore.t('next_step') }}
                 </button>
               </div>
             </div>
@@ -951,7 +951,7 @@ const showInfoPopup = (title, text) => {
     html: text,
     icon: 'info',
     confirmButtonColor: '#F05A23',
-    confirmButtonText: 'เข้าใจแล้ว',
+    confirmButtonText: langStore.t('acknowledge_btn'),
     customClass: {
       popup: 'premium-swal-popup',
       confirmButton: 'premium-swal-confirm'
@@ -962,12 +962,12 @@ const showInfoPopup = (title, text) => {
 const handleClaim = async (title) => {
   if (title.unlock_type === 'code') {
     const { value: code } = await Swal.fire({
-      title: 'กรอกรหัสปลดล็อค',
+      title: langStore.t('enter_unlock_code'),
       input: 'text',
-      inputPlaceholder: 'กรอกรหัสเพื่อรับฉายานี้...',
+      inputPlaceholder: langStore.t('enter_code_placeholder'),
       showCancelButton: true,
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก',
+      confirmButtonText: langStore.t('confirm'),
+      cancelButtonText: langStore.t('cancel'),
       confirmButtonColor: '#F05A23',
       customClass: {
         popup: 'premium-swal-popup',
@@ -982,15 +982,15 @@ const handleClaim = async (title) => {
     if (res.success) {
       Swal.fire({
         icon: 'success',
-        title: 'ปลดล็อคสำเร็จ!',
-        text: `คุณได้รับฉายา "${title.name}" แล้ว`,
+        title: langStore.t('unlock_success'),
+        text: langStore.t('unlocked_title_msg').replace('{title}', title.name),
         confirmButtonColor: '#F05A23'
       })
     } else {
       Swal.fire({
         icon: 'error',
-        title: 'รหัสไม่ถูกต้อง',
-        text: res.error || 'กรุณาตรวจสอบรหัสอีกครั้ง',
+        title: langStore.t('invalid_code'),
+        text: res.error || langStore.t('check_code_again'),
         confirmButtonColor: '#F05A23'
       })
     }
@@ -1000,15 +1000,15 @@ const handleClaim = async (title) => {
     if (res.success) {
       Swal.fire({
         icon: 'success',
-        title: 'สำเร็จ!',
-        text: `ปลดล็อคฉายา "${title.name}" เรียบร้อย`,
+        title: langStore.t('success'),
+        text: langStore.t('unlocked_title_msg').replace('{title}', title.name),
         confirmButtonColor: '#F05A23'
       })
     } else {
       Swal.fire({
         icon: 'warning',
-        title: 'ยังไม่สามารถปลดล็อคได้',
-        text: res.error || 'คุณยังทำตามเงื่อนไขไม่ครบถ้วน',
+        title: langStore.t('cannot_unlock_yet'),
+        text: res.error || langStore.t('requirements_not_met'),
         confirmButtonColor: '#F05A23'
       })
     }
@@ -1050,8 +1050,8 @@ const {
 
 const recommendedWater = computed(() => {
   const w = parseFloat(String(latestWeight.value))
-  if (isNaN(w) || w <= 0) return '2.0 - 3.0 ลิตร'
-  return (Math.round(w * 33 / 100) / 10).toFixed(1) + ' ลิตร'
+  if (isNaN(w) || w <= 0) return '2.0 - 3.0 ' + langStore.t('liters')
+  return (Math.round(w * 33 / 100) / 10).toFixed(1) + ' ' + langStore.t('liters')
 })
 
 const genderLabel = computed(() => {
@@ -1065,11 +1065,11 @@ const weightRecommendation = computed(() => {
   if (isNaN(w) || isNaN(ideal) || w <= 0) return '–'
   const diff = w - ideal
   if (diff > 0) {
-    return `ลดไขมันอีก ${diff.toFixed(1)} กก. (เป้าหมาย: ${ideal.toFixed(1)} กก.)`
+    return langStore.t('lose_fat_more').replace('{val}', diff.toFixed(1)).replace('{target}', ideal.toFixed(1))
   } else if (diff < 0) {
-    return `เพิ่มกล้ามเนื้ออีก ${Math.abs(diff).toFixed(1)} กก. (เป้าหมาย: ${ideal.toFixed(1)} กก.)`
+    return langStore.t('gain_muscle_more').replace('{val}', Math.abs(diff).toFixed(1)).replace('{target}', ideal.toFixed(1))
   }
-  return 'น้ำหนักเหมาะสมดีเยี่ยม!'
+  return langStore.t('ideal_weight_excellent')
 })
 
 const fatRecommendation = computed(() => {
@@ -1079,20 +1079,20 @@ const fatRecommendation = computed(() => {
   const maxNormal = isFemale ? 30 : 20
   const minNormal = isFemale ? 20 : 10
   if (fat > maxNormal) {
-    return `ควรลดไขมันลงอีก ${(fat - maxNormal).toFixed(1)}% (ช่วงปกติ: ${minNormal}-${maxNormal}%)`
+    return langStore.t('reduce_fat_more').replace('{val}', (fat - maxNormal).toFixed(1)).replace('{min}', minNormal).replace('{max}', maxNormal)
   } else if (fat < minNormal) {
-    return `ควรเพิ่มไขมันขึ้นอีก ${(minNormal - fat).toFixed(1)}% (ช่วงปกติ: ${minNormal}-${maxNormal}%)`
+    return langStore.t('increase_fat_more').replace('{val}', (minNormal - fat).toFixed(1)).replace('{min}', minNormal).replace('{max}', maxNormal)
   }
-  return `อยู่ในเกณฑ์ดีเยี่ยม! (เกณฑ์ปกติ: ${minNormal}-${maxNormal}%)`
+  return langStore.t('excellent_fat_level').replace('{min}', minNormal).replace('{max}', maxNormal)
 })
 
 const visceralRecommendation = computed(() => {
   const vis = parseFloat(String(tanita.value?.visceral_fat))
   if (isNaN(vis) || vis <= 0) return '–'
   if (vis >= 10) {
-    return `ควรลดลงอีก ${(vis - 9)} ระดับ (เป้าหมายปลอดภัย: < 9)`
+    return langStore.t('reduce_visceral_more').replace('{val}', (vis - 9))
   }
-  return 'ดีเยี่ยม! ปลอดภัยจากโรค NCDs (ระดับ < 9)'
+  return langStore.t('excellent_visceral_level')
 })
 
 const waterRecommendation = computed(() => {
@@ -1102,9 +1102,9 @@ const waterRecommendation = computed(() => {
   const minNormal = isFemale ? 45 : 55
   const maxNormal = isFemale ? 60 : 65
   if (tbw < minNormal) {
-    return `ดื่มน้ำเพิ่มอีกเพื่อเพิ่ม ${(minNormal - tbw).toFixed(1)}% (เป้าหมาย: ${minNormal}-${maxNormal}%)`
+    return langStore.t('drink_water_more').replace('{val}', (minNormal - tbw).toFixed(1)).replace('{min}', minNormal).replace('{max}', maxNormal)
   }
-  return `สมบูรณ์ดีมาก! (เกณฑ์ปกติ: ${minNormal}-${maxNormal}%)`
+  return langStore.t('excellent_water_level').replace('{min}', minNormal).replace('{max}', maxNormal)
 })
 const {
   registrations, userSubmissions, team, memberCount, teamProgress, teamGoal,
@@ -1147,9 +1147,9 @@ const handleSelectDay = (day) => {
 const isCalDropdownOpen = ref(false)
 const calActivitySearch = ref('')
 const currentCalActivityTitle = computed(() => {
-  if (!selectedEventId.value) return 'แสดงภารกิจทั้งหมด'
+  if (!selectedEventId.value) return langStore.t('show_all_missions')
   const reg = registrations.value.find(r => r.event.id === selectedEventId.value)
-  return reg ? reg.event.title : 'แสดงภารกิจทั้งหมด'
+  return reg ? reg.event.title : langStore.t('show_all_missions')
 })
 const filteredCalActivities = computed(() => {
   if (!calActivitySearch.value) return registrations.value
@@ -1190,19 +1190,19 @@ function closeTab() {
 }
 const currentTabTitle = computed(() => {
   const titles = { 
-    dashboard: 'สรุปผลกิจกรรม',
-    general: 'ข้อมูลของฉัน', 
-    contact: 'ข้อมูลติดต่อ', 
-    tanita: 'ข้อมูลองค์ประกอบร่างกาย', 
-    calendar: 'ปฏิทินภารกิจ',
-    team: 'ทีมของฉัน', 
-    events: 'กิจกรรมที่สมัคร',
-    titles: 'ฉายาของฉัน'
+    dashboard: langStore.t('dashboard_title'),
+    general: langStore.t('my_info'), 
+    contact: langStore.t('contact_info'), 
+    tanita: langStore.t('body_composition'), 
+    calendar: langStore.t('mission_calendar'),
+    team: langStore.t('my_team'), 
+    events: langStore.t('registered_events'),
+    titles: langStore.t('my_titles')
   }
   return titles[activeTab.value] || ''
 })
 const currentTabSubtitle = computed(() => {
-  if (activeTab.value === 'general' || activeTab.value === 'contact') return 'จัดการข้อมูลส่วนตัวคุณเพื่อการใช้งานที่สมบูรณ์'
+  if (activeTab.value === 'general' || activeTab.value === 'contact') return langStore.t('profile_management_subtitle')
   return ''
 })
 const canEditTab = computed(() => activeTab.value === 'general' || activeTab.value === 'contact')

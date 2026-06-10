@@ -17,7 +17,7 @@
       <table>
         <thead>
           <tr>
-            <th v-for="day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :key="day">{{ day }}</th>
+            <th v-for="(day, index) in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :key="day">{{ langStore.locale === 'th' ? ['จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.', 'อา.'][index] : day }}</th>
           </tr>
         </thead>
         <tbody>
@@ -48,10 +48,10 @@
                       class="mission-bar"
                       :class="m.status"
                     >
-                      <span class="mission-text">{{ m.task?.note || m.task?.type || 'ภารกิจ' }}</span>
+                      <span class="mission-text" v-auto-translate="m.task?.note || m.task?.type || langStore.t('mission_activity')"></span>
                     </div>
                     <div v-if="day.missions.length > maxBars" class="more-bars">
-                      +{{ day.missions.length - maxBars }} เพิ่มเติม
+                      +{{ day.missions.length - maxBars }} {{ langStore.t('more_items') }}
                     </div>
                   </div>
                   <!-- fallback if missions not provided -->
@@ -71,6 +71,7 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { langStore } from '../store/lang'
 
 const props = defineProps({
   days: { type: Array, required: true },

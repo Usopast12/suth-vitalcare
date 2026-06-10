@@ -38,7 +38,7 @@
         <button class="btn-back-hero" @click="handleBack">
           <ArrowLeftIcon :size="24" />
         </button>
-        <h1 class="event-title-hero">{{ event.title }}</h1>
+        <h1 class="event-title-hero" v-auto-translate="event.title"></h1>
       </div>
       <div class="content-grid">
         <div class="left-column">
@@ -297,14 +297,14 @@
               <SparklesIcon :size="18" class="inline mr-1 flex-shrink-0" />
               {{ langStore.locale === 'th' ? 'สิ่งที่จะได้รับ' : 'What you will receive' }}
             </h3>
-            <p class="prose">{{ event.inclusions }}</p>
+            <p class="prose" v-auto-translate="event.inclusions"></p>
           </div>
           <div v-if="event.rules_regulations" class="content-section mt-6">
             <h3 class="section-title">{{ langStore.locale === 'th' ? 'กติกาและเงื่อนไข' : 'Rules and Conditions' }}</h3>
             <div class="prose" v-html="sanitizedRules"></div>
           </div>
           <div v-for="(sec, i) in parsedSections" :key="i" class="content-section mt-6">
-            <h3 class="section-title">{{ sec.title }}</h3>
+            <h3 class="section-title" v-auto-translate="sec.title"></h3>
             <img v-if="sec.image" :src="sec.image" class="w-full rounded-2xl mb-4 object-cover shadow-sm" />
             <div class="prose" v-html="sanitizeHtml(sec.content)"></div>
           </div>

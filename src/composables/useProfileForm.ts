@@ -1,5 +1,6 @@
 import { ref, computed, watch } from "vue";
 import { authStore } from "../store/auth";
+import { langStore } from "../store/lang";
 import { showError } from "../lib/swal";
 import {
   User,
@@ -92,8 +93,8 @@ export function useProfileForm(user: any, tanitaRef: any) {
   });
   function setDisease(type) {
     underlyingDiseaseState.value = type;
-    if (type === "no") form.value.underlying_disease = "ไม่มีโรคประจำตัว";
-    else if (form.value.underlying_disease === "ไม่มีโรคประจำตัว")
+    if (type === "no") form.value.underlying_disease = langStore.t('no_underlying_disease');
+    else if (form.value.underlying_disease === langStore.t('no_underlying_disease') || form.value.underlying_disease === "ไม่มีโรคประจำตัว")
       form.value.underlying_disease = "";
   }
   function startEdit() {
@@ -104,8 +105,8 @@ export function useProfileForm(user: any, tanitaRef: any) {
       if (u.role_detail_2.includes(" - ")) {
         const parts = u.role_detail_2.split(" - ");
         let fac = parts[0];
-        if (fac && !uniFaculties.includes(fac)) {
-          form.value.univ_faculty = "อื่น ๆ";
+        if (fac && !uniFaculties.value.includes(fac) && fac !== langStore.t('others') && fac !== "อื่น ๆ") {
+          form.value.univ_faculty = langStore.t('others');
           form.value.univ_faculty_other = fac;
         } else {
           form.value.univ_faculty = fac;
@@ -113,8 +114,8 @@ export function useProfileForm(user: any, tanitaRef: any) {
         form.value.univ_year = parts[1];
       } else {
         let fac = u.role_detail_2;
-        if (fac && !uniFaculties.includes(fac)) {
-          form.value.univ_faculty = "อื่น ๆ";
+        if (fac && !uniFaculties.value.includes(fac) && fac !== langStore.t('others') && fac !== "อื่น ๆ") {
+          form.value.univ_faculty = langStore.t('others');
           form.value.univ_faculty_other = fac;
         } else {
           form.value.univ_faculty = fac;
@@ -122,8 +123,8 @@ export function useProfileForm(user: any, tanitaRef: any) {
       }
     } else if (u?.role_type === "บุคลากรมหาวิทยาลัย") {
       let dep = u?.role_detail_1;
-      if (dep && !uniFaculties.includes(dep) && dep !== "") {
-        form.value.role_detail_1 = "อื่น ๆ";
+      if (dep && !uniFaculties.value.includes(dep) && dep !== "" && dep !== langStore.t('others') && dep !== "อื่น ๆ") {
+        form.value.role_detail_1 = langStore.t('others');
         form.value.role_detail_1_other = dep;
       }
     }
@@ -174,7 +175,7 @@ export function useProfileForm(user: any, tanitaRef: any) {
       if (form.value.email) {
         const email = form.value.email.toLowerCase().trim();
         if (!email.endsWith("@gmail.com")) {
-          showError("กรุณาใช้อีเมลของ Gmail (@gmail.com) เท่านั้น");
+          showError(langStore.t('gmail_only_error') || "กรุณาใช้อีเมลของ Gmail (@gmail.com) เท่านั้น");
           return;
         }
         form.value.email = email;
@@ -183,7 +184,7 @@ export function useProfileForm(user: any, tanitaRef: any) {
       if (form.value.phone) {
         const digits = form.value.phone.replace(/\D/g, "");
         if (digits.length !== 10) {
-          showError("กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 หลัก");
+          showError(langStore.t('phone_10_digits_error') || "กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 หลัก");
           return;
         }
       }
@@ -196,7 +197,8 @@ export function useProfileForm(user: any, tanitaRef: any) {
       if (form.value.role_type === "นักศึกษา" && form.value.univ_faculty) {
         const finalFac =
           form.value.univ_faculty === "อื่น ๆ" ||
-          form.value.univ_faculty === "อื่นๆ"
+          form.value.univ_faculty === "อื่นๆ" ||
+          form.value.univ_faculty === langStore.t('others')
             ? form.value.univ_faculty_other || ""
             : form.value.univ_faculty;
         form.value.role_detail_2 = `${finalFac}${form.value.univ_year ? " - " + form.value.univ_year : ""}`;
@@ -206,7 +208,8 @@ export function useProfileForm(user: any, tanitaRef: any) {
       } else if (
         form.value.role_type === "บุคลากรมหาวิทยาลัย" &&
         (form.value.role_detail_1 === "อื่น ๆ" ||
-          form.value.role_detail_1 === "อื่นๆ")
+          form.value.role_detail_1 === "อื่นๆ" ||
+          form.value.role_detail_1 === langStore.t('others'))
       ) {
         form.value.role_detail_1 = form.value.role_detail_1_other || "";
         delete form.value.role_detail_1_other;
@@ -229,11 +232,11 @@ export function useProfileForm(user: any, tanitaRef: any) {
         // Optionally show success message
       } else {
         const errorData = await res.json().catch(() => ({}));
-        showError(errorData.error || "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
+        showError(errorData.error || langStore.t('save_failed_retry') || "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
       }
     } catch (err: any) {
       console.error("[saveEdit] Error:", err);
-      showError("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+      showError(langStore.t('server_connection_error') || "เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
     } finally {
       isSubmitting.value = false;
     }
@@ -321,7 +324,7 @@ export function useProfileForm(user: any, tanitaRef: any) {
       }
     } catch (err) {
       console.error("[upload:profile:error]", err);
-      showError("ไม่สามารถอัปโหลดรูปโปรไฟล์ได้ กรุณาลองใหม่อีกครั้ง");
+      showError(langStore.t('upload_failed_retry') || "ไม่สามารถอัปโหลดรูปโปรไฟล์ได้ กรุณาลองใหม่อีกครั้ง");
     } finally {
       isUploading.value = false;
       if (e.target) e.target.value = "";
@@ -425,7 +428,7 @@ export function useProfileForm(user: any, tanitaRef: any) {
       maxBmi: 18.5,
       src: "/underweight.png",
       label: "ผอมเกินเกณฑ์",
-      badge: "น้ำหนักน้อยกว่าเกณฑ์",
+      badge: langStore.t('bmi_under_badge'),
       badgeStyle: { background: "#e0f2fe", color: "#075985" },
       color: "#0369a1",
       descStyle: {
@@ -433,14 +436,14 @@ export function useProfileForm(user: any, tanitaRef: any) {
         border: "1px solid #bae6fd",
         color: "#075985",
       },
-      desc: "BMI < 18.5: ร่างกายอาจได้รับสารอาหารไม่เพียงพอ ควรเน้นทานโปรตีนและคาร์โบไฮเดรตเชิงซ้อน (อ้างอิง: กองส่งเสริมความรอบรู้และสื่อสารสุขภาพ)",
+      desc: langStore.t('bmi_under_desc'),
       dotIndex: 0,
     },
     {
       maxBmi: 22.9,
       src: "/normalweight.png",
       label: "ปกติ / สมส่วน",
-      badge: "ร่างกายสมส่วน",
+      badge: langStore.t('bmi_normal_badge'),
       badgeStyle: { background: "#dcfce7", color: "#166534" },
       color: "#10b981",
       descStyle: {
@@ -448,14 +451,14 @@ export function useProfileForm(user: any, tanitaRef: any) {
         border: "1px solid #bbf7d0",
         color: "#166534",
       },
-      desc: "BMI 18.5 - 22.9: น้ำหนักอยู่ในเกณฑ์มาตรฐาน สุขภาพดีเยี่ยม (อ้างอิง: กองส่งเสริมความรอบรู้และสื่อสารสุขภาพ)",
+      desc: langStore.t('bmi_normal_desc'),
       dotIndex: 1,
     },
     {
       maxBmi: 24.9,
       src: "/overweight.png",
       label: "รูปร่างท้วม",
-      badge: "เริ่มมีน้ำหนักเกิน",
+      badge: langStore.t('bmi_over_badge'),
       badgeStyle: { background: "#fef9c3", color: "#854d0e" },
       color: "#ca8a04",
       descStyle: {
@@ -463,14 +466,14 @@ export function useProfileForm(user: any, tanitaRef: any) {
         border: "1px solid #fef08a",
         color: "#854d0e",
       },
-      desc: "BMI 23.0 - 24.9: เริ่มมีน้ำหนักเกินเกณฑ์มาตรฐานเล็กน้อย ควรคุมอาหารหวานและมัน (อ้างอิง: กองส่งเสริมความรอบรู้และสื่อสารสุขภาพ)",
+      desc: langStore.t('bmi_over_desc'),
       dotIndex: 2,
     },
     {
       maxBmi: 29.9,
       src: "/chubbyweight.png",
       label: "น้ำหนักเกินระดับ 1",
-      badge: "น้ำหนักเกินระดับ 1",
+      badge: langStore.t('bmi_obese1_badge'),
       badgeStyle: { background: "#ffedd5", color: "#9a3412" },
       color: "#ea580c",
       descStyle: {
@@ -478,14 +481,14 @@ export function useProfileForm(user: any, tanitaRef: any) {
         border: "1px solid #fed7aa",
         color: "#9a3412",
       },
-      desc: "BMI 25.0 - 29.9: สภาวะท้วมระดับ 1 ควรเพิ่มการเคลื่อนไหวและคุมแคลอรี่ (อ้างอิง: กองส่งเสริมความรอบรู้และสื่อสารสุขภาพ)",
+      desc: langStore.t('bmi_obese1_desc'),
       dotIndex: 3,
     },
     {
       maxBmi: Infinity,
       src: "/chubbyweight.png",
       label: "น้ำหนักเกินระดับ 2",
-      badge: "น้ำหนักเกินระดับ 2",
+      badge: langStore.t('bmi_obese2_badge'),
       badgeStyle: { background: "#fee2e2", color: "#991b1b" },
       color: "#dc2626",
       descStyle: {
@@ -493,7 +496,7 @@ export function useProfileForm(user: any, tanitaRef: any) {
         border: "1px solid #fecaca",
         color: "#991b1b",
       },
-      desc: "BMI ≥ 30.0: สภาวะน้ำหนักเกิน แนะนำให้ดูแลเรื่องการรับประทานอาหารและออกกำลังกายอย่างสม่ำเสมอ (อ้างอิง: กองส่งเสริมความรอบรู้และสื่อสารสุขภาพ)",
+      desc: langStore.t('bmi_obese2_desc'),
       dotIndex: 4,
     },
   ];
@@ -504,18 +507,18 @@ export function useProfileForm(user: any, tanitaRef: any) {
     return BMI_LEVELS.find((l) => val < l.maxBmi) ?? BMI_LEVELS[4];
   });
   // Dynamic field definitions
-  const roleOptions = [
-    "นักเรียน",
-    "นักศึกษา",
-    "บุคลากรโรงพยาบาล",
-    "บุคลากรมหาวิทยาลัย",
-    "บุคคลทั่วไป",
-  ];
-  const gradeOptions = [
+  const roleOptions = computed(() => [
+    { value: "นักเรียน", label: langStore.t('role_student_school') },
+    { value: "นักศึกษา", label: langStore.t('role_student_uni') },
+    { value: "บุคลากรโรงพยาบาล", label: langStore.t('role_hospital_staff') },
+    { value: "บุคลากรมหาวิทยาลัย", label: langStore.t('role_uni_staff') },
+    { value: "บุคคลทั่วไป", label: langStore.t('role_general') },
+  ]);
+  const gradeOptions = computed(() => [
     { value: "ป.1 - ป.6", label: "ประถมศึกษา (ป.1 - ป.6)" },
     { value: "ม.1 - ม.6", label: "มัธยมศึกษา (ม.1 - ม.6)" },
-  ];
-  const uniFaculties = [
+  ]);
+  const uniFaculties = computed(() => [
     "สำนักวิชาวิทยาศาสตร์",
     "สำนักวิชาเทคโนโลยีสังคม",
     "สำนักวิชาเทคโนโลยีการเกษตร",
@@ -525,33 +528,33 @@ export function useProfileForm(user: any, tanitaRef: any) {
     "สำนักวิชาทันตแพทยศาสตร์",
     "สำนักวิชาสาธารณสุขศาสตร์",
     "สำนักวิชาศาสตร์และศิลป์ดิจิทัล",
-    "อื่น ๆ",
-  ];
-  const uniYears = ["ปี 1", "ปี 2", "ปี 3", "ปี 4", "ปี 5", "ปี 6"];
-  const activityOptions = [
-    { value: "sedentary", label: "ไม่ออกกำลังกายเลยหรือน้อยมาก" },
-    { value: "light", label: "ออกกำลังกาย 1-3 ครั้งต่อสัปดาห์" },
-    { value: "moderate", label: "ออกกำลังกาย 3-5 ครั้งต่อสัปดาห์" },
-    { value: "very_active", label: "ออกกำลังกาย 6-7 ครั้งต่อสัปดาห์" },
-    { value: "extra_active", label: "ออกกำลังกายวันละ 2 ครั้งขึ้นไป" },
-  ];
-  const goalOptions = [
-    "ลดน้ำหนัก",
-    "เพิ่มกล้ามเนื้อ",
-    "เพิ่มการเดิน",
-    "นอนหลับให้ดีขึ้น",
-    "รักษาสุขภาพทั่วไป",
-  ];
+    langStore.t('others'),
+  ]);
+  const uniYears = computed(() => ["ปี 1", "ปี 2", "ปี 3", "ปี 4", "ปี 5", "ปี 6"]);
+  const activityOptions = computed(() => [
+    { value: "sedentary", label: langStore.t('act_sedentary') },
+    { value: "light", label: langStore.t('act_light') },
+    { value: "moderate", label: langStore.t('act_moderate') },
+    { value: "very_active", label: langStore.t('act_very_active') },
+    { value: "extra_active", label: langStore.t('act_extra_active') },
+  ]);
+  const goalOptions = computed(() => [
+    { value: "ลดน้ำหนัก", label: langStore.t('goal_weight_loss') },
+    { value: "เพิ่มกล้ามเนื้อ", label: langStore.t('goal_muscle_gain') },
+    { value: "เพิ่มการเดิน", label: langStore.t('goal_walk_more') },
+    { value: "นอนหลับให้ดีขึ้น", label: langStore.t('goal_sleep_better') },
+    { value: "รักษาสุขภาพทั่วไป", label: langStore.t('goal_general_health') },
+  ]);
   const generalFields = computed(() => {
     const fields: any[] = [
-      { key: "fname_th", label: "ชื่อจริง", icon: User },
-      { key: "lname_th", label: "นามสกุล", icon: User },
-      { key: "nickname", label: "ชื่อเล่น", icon: User },
+      { key: "fname_th", label: langStore.t('first_name'), icon: User },
+      { key: "lname_th", label: langStore.t('last_name'), icon: User },
+      { key: "nickname", label: langStore.t('nickname'), icon: User },
       {
         key: "role_type",
-        label: "ประเภทผู้ใช้งาน",
+        label: langStore.t('user_type'),
         type: "select",
-        options: roleOptions,
+        options: roleOptions.value,
         icon: User,
       },
     ];
@@ -559,54 +562,55 @@ export function useProfileForm(user: any, tanitaRef: any) {
     if (role === "นักเรียน") {
       fields.push({
         key: "role_detail_1",
-        label: "ชื่อโรงเรียน",
+        label: langStore.t('school_name'),
         type: "text",
         icon: School,
       });
       fields.push({
         key: "role_detail_2",
-        label: "ระดับชั้น",
+        label: langStore.t('grade_level'),
         type: "select",
-        options: gradeOptions,
+        options: gradeOptions.value,
         icon: GraduationCap,
       });
     } else if (role === "นักศึกษา") {
       fields.push({
         key: "role_detail_1",
-        label: "มหาวิทยาลัย",
+        label: langStore.t('university'),
         type: "text",
         icon: School,
       });
       if (editing.value) {
         fields.push({
           key: "univ_faculty",
-          label: "คณะ / สำนักวิชา",
+          label: langStore.t('faculty'),
           type: "select",
-          options: uniFaculties,
+          options: uniFaculties.value,
           icon: GraduationCap,
         });
         if (
           form.value.univ_faculty === "อื่น ๆ" ||
-          form.value.univ_faculty === "อื่นๆ"
+          form.value.univ_faculty === "อื่นๆ" ||
+          form.value.univ_faculty === langStore.t('others')
         ) {
           fields.push({
             key: "univ_faculty_other",
-            label: "โปรดระบุคณะ / สำนักวิชา",
+            label: langStore.t('specify_faculty'),
             type: "text",
             icon: GraduationCap,
           });
         }
         fields.push({
           key: "univ_year",
-          label: "ชั้นปี",
+          label: langStore.t('year_level'),
           type: "select",
-          options: uniYears,
+          options: uniYears.value,
           icon: GraduationCap,
         });
       } else {
         fields.push({
           key: "role_detail_2",
-          label: "คณะ-ชั้นปี",
+          label: langStore.t('faculty_year'),
           type: "text",
           icon: GraduationCap,
         });
@@ -615,27 +619,28 @@ export function useProfileForm(user: any, tanitaRef: any) {
       const isUni = role === "บุคลากรมหาวิทยาลัย";
       fields.push({
         key: "role_detail_1",
-        label: isUni ? "หน่วยงาน / สำนักวิชา" : "แผนก/สังกัด",
+        label: isUni ? langStore.t('department') : langStore.t('division'),
         type: isUni ? "select" : "text",
-        options: isUni ? uniFaculties : [],
+        options: isUni ? uniFaculties.value : [],
         icon: Building2,
       });
       if (
         isUni &&
         editing.value &&
         (form.value.role_detail_1 === "อื่น ๆ" ||
-          form.value.role_detail_1 === "อื่นๆ")
+          form.value.role_detail_1 === "อื่นๆ" ||
+          form.value.role_detail_1 === langStore.t('others'))
       ) {
         fields.push({
           key: "role_detail_1_other",
-          label: "โปรดระบุสังกัดหน่วยงาน",
+          label: langStore.t('specify_department'),
           type: "text",
           icon: Building2,
         });
       }
       fields.push({
         key: "role_detail_2",
-        label: isUni ? "ตำแหน่ง" : "วิชาชีพ",
+        label: isUni ? langStore.t('position') : langStore.t('profession'),
         type: "text",
         icon: Briefcase,
       });
@@ -643,40 +648,40 @@ export function useProfileForm(user: any, tanitaRef: any) {
     fields.push(
       {
         key: "gender",
-        label: "เพศกำเนิด",
+        label: langStore.t('biological_sex'),
         type: "select",
         options: [
-          { value: "male", label: "ชาย" },
-          { value: "female", label: "หญิง" },
-          { value: "other", label: "อื่นๆ" },
+          { value: "male", label: langStore.t('gender_male') },
+          { value: "female", label: langStore.t('gender_female') },
+          { value: "other", label: langStore.t('gender_other') },
         ],
         icon: VenetianMask,
       },
-      { key: "birth_date", label: "วันเกิด", type: "date_be", icon: Calendar },
+      { key: "birth_date", label: langStore.t('date_of_birth'), type: "date_be", icon: Calendar },
       {
         key: "activity_level",
-        label: "ระดับกิจกรรม",
+        label: langStore.t('activity_level'),
         type: "select",
-        options: activityOptions,
+        options: activityOptions.value,
         icon: Activity,
       },
       {
         key: "main_goal",
-        label: "เป้าหมาย",
+        label: langStore.t('main_goal'),
         type: "select",
-        options: goalOptions,
+        options: goalOptions.value,
         icon: Target,
       },
     );
     return fields;
   });
-  const contactFields = [
-    { key: "email", label: "อีเมล", icon: Mail },
-    { key: "phone", label: "โทรศัพท์", icon: Phone },
-    { key: "id_code", label: "รหัสประจำตัว", icon: IdCard },
-    { key: "address", label: "ที่อยู่", icon: MapPin },
-    { key: "underlying_disease", label: "โรคประจำตัว", icon: Stethoscope },
-  ];
+  const contactFields = computed(() => [
+    { key: "email", label: langStore.t('email'), icon: Mail },
+    { key: "phone", label: langStore.t('phone'), icon: Phone },
+    { key: "id_code", label: langStore.t('id_card'), icon: IdCard },
+    { key: "address", label: langStore.t('address'), icon: MapPin },
+    { key: "underlying_disease", label: langStore.t('congenital_disease'), icon: Stethoscope },
+  ]);
   function formatBE(dateStr) {
     if (!dateStr) return "–";
     const date = new Date(dateStr);

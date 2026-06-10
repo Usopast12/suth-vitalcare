@@ -2,12 +2,12 @@
   <div class="profile-dashboard font-sans p-2 md:p-6 bg-slate-50 min-h-screen">
     <div class="dashboard-header mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
       <div>
-        <h2 class="text-3xl font-black text-slate-800 tracking-tight">สรุปผลสุขภาพและกิจกรรม</h2>
-        <p class="text-slate-500 mt-2 font-medium">ข้อมูลสรุปการเข้าร่วมกิจกรรมและผลประเมินรายบุคคล</p>
+        <h2 class="text-3xl font-black text-slate-800 tracking-tight">{{ langStore.t('dashboard_header') }}</h2>
+        <p class="text-slate-500 mt-2 font-medium">{{ langStore.t('dashboard_sub') }}</p>
       </div>
       <button @click="fetchData" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-sm">
         <RefreshCcw :class="{'animate-spin': isLoading}" :size="18" />
-        อัปเดตข้อมูล
+        {{ langStore.t('update_data') }}
       </button>
     </div>
 
@@ -24,32 +24,32 @@
         <div class="summary-card glass blue">
           <div class="card-icon"><MapPin :size="22" /></div>
           <div class="card-info">
-            <div class="card-label">ระยะทางสะสม</div>
-            <div class="card-value">{{ totalDistance.toFixed(2) }} <small>กม.</small></div>
+            <div class="card-label">{{ langStore.t('accumulated_distance') }}</div>
+            <div class="card-value">{{ totalDistance.toFixed(2) }} <small>{{ langStore.t('km') }}</small></div>
           </div>
         </div>
 
         <div class="summary-card glass orange">
           <div class="card-icon"><Activity :size="22" /></div>
           <div class="card-info">
-            <div class="card-label">จำนวนก้าวสะสม</div>
-            <div class="card-value">{{ totalSteps.toLocaleString() }} <small>ก้าว</small></div>
+            <div class="card-label">{{ langStore.t('accumulated_steps') }}</div>
+            <div class="card-value">{{ totalSteps.toLocaleString() }} <small>{{ langStore.t('steps') }}</small></div>
           </div>
         </div>
 
         <div class="summary-card glass purple">
           <div class="card-icon"><Award :size="22" /></div>
           <div class="card-info">
-            <div class="card-label">คะแนน VitalCare</div>
-            <div class="card-value">{{ points.toLocaleString() }} <small>แต้ม</small></div>
+            <div class="card-label">{{ langStore.t('vitalcare_points') }}</div>
+            <div class="card-value">{{ points.toLocaleString() }} <small>{{ langStore.t('pts') }}</small></div>
           </div>
         </div>
 
         <div class="summary-card glass teal">
           <div class="card-icon"><Droplets :size="22" /></div>
           <div class="card-info">
-            <div class="card-label">ดื่มน้ำสะสม</div>
-            <div class="card-value">{{ totalWater }} <small>ลิตร</small></div>
+            <div class="card-label">{{ langStore.t('accumulated_water') }}</div>
+            <div class="card-value">{{ totalWater }} <small>{{ langStore.t('liters') }}</small></div>
           </div>
         </div>
       </div>
@@ -58,25 +58,25 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div class="content-card lg:col-span-2 flex flex-col">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-slate-800">แนวโน้มคะแนนประเมินสุขภาพ</h3>
-            <div class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">เฉลี่ย {{ avgAssessmentScore }} คะแนน</div>
+            <h3 class="text-lg font-bold text-slate-800">{{ langStore.t('health_assessment_trend') }}</h3>
+            <div class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">{{ langStore.t('average_points').replace('{val}', avgAssessmentScore) }}</div>
           </div>
           <div class="flex-1 relative min-h-[300px]">
             <Line v-if="assessmentChartData.labels.length > 0" :data="assessmentChartData" :options="lineChartOptions" />
             <div v-else class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 font-medium">
               <FileText :size="48" class="opacity-20 mb-2" />
-              ไม่พบประวัติการประเมิน
+              {{ langStore.t('no_assessment_history') }}
             </div>
           </div>
         </div>
 
         <div class="content-card flex flex-col">
-          <h3 class="text-lg font-bold text-slate-800 mb-4">สถานะภารกิจทั้งหมด</h3>
+          <h3 class="text-lg font-bold text-slate-800 mb-4">{{ langStore.t('overall_mission_status') }}</h3>
           <div class="flex-1 relative min-h-[300px] flex items-center justify-center">
             <Doughnut v-if="totalMissions > 0" :data="missionStatusData" :options="doughnutChartOptions" />
             <div v-else class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 font-medium">
               <ClipboardList :size="48" class="opacity-20 mb-2" />
-              ยังไม่มีการส่งภารกิจ
+              {{ langStore.t('no_mission_submitted') }}
             </div>
           </div>
         </div>
@@ -86,10 +86,10 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Missions Summary -->
         <div class="content-card">
-          <h3 class="text-lg font-bold text-slate-800 mb-5">สรุปกิจกรรมล่าสุด</h3>
+          <h3 class="text-lg font-bold text-slate-800 mb-5">{{ langStore.t('recent_activity_summary') }}</h3>
           <div class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
             <div v-if="submissions.length === 0" class="py-12 text-center text-slate-400">
-               ไม่มีประวัติกิจกรรมล่าสุด
+               {{ langStore.t('no_recent_activity') }}
             </div>
             <div v-for="sub in submissions.slice(0, 10)" :key="sub.id" class="p-4 rounded-xl border border-slate-100 flex items-center gap-4 bg-slate-50/50 hover:bg-white hover:shadow-sm transition-all">
               <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="sub.status === 'approved' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'">
@@ -97,13 +97,13 @@
                 <Clock v-else :size="20" />
               </div>
               <div class="flex-1 min-w-0">
-                <div class="font-bold text-sm text-slate-900 truncate">{{ sub.tasks?.note || 'ภารกิจกิจกรรม' }}</div>
+                <div class="font-bold text-sm text-slate-900 truncate" v-auto-translate="sub.tasks?.note || langStore.t('mission_activity')"></div>
                 <div class="text-xs text-slate-500 mt-0.5 truncate">{{ sub.value }} {{ sub.tasks?.metric_unit || '' }}</div>
               </div>
               <div class="text-right">
                 <div class="text-xs font-bold text-slate-400">{{ formatDate(sub.created_at) }}</div>
                 <div class="text-[10px] font-black uppercase mt-1" :class="sub.status === 'approved' ? 'text-emerald-600' : 'text-amber-600'">
-                  {{ sub.status === 'approved' ? 'สำเร็จ' : 'รอตรวจสอบ' }}
+                  {{ sub.status === 'approved' ? langStore.t('success_status') : langStore.t('pending_status') }}
                 </div>
               </div>
             </div>
@@ -112,10 +112,10 @@
 
         <!-- Health Assessments -->
         <div class="content-card">
-          <h3 class="text-lg font-bold text-slate-800 mb-5">ประวัติการทำแบบประเมิน</h3>
+          <h3 class="text-lg font-bold text-slate-800 mb-5">{{ langStore.t('assessment_history') }}</h3>
           <div class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
             <div v-if="assessments.length === 0" class="py-12 text-center text-slate-400">
-               ไม่มีประวัติแบบประเมิน
+               {{ langStore.t('no_assessment') }}
             </div>
             <div v-for="assessment in assessments" :key="assessment.id" class="p-4 rounded-xl border border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-white hover:shadow-sm transition-all">
               <div class="flex items-center gap-4">
@@ -124,9 +124,9 @@
                 </div>
                 <div>
                   <div class="font-bold text-sm text-slate-900">
-                    แบบประเมินสุขภาพทั่วไป
+                    {{ langStore.t('general_health_assessment') }}
                   </div>
-                  <div class="text-xs text-slate-500 mt-1 font-medium">{{ assessment.overall_level || 'ระดับปกติ' }}</div>
+                  <div class="text-xs text-slate-500 mt-1 font-medium">{{ assessment.overall_level || langStore.t('normal_level') }}</div>
                 </div>
               </div>
               <div class="text-right">
@@ -143,6 +143,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { langStore } from '../store/lang'
 import { 
   HeartPulse, Activity, Clock, CheckCircle2, 
   XCircle, FileText, ClipboardList, RefreshCcw,
@@ -210,7 +211,7 @@ const assessmentChartData = computed(() => {
   return {
     labels: labels,
     datasets: [{
-      label: 'คะแนนประเมินสุขภาพ',
+      label: langStore.t('health_assessment_score'),
       data: scores,
       borderColor: '#4f46e5',
       backgroundColor: 'rgba(79, 70, 229, 0.1)',
@@ -227,7 +228,7 @@ const assessmentChartData = computed(() => {
 
 const missionStatusData = computed(() => {
   return {
-    labels: ['สำเร็จ', 'รอตรวจสอบ', 'อื่น ๆ'],
+    labels: [langStore.t('success_status'), langStore.t('pending_status'), langStore.t('other_status')],
     datasets: [{
       data: [approvedCount.value, pendingCount.value, totalMissions.value - approvedCount.value - pendingCount.value],
       backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
@@ -287,13 +288,13 @@ onMounted(() => {
 
 // ---------------- UI Utilities ----------------
 const formatDate = (dateString) => {
-  return new Intl.DateTimeFormat('th-TH', { 
+  return new Intl.DateTimeFormat(langStore.locale === 'en' ? 'en-US' : 'th-TH', { 
     day: 'numeric', month: 'short', year: 'numeric'
   }).format(new Date(dateString))
 }
 
 const formatTimeOnly = (dateString) => {
-  return new Intl.DateTimeFormat('th-TH', { 
+  return new Intl.DateTimeFormat(langStore.locale === 'en' ? 'en-US' : 'th-TH', { 
     day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
   }).format(new Date(dateString))
 }

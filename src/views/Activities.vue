@@ -249,10 +249,8 @@ onMounted(() => {
                 <img :src="banner.image_url" :alt="banner.title" draggable="false" />
               </div>
               <div class="hero-content-side">
-                <h2 class="hero-title">{{ (langStore.locale === 'en' && banner.title_en) ? banner.title_en : (banner.title || langStore.t('no_banner_title')) }}</h2>
-                <p class="hero-subtitle" v-if="banner.subtitle_en || banner.subtitle">
-                  {{ (langStore.locale === 'en' && banner.subtitle_en) ? banner.subtitle_en : banner.subtitle }}
-                </p>
+                <h2 class="hero-title" v-auto-translate="(langStore.locale === 'en' && banner.title_en) ? banner.title_en : (banner.title || langStore.t('no_banner_title'))"></h2>
+                <p class="hero-subtitle" v-if="banner.subtitle_en || banner.subtitle" v-auto-translate="(langStore.locale === 'en' && banner.subtitle_en) ? banner.subtitle_en : banner.subtitle"></p>
                 <div class="hero-actions" v-if="banner.link_type !== 'none'">
                   <button class="btn-hero-solid" @click="onBannerClick(banner)">
                     {{ langStore.t('view_detail') }} <ArrowRight :size="16" class="ml-1"/>
@@ -345,7 +343,7 @@ onMounted(() => {
                 </button>
               </div>
               <div class="info-box">
-                <h4 class="title" :title="act.title">{{ act.title }}</h4>
+                <h4 class="title" v-auto-translate-title="act.title" v-auto-translate="act.title"></h4>
                 <div class="meta-row text-primary">
                   <CalendarDays :size="14" />
                   <span>{{ langStore.t('register_label') }} {{ act.is_continuous_registration ? langStore.t('always_open') : (act.registration_end_date ? formatDateThai(act.registration_end_date) : langStore.t('not_specified')) }}</span>
